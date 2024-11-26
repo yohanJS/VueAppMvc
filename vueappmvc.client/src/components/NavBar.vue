@@ -1,13 +1,13 @@
 <template>
   <nav class="navbar bg-light fixed-top navbar-expand-lg">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">VueJs - MVC</a>
+      <a class="navbar-brand" href="#">BookAI</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-        <span class="navbar-toggler-icon"></span>
+        <i class="bi bi-list"></i>
       </button>
       <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
         <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">MVC - VueJS</h5>
+          <p class="offcanvas-title" id="offcanvasNavbarLabel">BookAI</p>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -30,5 +30,14 @@
 </script>
 
 <style scoped>
-
+  .navbar-toggler {
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .navbar-brand {
+      font-size: 0.9rem;
+  }
+  .offcanvas-title {
+    font-size: 0.9rem;
+  }
 </style>

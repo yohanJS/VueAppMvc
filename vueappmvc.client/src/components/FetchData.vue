@@ -50,9 +50,7 @@
 
 
 <script lang="js">
-  import { defineComponent } from 'vue';
-
-  export default defineComponent({
+  export default {
     data() {
       return {
         total: 2,
@@ -65,6 +63,9 @@
       // already being observed
       await this.fetchReviews();
     },
+    //components: {
+    //  DatePicker
+    //},
     watch: {
       // call again the method if the route changes
       '$route': 'fetchReviews'
@@ -87,10 +88,54 @@
         this.total = 0;
       }
     },
-  });
+  };
 </script>
 
 <style scoped>
+  /* General Styling for the Date Field */
+  input[type="date"] {
+    display: block;
+    width: 100%;
+    max-width: 300px; /* Adjust as needed */
+    padding: 10px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    color: #333;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+    /* Hover State */
+    input[type="date"]:hover {
+      border-color: #888;
+      background-color: #f0f0f0;
+    }
+
+    /* Focus State */
+    input[type="date"]:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      background-color: #fff;
+    }
+
+    /* Disabled State */
+    input[type="date"]:disabled {
+      background-color: #e9ecef;
+      border-color: #ddd;
+      cursor: not-allowed;
+    }
+
+  /* Styling for the Label */
+  label.form-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+    display: inline-block;
+  }
+
   .review-component {
     display: flex;
     align-items: center;
