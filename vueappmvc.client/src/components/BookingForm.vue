@@ -2,28 +2,29 @@
   <div class="container py-4 mt-5">
     <h6 class="mb-4 text-center">Book Your Service</h6>
     <form @submit.prevent="submitForm">
-      <div v-if="step === 1">
-        <!-- Step 1: Booking Details -->
-        <div class="mb-2">
-          <label for="service" class="form-label">Select a Service</label>
-          <select id="service"
-                  class="form-select"
-                  v-model="formData.service"
-                  required>
-            <option value="" disabled>Select a service</option>
-            <option v-for="service in services"
-                    :key="service.id"
-                    :value="service.name">
-              {{ service.name }} - ${{ service.price }}
-            </option>
-          </select>
-          <p v-if="formData.service" class="mt-2 text-muted">
-            {{ getSelectedServiceDescription() }}
-          </p>
-        </div>
 
+      <div v-if="step === 1">
+        <!-- Step 1: Booking Service -->
+        <div class="d-flex flex-column gap-3">
+          <div v-for="service in services"
+               :key="service.id"
+               class="service-card bg-light-subtle p-2 rounded-2 shadow-sm btn text-dark text-start"
+               @click="goToStep(2)">
+            <div class="card-header">
+              <p class="lead m-0 fw-bold">{{ service.name }}</p>
+              <span class="price">${{ service.price }}</span>
+            </div>
+            <p class="text-dark">{{ service.description }}</p>
+            <div class="text-end">
+              <i class="bi bi-arrow-right-circle"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="step === 2">
+        <!-- Step 3: Date and time -->
         <div class="mb-2">
-          <label for="date" class="form-label">Booking Date</label>
           <input type="date"
                  id="date"
                  class="form-control"
@@ -39,13 +40,22 @@
                  v-model="formData.time"
                  required />
         </div>
-        <button type="button" class="btn btn-outline-dark w-100" @click="goToStep(2)">
-          <i class="bi bi-arrow-right-circle"></i>
-        </button>
-      </div>
 
-      <div v-if="step === 2">
-        <!-- Step 2: Personal Details -->
+        <div class="d-flex justify-content-between">
+          <button type="button"
+                  class="btn btn-outline-secondary w-25"
+                  @click="goToStep(1)">
+            <i class="bi bi-arrow-left-circle"></i>
+          </button>
+          <button type="button"
+                  class="btn btn-outline-secondary w-25"
+                  @click="goToStep(3)">
+            <i class="bi bi-arrow-right-circle"></i>
+          </button>
+        </div>
+      </div>
+      <div v-if="step === 3">
+        <!-- Step 3: Personal Details -->
         <div v-if="formData.service !== ''">
           <p class="m-0 bg-success-subtle p-1 mb-3 rounded-1 shadow-sm">
             You are booking a {{ formData.service }}
@@ -219,6 +229,9 @@
 </script>
 
 <style scoped>
+  .service-card {
+    border-bottom: 4px solid midnightblue;
+  }
   .form-label {
     font-size: 0.8rem !important;
   }
