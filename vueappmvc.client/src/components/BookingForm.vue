@@ -23,32 +23,67 @@
       </div>
 
       <div v-if="step === 2">
-        <!-- Step 3: Date and time -->
-        <div class="mb-2">
-          <input type="date"
-                 id="date"
-                 class="form-control"
-                 v-model="formData.date"
-                 required />
+        <!-- Step 2: Date and time -->
+        <div class="datepicker-container mt-3 mb-3">
+          <div class="calendar rounded-2 shadow-sm">
+            <div class="calendar-header">
+              <button @click="prevMonth" class="nav-button" type="button">‹</button>
+              <span>{{ monthNames[currentMonth] }} {{ currentYear }}</span>
+              <button @click="nextMonth" class="nav-button" type="button">›</button>
+            </div>
+            <div class="calendar-body">
+              <div class="calendar-weekdays">
+                <span v-for="day in weekdays" :key="day" class="weekday">{{ day }}</span>
+              </div>
+              <div class="calendar-dates">
+                <span v-for="(date, index) in getDates()"
+                      :key="index"
+                      :class="['date', { 'current-date': isToday(date), 'selected-date': isSelectedDate(date) }]"
+                      @click="selectDate(date)">
+                  {{ date.getDate() }}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div class="mb-2">
-          <label for="time" class="form-label">Booking Time</label>
-          <input type="time"
-                 id="time"
-                 class="form-control"
-                 v-model="formData.time"
-                 required />
+        <!--TIME PICKER-->
+        <div class="timepicker-container mt-3 mb-3">
+          <div class="timepicker rounded-2 shadow-sm">
+            <div class="timepicker-header">
+              <span>Selected Time: {{ formattedTime }}</span>
+            </div>
+            <div class="timepicker-body">
+              <div class="timepicker-section">
+                <label>Hour</label>
+                <select v-model="selectedHour" class="timepicker-select">
+                  <option v-for="hour in hours" :key="hour" :value="hour">{{ hour }}</option>
+                </select>
+              </div>
+              <div class="timepicker-section">
+                <label>Minute</label>
+                <select v-model="selectedMinute" class="timepicker-select">
+                  <option v-for="minute in minutes" :key="minute" :value="minute">{{ minute }}</option>
+                </select>
+              </div>
+              <div class="timepicker-section">
+                <label>AM/PM</label>
+                <select v-model="selectedPeriod" class="timepicker-select">
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="d-flex justify-content-between">
           <button type="button"
-                  class="btn btn-outline-secondary w-25"
+                  class="btn w-25"
                   @click="goToStep(1)">
             <i class="bi bi-arrow-left-circle"></i>
           </button>
           <button type="button"
-                  class="btn btn-outline-secondary w-25"
+                  class="btn w-25"
                   @click="goToStep(3)">
             <i class="bi bi-arrow-right-circle"></i>
           </button>
@@ -133,7 +168,7 @@
         <div class="d-flex justify-content-between">
           <button type="button"
                   class="btn btn-outline-secondary w-25"
-                  @click="goToStep(1)">
+                  @click="goToStep(2)">
             <i class="bi bi-arrow-left-circle"></i>
           </button>
           <button type="submit" class="btn btn-outline-primary w-25">
@@ -146,10 +181,27 @@
 </template>
 
 <script>
+
   export default {
     name: "BookingForm",
+    //components: {
+    //  DatePicker,
+    //},
     data() {
+      const today = new Date();
+      const currentTime = new Date();
       return {
+        currentYear: today.getFullYear(),
+        currentMonth: today.getMonth(),
+        selectedDate: today,
+        weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        monthNames: [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ],
+        selectedHour: String(currentTime.getHours() % 12 || 12).padStart(2, '0'), // Convert to 12-hour format
+        selectedMinute: String(currentTime.getMinutes()).padStart(2, '0'),
+        selectedPeriod: currentTime.getHours() >= 12 ? 'PM' : 'AM', // Determine AM or PM
         step: 1, // Step tracking
         formData: {
           name: "",
@@ -193,6 +245,20 @@
         ],
       };
     },
+    computed: {
+      hours() {
+        // 1–12 for 12-hour format
+        return Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+      },
+      minutes() {
+        // 0–59 for minutes
+        return Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
+      },
+      formattedTime() {
+        // Format as HH:MM AM/PM
+        return `${this.selectedHour}:${this.selectedMinute} ${this.selectedPeriod}`;
+      },
+    },
     methods: {
       getSelectedServiceDescription() {
         const selectedService = this.services.find(
@@ -205,7 +271,7 @@
       },
       submitForm() {
         // Handle form submission (e.g., send to an API)
-        alert(`Booking submitted:\n${JSON.stringify(this.formData, null, 2)}`);
+        alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
 
         // Clear the form
         this.step = 1;
@@ -224,6 +290,63 @@
           time: "",
         };
       },
+      getDates() {
+        const dates = [];
+        const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
+        const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
+
+        // Add days from the previous month to fill the first week
+        const startDay = firstDayOfMonth.getDay();
+        for (let i = 0; i < startDay; i++) {
+          const prevDate = new Date(this.currentYear, this.currentMonth, -i);
+          dates.unshift(prevDate);
+        }
+
+        // Add all dates from the current month
+        for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+          dates.push(new Date(this.currentYear, this.currentMonth, i));
+        }
+
+        // Add days from the next month to complete the grid
+        while (dates.length % 7 !== 0) {
+          const nextDate = new Date(this.currentYear, this.currentMonth + 1, dates.length % 7);
+          dates.push(nextDate);
+        }
+
+        return dates;
+      },
+      prevMonth() {
+        this.currentMonth -= 1;
+        if (this.currentMonth < 0) {
+          this.currentMonth = 11;
+          this.currentYear -= 1;
+        }
+      },
+      nextMonth() {
+        this.currentMonth += 1;
+        if (this.currentMonth > 11) {
+          this.currentMonth = 0;
+          this.currentYear += 1;
+        }
+      },
+      selectDate(date) {
+        this.selectedDate = date;
+      },
+      isToday(date) {
+        const today = new Date();
+        return (
+          date.getFullYear() === today.getFullYear() &&
+          date.getMonth() === today.getMonth() &&
+          date.getDate() === today.getDate()
+        );
+      },
+      isSelectedDate(date) {
+        return (
+          this.selectedDate.getFullYear() === date.getFullYear() &&
+          this.selectedDate.getMonth() === date.getMonth() &&
+          this.selectedDate.getDate() === date.getDate()
+        );
+      },
     },
   };
 </script>
@@ -232,6 +355,7 @@
   .service-card {
     border-bottom: 4px solid midnightblue;
   }
+
   .form-label {
     font-size: 0.8rem !important;
   }
@@ -263,4 +387,97 @@
     font-size: 0.9rem;
     font-style: italic;
   }
+
+  .datepicker-container {
+    max-width: 300px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+  }
+
+  .calendar {
+    padding: 10px;
+    background-color: #fff;
+  }
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  .nav-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+  }
+
+  .calendar-weekdays,
+  .calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    gap: 5px;
+  }
+
+  .weekday {
+    font-weight: bold;
+  }
+
+  .date {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+  }
+
+    .date:hover {
+      background-color: #f0f0f0;
+    }
+
+  .current-date {
+    background-color: #007BFF;
+    color: #fff;
+  }
+
+  .selected-date {
+    background-color: #28a745;
+    color: #fff;
+  }
+  /*TIME PICKER CSS*/
+  .timepicker {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: #fff;
+  }
+
+  .timepicker-header {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: bold;
+  }
+
+  .timepicker-body {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .timepicker-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .timepicker-select {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
 </style>
+
+
