@@ -46,6 +46,11 @@
 
       <div v-if="step === 2">
         <!-- Step 2: Personal Details -->
+        <div v-if="formData.service !== ''">
+          <p class="m-0 bg-success-subtle p-1 mb-3 rounded-1 shadow-sm">
+            You are booking a {{ formData.service }}
+          </p>
+        </div>
         <div class="mb-2">
           <label for="name" class="form-label">Name</label>
           <input type="text"
