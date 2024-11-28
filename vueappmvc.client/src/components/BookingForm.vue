@@ -32,9 +32,9 @@
         </div>
       </div>
 
+      <!-- Step 2: Date and time -->
       <div v-if="step === 2">
         <p class="text-center steel-blue-color">Select date and time</p>
-        <!-- Step 2: Date and time -->
         <div class="datepicker-container m-2 mx-auto">
           <div class="calendar rounded-2 shadow-sm">
             <div class="calendar-header">
@@ -226,12 +226,34 @@
       </div>
 
     </form>
+    <!--SUCCESS MODAL-->
+    <div>
+      <div class="modal fade" id="submissionModal" tabindex="-1" aria-labelledby="submissionModalLabel"
+           aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content my-bg text-white rounded-2 border-0 shadow-sm">
+            <div class="modal-header">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>
+                We have received your request. Thank you!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--<div v-if="errorMessage != ''" class="alert alert-danger mt-2" role="alert">
+        {{ errorMessage }}
+      </div>-->
+    </div>
   </div>
 </template>
 
 <!--JS-->
 <script>
   import moment from 'moment';
+  import { Modal } from "bootstrap";
 
   export default {
     name: "BookingForm",
@@ -315,8 +337,14 @@
         this.step = stepNumber;
       },
       submitForm() {
+        const modalElement = document.getElementById("submissionModal");
+        const submissionModal = new Modal(modalElement);
+        if (true) {
+          submissionModal.show();
+          console.log(this.formData);
+        }
         // Handle form submission (e.g., send to an API)
-        alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
+        //alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
 
         // Clear the form
         this.step = 1;
@@ -416,7 +444,7 @@
     background-color: #2C3539
   }
   .form-check-input {
-    background-color: #ffffff !important;
+    background-color: #000000 !important;
     border: 1px solid #2C3539;
   }
 
@@ -563,6 +591,10 @@
     .time-box:hover:not(.taken):not(.selected) {
       background-color: #FF2400;
     }
+    /*MODAL*/
+  .btn-close {
+      color: #ffffff !important;
+  }
 </style>
 
 
