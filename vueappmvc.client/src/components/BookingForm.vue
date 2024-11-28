@@ -1,15 +1,14 @@
 <template>
   <div class="container py-4 mt-5">
-    <h6 class="mb-4 text-center">Book Your Service</h6>
     <form @submit.prevent="submitForm">
-
       <div v-if="step === 1">
+        <p class="lead text-center">Select service</p>
         <!-- Step 1: Booking Service -->
         <div class="d-flex flex-column gap-3">
           <div v-for="service in services"
                :key="service.id"
                class="service-card bg-light-subtle p-2 rounded-2 shadow-sm btn text-dark text-start"
-               @click="goToStep(2)">
+               @click="selectService(service)">
             <div class="card-header">
               <p class="lead m-0 fw-bold">{{ service.name }}</p>
               <span class="price">${{ service.price }}</span>
@@ -23,8 +22,9 @@
       </div>
 
       <div v-if="step === 2">
+        <p class="lead text-center">Select date and time</p>
         <!-- Step 2: Date and time -->
-        <div class="datepicker-container mt-3 mb-3">
+        <div class="datepicker-container m-2">
           <div class="calendar rounded-2 shadow-sm">
             <div class="calendar-header">
               <button @click="prevMonth" class="nav-button" type="button">‹</button>
@@ -47,26 +47,23 @@
           </div>
         </div>
         <!--TIME PICKER-->
-        <div class="timepicker-container mt-3 mb-3">
+        <div class="timepicker-container m-2">
           <div class="timepicker rounded-2 shadow-sm">
-            <div class="timepicker-header">
-              <span>Selected Time: {{ formattedTime }}</span>
-            </div>
-            <div class="timepicker-body">
-              <div class="timepicker-section">
-                <label>Hour</label>
+            <div class="timepicker-body p-2">
+              <div class="timepicker-section mb-2">
+                <label class="form-label fw-bold">Hour</label>
                 <select v-model="selectedHour" class="timepicker-select">
                   <option v-for="hour in hours" :key="hour" :value="hour">{{ hour }}</option>
                 </select>
               </div>
               <div class="timepicker-section">
-                <label>Minute</label>
+                <label class="form-label fw-bold">Minute</label>
                 <select v-model="selectedMinute" class="timepicker-select">
                   <option v-for="minute in minutes" :key="minute" :value="minute">{{ minute }}</option>
                 </select>
               </div>
               <div class="timepicker-section">
-                <label>AM/PM</label>
+                <label class="form-label fw-bold">AM/PM</label>
                 <select v-model="selectedPeriod" class="timepicker-select">
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
@@ -90,10 +87,11 @@
         </div>
       </div>
       <div v-if="step === 3">
+        <p class="lead text-center">Enter personal details</p>
         <!-- Step 3: Personal Details -->
         <div v-if="formData.service !== ''">
-          <p class="m-0 bg-success-subtle p-1 mb-3 rounded-1 shadow-sm">
-            You are booking a {{ formData.service }}
+          <p class="m-0 bg-success-subtle p-1 mb-3 rounded-1 shadow-sm p-2">
+            You are booking: {{ formData.service }} on {{ formattedDate }} at {{ formattedTime }}
           </p>
         </div>
         <div class="mb-2">
@@ -167,11 +165,11 @@
         </div>
         <div class="d-flex justify-content-between">
           <button type="button"
-                  class="btn btn-outline-secondary w-25"
+                  class="btn w-25"
                   @click="goToStep(2)">
             <i class="bi bi-arrow-left-circle"></i>
           </button>
-          <button type="submit" class="btn btn-outline-primary w-25">
+          <button type="submit" class="btn w-25">
             <i class="bi bi-send-check-fill"></i>
           </button>
         </div>
@@ -181,6 +179,7 @@
 </template>
 
 <script>
+  import moment from 'moment';
 
   export default {
     name: "BookingForm",
@@ -258,13 +257,14 @@
         // Format as HH:MM AM/PM
         return `${this.selectedHour}:${this.selectedMinute} ${this.selectedPeriod}`;
       },
+      formattedDate() {
+        return moment(this.selectedDate).format('YYYY/MM/DD dddd');
+      }
     },
     methods: {
-      getSelectedServiceDescription() {
-        const selectedService = this.services.find(
-          (service) => service.name === this.formData.service
-        );
-        return selectedService ? selectedService.description : "";
+      selectService(service) {
+        this.formData.service = service.name; // Set the service name in formData
+        this.goToStep(2); // Navigate to step 2
       },
       goToStep(stepNumber) {
         this.step = stepNumber;
@@ -435,7 +435,7 @@
   }
 
     .date:hover {
-      background-color: #f0f0f0;
+      background-color: #007BFF;
     }
 
   .current-date {
@@ -453,12 +453,7 @@
     flex-direction: column;
     padding: 1rem;
     background: #fff;
-  }
-
-  .timepicker-header {
-    text-align: center;
-    margin-bottom: 1rem;
-    font-weight: bold;
+    font-size: 0.8rem;
   }
 
   .timepicker-body {
@@ -473,10 +468,11 @@
   }
 
   .timepicker-select {
-    padding: 0.5rem;
+    padding: 0.2rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 1rem;
+    font-size: 0.8rem;
+    color: #000000;
   }
 </style>
 
