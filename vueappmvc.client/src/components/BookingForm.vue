@@ -46,29 +46,14 @@
             </div>
           </div>
         </div>
-        <!--TIME PICKER-->
+        <!-- Time Picker -->
         <div class="timepicker-container m-2">
-          <div class="timepicker rounded-2 shadow-sm">
-            <div class="timepicker-body p-2">
-              <div class="timepicker-section mb-2">
-                <label class="form-label fw-bold">Hour</label>
-                <select v-model="selectedHour" class="timepicker-select">
-                  <option v-for="hour in hours" :key="hour" :value="hour">{{ hour }}</option>
-                </select>
-              </div>
-              <div class="timepicker-section">
-                <label class="form-label fw-bold">Minute</label>
-                <select v-model="selectedMinute" class="timepicker-select">
-                  <option v-for="minute in minutes" :key="minute" :value="minute">{{ minute }}</option>
-                </select>
-              </div>
-              <div class="timepicker-section">
-                <label class="form-label fw-bold">AM/PM</label>
-                <select v-model="selectedPeriod" class="timepicker-select">
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
-              </div>
+          <div class="time-grid">
+            <div v-for="(time, index) in timeSlots"
+                 :key="index"
+                 :class="['time-box shadow-sm', { 'taken': takenTimes.includes(time), 'selected': selectedTime === time }]"
+                 @click="!takenTimes.includes(time) && selectTime(time)">
+              {{ time }}
             </div>
           </div>
         </div>
@@ -86,6 +71,7 @@
           </button>
         </div>
       </div>
+      <!--STEP 3-->
       <div v-if="step === 3">
         <p class="lead text-center">Enter personal details</p>
         <!-- Step 3: Personal Details -->
@@ -198,9 +184,9 @@
           'January', 'February', 'March', 'April', 'May', 'June',
           'July', 'August', 'September', 'October', 'November', 'December'
         ],
-        selectedHour: String(currentTime.getHours() % 12 || 12).padStart(2, '0'), // Convert to 12-hour format
-        selectedMinute: String(currentTime.getMinutes()).padStart(2, '0'),
-        selectedPeriod: currentTime.getHours() >= 12 ? 'PM' : 'AM', // Determine AM or PM
+        timeSlots: this.generateTimeSlots(),
+        selectedTime: null,
+        takenTimes: ["9:00 AM", "9:15 AM", "12:00 PM"], 
         step: 1, // Step tracking
         formData: {
           name: "",
@@ -255,7 +241,7 @@
       },
       formattedTime() {
         // Format as HH:MM AM/PM
-        return `${this.selectedHour}:${this.selectedMinute} ${this.selectedPeriod}`;
+        return this.selectedTime;
       },
       formattedDate() {
         return moment(this.selectedDate).format('YYYY/MM/DD dddd');
@@ -346,6 +332,19 @@
           this.selectedDate.getMonth() === date.getMonth() &&
           this.selectedDate.getDate() === date.getDate()
         );
+      },
+      generateTimeSlots() {
+        const slots = [];
+        const startTime = moment().startOf('day').hour(8); // Start at 8:00 AM
+        const endTime = moment().startOf('day').hour(18); // End at 6:00 PM
+        while (startTime <= endTime) {
+          slots.push(startTime.format('h:mm A'));
+          startTime.add(15, 'minutes'); // Increment by 15 minutes
+        }
+        return slots;
+      },
+      selectTime(time) {
+        this.selectedTime = time;
       },
     },
   };
@@ -448,32 +447,37 @@
     color: #fff;
   }
   /*TIME PICKER CSS*/
-  .timepicker {
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    background: #fff;
+  .time-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 boxes per row */
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .time-box {
     font-size: 0.8rem;
-  }
-
-  .timepicker-body {
-    display: flex;
-    justify-content: space-around;
-  }
-
-  .timepicker-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .timepicker-select {
-    padding: 0.2rem;
-    border: 1px solid #ccc;
+    text-align: center;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 0.8rem;
-    color: #000000;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: background-color 0.3s;
   }
+
+    .time-box.taken {
+      background-color: #b15454;
+      cursor: not-allowed;
+      color: #ffffff;
+    }
+
+    .time-box.selected {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .time-box:hover:not(.taken):not(.selected) {
+      background-color: #e0f7fa;
+    }
 </style>
 
 
