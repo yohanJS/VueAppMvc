@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar bg-light fixed-top navbar-expand-lg">
+  <nav class="navbar bg-dark-subtle pt-5 pb-5 m-2 rounded-1 shadow-lg navbar-expand-lg">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">BookAI</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">

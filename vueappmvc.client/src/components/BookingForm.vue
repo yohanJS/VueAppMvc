@@ -1,19 +1,30 @@
 <template>
-  <div class="container py-4 mt-5">
+  <div class="container py-4">
     <form @submit.prevent="submitForm">
       <div v-if="step === 1">
         <p class="lead text-center">Select service</p>
         <!-- Step 1: Booking Service -->
+        <div class="bg-warning-subtle mb-2 p-2 rounded-2 shadow-sm">
+          <label class="m-2">
+            <input class="form-check-input" type="radio" v-model="isInPerson" :value="true" />
+            In Person
+          </label>
+          <label class="m-2">
+            <input class="form-check-input" type="radio" v-model="isInPerson" :value="false" />
+            Online/Phone
+          </label>
+        </div>
+
         <div class="d-flex flex-column gap-3">
           <div v-for="service in services"
                :key="service.id"
                class="service-card bg-light-subtle p-2 rounded-2 shadow-sm btn text-dark text-start"
                @click="selectService(service)">
             <div class="card-header">
-              <p class="lead m-0 fw-bold">{{ service.name }}</p>
-              <span class="price">${{ service.price }}</span>
+              <p class="m-0 fs-5 text-dark">{{ service.name }}</p>
             </div>
             <p class="text-dark">{{ service.description }}</p>
+            <span class="price lead">${{ service.price }}</span>
             <div class="text-end">
               <i class="bi bi-arrow-right-circle"></i>
             </div>
@@ -72,7 +83,7 @@
         </div>
       </div>
       <!--STEP 3-->
-      <div v-if="step === 3">
+      <div v-if="step === 3 && isInPerson === true">
         <p class="lead text-center">Enter personal details</p>
         <!-- Step 3: Personal Details -->
         <div v-if="formData.service !== ''">
@@ -160,6 +171,57 @@
           </button>
         </div>
       </div>
+
+      <div v-if="step === 3 && isInPerson === false">
+        <p class="lead text-center">Enter personal details</p>
+        <!-- Step 3: Personal Details -->
+        <div v-if="formData.service !== ''">
+          <p class="m-0 bg-success-subtle p-1 mb-3 rounded-1 shadow-sm p-2">
+            You are booking: {{ formData.service }} on {{ formattedDate }} at {{ formattedTime }}
+          </p>
+        </div>
+        <div class="mb-2">
+          <label for="name" class="form-label">Name</label>
+          <input type="text"
+                 id="name"
+                 class="form-control"
+                 v-model="formData.name"
+                 placeholder=""
+                 required />
+        </div>
+
+        <div class="mb-2">
+          <label for="email" class="form-label">Email</label>
+          <input type="email"
+                 id="email"
+                 class="form-control"
+                 v-model="formData.email"
+                 placeholder=""
+                 required />
+        </div>
+
+        <div class="mb-2">
+          <label for="phone" class="form-label">Phone Number</label>
+          <input type="tel"
+                 id="phone"
+                 class="form-control"
+                 v-model="formData.phone"
+                 placeholder=""
+                 required />
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <button type="button"
+                  class="btn w-25"
+                  @click="goToStep(2)">
+            <i class="bi bi-arrow-left-circle"></i>
+          </button>
+          <button type="submit" class="btn w-25">
+            <i class="bi bi-send-check-fill"></i>
+          </button>
+        </div>
+      </div>
+
     </form>
   </div>
 </template>
@@ -186,8 +248,9 @@
         ],
         timeSlots: this.generateTimeSlots(),
         selectedTime: null,
-        takenTimes: ["9:00 AM", "9:15 AM", "12:00 PM"], 
-        step: 1, // Step tracking
+        takenTimes: ["9:00 AM", "9:15 AM", "12:00 PM"],
+        step: 1,
+        isInPerson: false,
         formData: {
           name: "",
           email: "",
@@ -231,14 +294,6 @@
       };
     },
     computed: {
-      hours() {
-        // 1–12 for 12-hour format
-        return Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
-      },
-      minutes() {
-        // 0–59 for minutes
-        return Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
-      },
       formattedTime() {
         // Format as HH:MM AM/PM
         return this.selectedTime;
@@ -447,6 +502,9 @@
     color: #fff;
   }
   /*TIME PICKER CSS*/
+  .timepicker-container {
+      max-width: 300px;
+  }
   .time-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3 boxes per row */
