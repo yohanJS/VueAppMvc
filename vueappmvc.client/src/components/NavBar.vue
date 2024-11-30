@@ -19,6 +19,7 @@
               <a class="nav-link text-white" href="#">Link</a>
             </li>
           </ul>
+          <FetchData />
         </div>
       </div>
     </div>
@@ -26,7 +27,7 @@
 </template>
 
 <script setup>
-
+  import FetchData from './FetchData.vue'
 </script>
 
 <style scoped>
