@@ -2,14 +2,25 @@
 <template>
   <div class="container py-4 mt-5">
     <div class="text-center mb-4 mt-2">
-      <div class="btn-group px-5" role="group" aria-label="First group">
-        <button @click="goToStep(1)" id="step1" type="button" class="btn btn-primary m-2 rounded-5 my-bg border-0 fw-bold steel-blue-color">1</button>
-        <button @click="goToStep(2)" id="step2" type="button" class="btn btn-primary m-2 rounded-5 my-bg border-0">2</button>
-        <button @click="goToStep(3)" id="step3" type="button" class="btn btn-primary m-2 rounded-5 my-bg border-0">3</button>
-        <button @click="goToStep(4)" id="step4" type="button" class="btn btn-primary m-2 rounded-5 my-bg border-0">4</button>
-        <button @click="goToStep(5)" id="step5" type="button" class="btn btn-primary m-2 rounded-5 my-bg border-0">5</button>
+      <div class="px-5" role="group" aria-label="First group">
+        <button @click="goToStep(1)" id="step1" type="button" class="btn btn-primary m-1 rounded-5 my-bg border-0 fw-bold steel-blue-color">1</button>
+        <button @click="goToStep(2)" id="step2" type="button" class="btn btn-primary m-1 rounded-5 my-bg border-0">2</button>
+        <button @click="goToStep(3)" id="step3" type="button" class="btn btn-primary m-1 rounded-5 my-bg border-0">3</button>
+        <button @click="goToStep(4)" id="step4" type="button" class="btn btn-primary m-1 rounded-5 my-bg border-0">4</button>
+        <button @click="goToStep(5)" id="step5" type="button" class="btn btn-primary m-1 rounded-5 my-bg border-0">5</button>
       </div>
     </div>
+
+    <div v-if="step === 5 && formData.service !== ''" class="bg-success-subtle p-2 mb-3 rounded-1 shadow-sm mt-2">
+      <p class="mb-2 text-center steel-blue-color">Your appointment details:</p>
+      <ul class="list-group list-group-flush rounded-2">
+        <li class="list-group-item f-s"><span class="fw-bold">Meeting Type:</span> {{ formData.meetingType }}</li>
+        <li class="list-group-item f-s"><span class="fw-bold">Service:</span> {{ formData.service }}</li>
+        <li class="list-group-item f-s"><span class="fw-bold">Date:</span> {{ formattedDate }}</li>
+        <li class="list-group-item f-s"><span class="fw-bold">Time:</span> {{ formattedTime }}</li>
+      </ul>
+    </div>
+
     <form @submit.prevent="submitForm">
       <!-- Step 1: Booking Service -->
       <div v-if="step === 1">
@@ -70,17 +81,17 @@
         </div>
 
         <!--<div class="d-flex justify-content-between my-bg rounded-2 shadow-sm mx-auto" style="max-width: 300px;">
-      <button type="button"
-              class="btn w-25"
-              @click="goToStep(2)">
-        <i class="bi bi-arrow-left-circle text-white"></i>
-      </button>
-      <button type="button"
-              class="btn w-25"
-              @click="goToStep(4)">
-        <i class="bi bi-arrow-right-circle text-white"></i>
-      </button>
-    </div>-->
+          <button type="button"
+                  class="btn w-25"
+                  @click="goToStep(2)">
+            <i class="bi bi-arrow-left-circle text-white"></i>
+          </button>
+          <button type="button"
+                  class="btn w-25"
+                  @click="goToStep(4)">
+            <i class="bi bi-arrow-right-circle text-white"></i>
+          </button>
+        </div>-->
       </div>
 
       <!-- Step 4: Time Picker -->
@@ -230,16 +241,6 @@
           </div>
 
         </div>
-
-        <div v-if="formData.service !== ''" class="bg-success-subtle p-2 mb-3 rounded-1 shadow-sm mt-2">
-          <p class="mb-2 fw-bold">Your appointment details:</p>
-          <ul class="list-group list-group-flush rounded-2">
-            <li class="list-group-item f-s"><span class="fw-bold">Meeting Type:</span> {{ formData.meetingType }}</li>
-            <li class="list-group-item f-s"><span class="fw-bold">Service:</span> {{ formData.service }}</li>
-            <li class="list-group-item f-s"><span class="fw-bold">Date:</span> {{ formattedDate }}</li>
-            <li class="list-group-item f-s"><span class="fw-bold">Time:</span> {{ formattedTime }}</li>
-          </ul>
-        </div>
       </div>
     </form>
     <!--SUCCESS MODAL-->
@@ -258,8 +259,8 @@
         </div>
       </div>
       <!--<div v-if="errorMessage != ''" class="alert alert-danger mt-2" role="alert">
-    {{ errorMessage }}
-  </div>-->
+        {{ errorMessage }}
+      </div>-->
     </div>
   </div>
 </template>
@@ -337,6 +338,9 @@
     computed: {
       formattedTime() {
         // Format as HH:MM AM/PM
+        if (this.selectedTime === "" || this.selectedTime === null) {
+          return "Select time"
+        }
         return moment(this.selectedTime, 'HH:mm').format('h:mm A');
       },
       formattedDate() {
@@ -344,6 +348,21 @@
       }
     },
     methods: {
+      validateFormData(formData) {
+        for (const key in formData) {
+          const value = formData[key];
+
+          if (typeof value === 'object') {
+            // Recursively validate nested objects
+            if (this.validateFormData(value)) {
+              return true;
+            }
+          } else if (value === null || value === '') {
+            alert(`Please fill in the ${key} field.`);
+            return false;
+          }
+        }
+      },
       selectService(service) {
         this.formData.service = service.name; // Set the service name in formData
         this.goToStep(2);
@@ -372,13 +391,8 @@
       submitForm() {
         const modalElement = document.getElementById("submissionModal");
         const submissionModal = new Modal(modalElement);
-        if (true) {
-          submissionModal.show();
-          console.log(this.formData);
-        }
-        // Handle form submission (e.g., send to an API)
-        //alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
-
+        console.log(this.formData);
+        console.log("Form submitted....");
         // Clear the form
         this.step = 1;
         this.formData = {
@@ -395,6 +409,12 @@
           date: "",
           time: "",
         };
+        //if (true) {
+        //  submissionModal.show();
+        //  console.log(this.formData);
+        //}
+        // Handle form submission (e.g., send to an API)
+        //alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
       },
       getDates() {
         const dates = [];
@@ -476,11 +496,13 @@
 <!--CSS-->
 <style scoped>
   .f-s {
-      font-size: 0.8rem;
+    font-size: 0.8rem;
   }
+
   .max-w {
-      max-width: 300px;
+    max-width: 300px;
   }
+
   .my-bg {
     background-color: #2C3539 !important;
   }
@@ -534,8 +556,9 @@
     font-size: 0.9rem;
     font-style: italic;
   }
+
   .price {
-      font-size: 0.7rem;
+    font-size: 0.7rem;
   }
   /*InPerson/Online CSS*/
   .datepicker-container {
@@ -586,7 +609,7 @@
     transition: background-color 0.3s ease;
   }
 
-  .date:hover {
+    .date:hover {
       background-color: #4682B4;
     }
 
@@ -621,18 +644,18 @@
     transition: background-color 0.3s;
   }
 
-  .time-box.taken {
-    background-color: #b15454;
-    cursor: not-allowed;
-    color: #ffffff;
-  }
+    .time-box.taken {
+      background-color: #b15454;
+      cursor: not-allowed;
+      color: #ffffff;
+    }
 
-  .time-box.selected {
-    background-color: #4682B4;
-    color: white;
-  }
+    .time-box.selected {
+      background-color: #4682B4;
+      color: white;
+    }
 
-  .time-box:hover:not(.taken):not(.selected) {
+    .time-box:hover:not(.taken):not(.selected) {
       background-color: #FF2400;
     }
   /*MODAL*/
@@ -662,7 +685,6 @@
   .rounded-3 {
     border-radius: 1rem !important;
   }
-
 </style>
 
 

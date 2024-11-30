@@ -61,7 +61,8 @@
         this.loading = true;
 
         try {
-          var response = await fetch('http://engfuel.com/GetBookings'); // Modify URL accordingly
+          //var response = await fetch('http://engfuel.com/GetBookings'); // Modify URL accordingly
+          var response = await fetch('https://localhost:7144/GetBookings');
           if (response.ok) {
             this.bookings = await response.json();
           }
