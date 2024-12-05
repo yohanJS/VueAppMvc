@@ -18,7 +18,8 @@
             <li class="nav-item">
               <a class="nav-link text-white" href="#">Link</a>
             </li>
-          </ul>          
+          </ul>
+          <FetchData></FetchData>
         </div>
       </div>
     </div>

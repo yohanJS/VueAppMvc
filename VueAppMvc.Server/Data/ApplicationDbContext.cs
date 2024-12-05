@@ -10,7 +10,7 @@ namespace VueAppMvc.Server.Data
         { }
 
         //Add your tables
-        public DbSet<BookingModel>? bookings { get; set; }
-        public DbSet<AddressModel>? addresses { get; set; }
+        public DbSet<UserModel>? users { get; set; }
+        public DbSet<ServiceAppModel>? serviceApps { get; set; }
     }
 }

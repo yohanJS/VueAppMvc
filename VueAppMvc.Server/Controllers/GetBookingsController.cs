@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Text.Json;
 using VueAppMvc.Server.Data;
 using VueAppMvc.Server.Models;
@@ -16,32 +17,40 @@ namespace VueAppMvc.Server.Controllers
             _dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Returns all bookings
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public IEnumerable<BookingModel> Get()
+        public BookingModel Get()
         {
-            List<BookingModel> bookings = new List<BookingModel>();
-            List<AddressModel> addresses = new List<AddressModel>();
-        /*
-        When to Use Pagination
-        Use pagination if:
-        Your dataset is large (hundreds or more records).
-        The data is displayed in a UI grid, table, or list where users navigate through pages.
-        You expect frequent data retrievals where performance is critical. */
-            bookings = _dbContext.bookings.OrderBy(b => b.Id).ToList();
-            addresses = _dbContext.addresses.OrderBy(b => b.Id).ToList();
-            foreach (var address in addresses)
+            BookingModel bookings = new BookingModel();
+            try
             {
-                foreach (var booking in bookings)
+                /*
+                When to Use Pagination
+                Use pagination if:
+                Your dataset is large (hundreds or more records).
+                The data is displayed in a UI grid, table, or list where users navigate through pages.
+                You expect frequent data retrievals where performance is critical. */
+                if (_dbContext != null)
                 {
-                    if (booking.Id == address.Id)
+                    List<UserModel> users = new List<UserModel>();
+                    List<ServiceAppModel> serviceApps = new List<ServiceAppModel>();
+
+                    if (_dbContext.users != null && _dbContext.serviceApps != null)
                     {
-                        booking.Address = address;
-                    }                 
+                        users = _dbContext.users.ToList();
+                        serviceApps = _dbContext.serviceApps.ToList();
+                        bookings.Users = users;
+                    }
                 }
             }
-            if (bookings.Any())
+            catch (Exception ex)
             {
-                return bookings;
+#pragma warning disable CA2200 // Rethrow to preserve stack details
+                throw ex;
+#pragma warning restore CA2200 // Rethrow to preserve stack details
             }
             return bookings;
         }

@@ -1,99 +1,89 @@
 <template>
-  <div class="text-center mt-3">
-    <button class="btn btn-outline-dark pt-0 pb-0 mt-5" @click="fetchBookings">
-      <span style="font-size: 0.8rem;">Get Latest</span>
-    </button>
-  </div>
+  <div class="container mt-4">
+    <!-- Button to Fetch Bookings -->
+    <div class="text-center">
+      <button class="btn btn-primary" @click="fetchBookings">
+        Get Latest
+      </button>
+    </div>
 
-  <!-- Bookings Section -->
-  <div class="booking-carousel mt-5">
-    <div class="card p-2 border-0 bg-light">
-      <h1>Bookings</h1>
+    <!-- Bookings Section -->
+    <div class="mt-5">
+      <div class="text-center mb-4">
+        <h1 class="text-white-50">Upcoming Bookings</h1>
+      </div>
 
-      <div v-if="loading" class="loading">Loading bookings... Please wait.</div>
+      <!-- Loading State -->
+      <div v-if="loading" class="text-center text-success-emphasis">
+        Loading bookings... Please wait.
+      </div>
 
-      <div v-if="bookings && bookings.length > 0" class="carousel-container">
-        <div class="carousel" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-          <div v-for="booking in bookings" :key="booking.phone" class="booking-card mx-auto mt-2 mb-2 p-2">
-            <div class="booking-header">
-              <h3>{{ booking.name }}</h3>
-              <div class="booking-details">
-                <p><strong>Service:</strong> {{ booking.service }}</p>
-                <p><strong>Date:</strong> {{ booking.date }}</p>
-                <p><strong>Time:</strong> {{ booking.time }}</p>
-                <p><strong>Address:</strong> {{ booking.address.street }}, {{ booking.address.city }}, {{ booking.address.state }} - {{ booking.address.zip }}</p>
-              </div>
+      <!-- Display Bookings -->
+      <div v-if="users && users.length > 0" class="row g-3">
+        <div v-for="user in users" :key="user.id" class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">{{ user.name }}</h5>
+              <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
+              <p class="card-text"><strong>Phone:</strong> {{ user.phone }}</p>
+              <p class="card-text">
+                <strong>Address:</strong>
+                {{ user.street }}, {{ user.city }}, {{ user.state }} - {{ user.zip }}
+              </p>
+              <h6 class="mt-3">Services:</h6>
+              <ul class="list-group list-group-flush">
+                <li v-for="service in user.services" :key="service.id" class="list-group-item">
+                  <p><strong>Service:</strong> {{ service.service }}</p>
+                  <p><strong>Date:</strong> {{ service.date }}</p>
+                  <p><strong>Time:</strong> {{ service.time }}</p>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-
-        <!-- Carousel Navigation -->
-        <div class="carousel-navigation">
-          <button @click="previousBooking" :disabled="currentIndex === 0">❮</button>
-          <button @click="nextBooking" :disabled="currentIndex === bookings.length - 1">❯</button>
-        </div>
       </div>
 
-      <div v-else-if="!loading" class="no-bookings">
+      <!-- No Bookings Message -->
+      <div v-else-if="!loading" class="text-center text-danger">
         <p>No bookings available at the moment. Be the first to book!</p>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="js">
+<script>
   export default {
     data() {
       return {
-        total: 2,
         loading: false,
-        bookings: null,
-        currentIndex: 0
+        users: null,
       };
     },
     async created() {
-      // fetch the bookings when the view is created
       await this.fetchBookings();
     },
     methods: {
       async fetchBookings() {
-        this.bookings = null;
+        this.users = null;
         this.loading = true;
-
         try {
-          //var response = await fetch('http://engfuel.com/GetBookings'); // Modify URL accordingly
-          var response = await fetch('https://localhost:7144/GetBookings');
+          const response = await fetch('http://engfuel.com/GetBookings');
+          //const response = await fetch("https://localhost:7144/GetBookings");
           if (response.ok) {
-            this.bookings = await response.json();
+            const data = await response.json();
+            this.users = data.users;
           }
         } catch (error) {
-          console.error('Error fetching bookings:', error);
+          console.error("Error fetching bookings:", error);
         } finally {
           this.loading = false;
         }
       },
-      addTwo() {
-        this.total += 2;
-      },
-      clearValue() {
-        this.total = 0;
-      },
-      nextBooking() {
-        if (this.currentIndex < this.bookings.length - 1) {
-          this.currentIndex++;
-        }
-      },
-      previousBooking() {
-        if (this.currentIndex > 0) {
-          this.currentIndex--;
-        }
-      }
     },
   };
 </script>
 
 <style scoped>
-  /* General component styles */
   .booking-carousel {
     display: flex;
     justify-content: center;
@@ -114,13 +104,14 @@
   }
 
   .booking-card {
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0;
     min-width: 280px;
-    margin: 0 15px;
+    max-width: 400px;
+    margin: 10px auto;
     padding: 20px;
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: left;
     transition: all 0.3s ease-in-out;
   }
@@ -130,13 +121,20 @@
     }
 
   .booking-header h3 {
-    font-size: 20px;
+    font-size: 1.5rem;
     color: #333;
+    margin-bottom: 10px;
   }
 
-  .booking-details p {
-    font-size: 14px;
-    color: #555;
+  .booking-details ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .booking-details li {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
   }
 
   .carousel-navigation {
@@ -173,81 +171,23 @@
     margin-top: 20px;
   }
 
-  /* Responsive Styles */
-  @media (max-width: 992px) {
-    .booking-card {
-      min-width: 250px;
-      margin: 0 10px;
-    }
-
-    .carousel-navigation button {
-      font-size: 16px;
-      padding: 8px 16px;
-    }
-
-    .booking-header h3 {
-      font-size: 18px;
-    }
-
-    .booking-details p {
-      font-size: 12px;
-    }
-  }
-
+  /* Responsive Design */
   @media (max-width: 768px) {
-    .carousel-container {
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .carousel {
-      display: block;
-    }
-
     .booking-card {
-      min-width: 100%;
-      margin-bottom: 20px;
+      min-width: 90%;
+    }
+
+    .booking-header h3 {
+      font-size: 1.25rem;
+    }
+
+    .booking-details ul {
+      font-size: 0.9rem;
     }
 
     .carousel-navigation button {
       font-size: 16px;
-      padding: 8px 16px;
-      margin-bottom: 10px;
-    }
-
-    .booking-header h3 {
-      font-size: 18px;
-    }
-
-    .booking-details p {
-      font-size: 14px;
-    }
-
-    .no-bookings p {
-      font-size: 14px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .booking-card {
-      padding: 15px;
-      margin: 0 5px;
-    }
-
-    .carousel-navigation button {
-      padding: 6px 12px;
-    }
-
-    .booking-header h3 {
-      font-size: 16px;
-    }
-
-    .booking-details p {
-      font-size: 12px;
-    }
-
-    .no-bookings p {
-      font-size: 12px;
+      padding: 5px 8px;
     }
   }
 </style>

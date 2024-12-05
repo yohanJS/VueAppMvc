@@ -268,6 +268,7 @@
 <!--JS-->
 <script>
   import moment from 'moment';
+  import axios from "axios";
   import { Modal } from "bootstrap";
 
   export default {
@@ -292,6 +293,7 @@
         takenTimes: ["9:00 AM", "9:15 AM", "12:00 PM"],
         step: 1,
         isInPerson: false,
+        isSubmissionOk: false,
         formData: {
           name: "",
           email: "",
@@ -376,7 +378,6 @@
           this.formData.meetingType = "Online/Phone";
         }
         this.goToStep(3);
-        console.log(this.formData.meetingType);
       },
       goToStep(stepNumber) {
         if (this.step !== stepNumber) {
@@ -388,11 +389,28 @@
         var step = document.getElementById("step" + stepNumber);
         step.classList.add('fw-bold', 'steel-blue-color');
       },
-      submitForm() {
-        const modalElement = document.getElementById("submissionModal");
-        const submissionModal = new Modal(modalElement);
-        console.log(this.formData);
+      async submitForm() {
         console.log("Form submitted....");
+        try {
+          const response = await axios
+            .post(
+              "https://localhost:7144/SubmitBooking",
+              {
+                test: this.formData,
+              },
+            )
+            .then(this.isSubmissionOk = true);
+
+          const modalElement = document.getElementById("submissionModal");
+          const submissionModal = new Modal(modalElement);
+
+          if (this.isSubmissionOk) {
+            submissionModal.show();
+            console.log(this.response);
+          }
+        } catch (error) {
+          console.log("Failed to submit form. Please try again.");
+        }
         // Clear the form
         this.step = 1;
         this.formData = {
@@ -409,10 +427,6 @@
           date: "",
           time: "",
         };
-        //if (true) {
-        //  submissionModal.show();
-        //  console.log(this.formData);
-        //}
         // Handle form submission (e.g., send to an API)
         //alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
       },
