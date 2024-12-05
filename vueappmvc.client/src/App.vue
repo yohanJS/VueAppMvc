@@ -1,6 +1,7 @@
 <script setup>
   import NavBar from './components/NavBar.vue'
   import FetchData from './components/FetchData.vue'
+  import BookingForm from './components/BookingForm.vue'
 </script>
 
 <template>
@@ -9,7 +10,7 @@
   </header>
 
   <main>
-    <FetchData />
+    <BookingForm />
   </main>
 </template>
 
