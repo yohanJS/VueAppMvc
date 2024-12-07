@@ -19,7 +19,7 @@
               <a class="nav-link text-white" href="#">Link</a>
             </li>
           </ul>
-          <FetchData></FetchData>
+          <!--<FetchData></FetchData>-->
         </div>
       </div>
     </div>

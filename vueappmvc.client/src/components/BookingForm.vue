@@ -150,7 +150,7 @@
             <input type="text"
                    id="street"
                    class="form-control"
-                   v-model="formData.address.street"
+                   v-model="formData.street"
                    placeholder=""
                    required />
           </div>
@@ -161,7 +161,7 @@
               <input type="text"
                      id="city"
                      class="form-control"
-                     v-model="formData.address.city"
+                     v-model="formData.city"
                      placeholder=""
                      required />
             </div>
@@ -170,7 +170,7 @@
               <input type="text"
                      id="state"
                      class="form-control"
-                     v-model="formData.address.state"
+                     v-model="formData.state"
                      placeholder=""
                      required />
             </div>
@@ -179,7 +179,7 @@
               <input type="text"
                      id="zip"
                      class="form-control"
-                     v-model="formData.address.zip"
+                     v-model="formData.zip"
                      placeholder=""
                      required />
             </div>
@@ -298,12 +298,10 @@
           name: "",
           email: "",
           phone: "",
-          address: {
-            street: "",
-            city: "",
-            state: "",
-            zip: "",
-          },
+          street: "",
+          city: "",
+          state: "",
+          zip: "",
           service: "",
           meetingType: "",
           date: "",
@@ -394,9 +392,18 @@
         try {
           const response = await axios
             .post(
-              "https://localhost:7144/SubmitBooking",
+              "https://localhost:7144/Bookings",
               {
-                test: this.formData,
+                Name: this.formData.name,
+                Email: this.formData.email,
+                Phone: this.formData.phone,
+                Street: this.formData.street,
+                City: this.formData.city,
+                State: this.formData.state,
+                ZipCode: this.formData.zip,
+                Service: this.formData.service,
+                date: this.formData.date,
+                Time: this.formData.time,
               },
             )
             .then(this.isSubmissionOk = true);
@@ -417,12 +424,10 @@
           name: "",
           email: "",
           phone: "",
-          address: {
-            street: "",
-            city: "",
-            state: "",
-            zip: "",
-          },
+          street: "",
+          city: "",
+          state: "",
+          zip: "",
           service: "",
           date: "",
           time: "",
