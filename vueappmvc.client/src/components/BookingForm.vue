@@ -378,12 +378,20 @@
         this.goToStep(3);
       },
       goToStep(stepNumber) {
+        // Scroll up to the top of the page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Check if the step has changed
         if (this.step !== stepNumber) {
-          //Clears CSS
+          // Clear previous step's styles
           var previousStep = document.getElementById("step" + this.step);
           previousStep.classList.remove('fw-bold', 'steel-blue-color');
         }
+
+        // Set the new step
         this.step = stepNumber;
+
+        // Add styles to the current step
         var step = document.getElementById("step" + stepNumber);
         step.classList.add('fw-bold', 'steel-blue-color');
       },
@@ -392,7 +400,7 @@
         try {
           const response = await axios
             .post(
-              "https://localhost:7144/Bookings",
+              "http://engfuel.com/Bookings",
               {
                 Name: this.formData.name,
                 Email: this.formData.email,

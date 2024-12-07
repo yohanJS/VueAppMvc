@@ -1,16 +1,16 @@
 <template>
   <div class="container mt-4">
-    <!-- Button to Fetch Bookings -->
-    <div class="text-center">
-      <button class="btn btn-primary" @click="fetchBookings">
-        Get Latest
-      </button>
-    </div>
-
     <!-- Bookings Section -->
     <div class="mt-5">
       <div class="text-center mb-4">
-        <h1 class="text-white-50">Upcoming Bookings</h1>
+        <h1 class="lead">Upcoming bookings</h1>
+      </div>
+
+      <!-- Button to Fetch Bookings -->
+      <div class="text-center">
+        <button class="btn btn-success btn-sm" @click="fetchBookings">
+          Get Latest
+        </button>
       </div>
 
       <!-- Loading State -->
@@ -72,8 +72,8 @@
         this.users = null;
         this.loading = true;
         try {
-          //const response = await fetch('http://engfuel.com/Bookings');
-          const response = await fetch("https://localhost:7144/Bookings");
+          const response = await fetch('http://engfuel.com/Bookings');
+          //const response = await fetch("https://localhost:7144/Bookings");
           if (response.ok) {
             const data = await response.json();
             this.users = data.users;
