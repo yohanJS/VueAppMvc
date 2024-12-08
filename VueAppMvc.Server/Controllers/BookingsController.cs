@@ -57,19 +57,19 @@ namespace VueAppMvc.Server.Controllers
                                             || us.Phone == bookFormModel.Phone).FirstOrDefault();
                     if (existingUser != null)
                     {
-                        if (string.IsNullOrEmpty(existingUser.Street))
+                        if (string.IsNullOrEmpty(existingUser.Street) && !string.IsNullOrEmpty(bookFormModel.Street))
                         {
                             existingUser.Street = bookFormModel.Street;
                         }
-                        if (string.IsNullOrEmpty(existingUser.City))
+                        if (string.IsNullOrEmpty(existingUser.City) && !string.IsNullOrEmpty(bookFormModel.City))
                         {
                             existingUser.City = bookFormModel.City;
                         }
-                        if (string.IsNullOrEmpty(existingUser.State))
+                        if (string.IsNullOrEmpty(existingUser.State) && !string.IsNullOrEmpty(bookFormModel.State))
                         {
                             existingUser.State = bookFormModel.State;
                         }
-                        if (string.IsNullOrEmpty(existingUser.Zip))
+                        if (string.IsNullOrEmpty(existingUser.Zip) && !string.IsNullOrEmpty(bookFormModel.ZipCode))
                         {
                             existingUser.Zip = bookFormModel.ZipCode;
                         }
@@ -81,37 +81,78 @@ namespace VueAppMvc.Server.Controllers
                         serviceAppModel.Service = !string.IsNullOrEmpty(bookFormModel.Service) ?            bookFormModel.Service : "";
                         serviceAppModel.Date = !string.IsNullOrEmpty(bookFormModel.Date) ? bookFormModel.Date : "";
                         serviceAppModel.Time = !string.IsNullOrEmpty(bookFormModel.Time) ? bookFormModel.Time : "";
+
                         if (_dbContext.serviceApps != null)
                         {
                             _dbContext.serviceApps.Add(serviceAppModel);
                             await _dbContext.SaveChangesAsync();
-                            return Ok("Existing user. New App addedd to db...");
+                            return Ok(string.Format("Existing user {0}. New service addedd to db...", existingUser.Name));
                         }
                     }
-                    else
+                }
+                else
+                {
+                    UserModel newUser = new UserModel();
+                    if (!string.IsNullOrEmpty(bookFormModel.Name))
                     {
-                        UserModel newUser = new UserModel();
                         newUser.Name = bookFormModel.Name;
-                        newUser.Phone = bookFormModel.Phone;
+                    }
+                    if (!string.IsNullOrEmpty(bookFormModel.Email))
+                    {
                         newUser.Email = bookFormModel.Email;
+                    }
+                    if (!string.IsNullOrEmpty(bookFormModel.Phone))
+                    {
+                        newUser.Phone = bookFormModel.Phone;
+                    }
+
+                    if (!string.IsNullOrEmpty(bookFormModel.Street))
+                    {
                         newUser.Street = bookFormModel.Street;
+                    }
+
+                    if (!string.IsNullOrEmpty(bookFormModel.City))
+                    {
                         newUser.City = bookFormModel.City;
+                    }
+
+                    if (!string.IsNullOrEmpty(bookFormModel.State))
+                    {
                         newUser.State = bookFormModel.State;
+                    }
+
+                    if (!string.IsNullOrEmpty(bookFormModel.ZipCode))
+                    {
                         newUser.Zip = bookFormModel.ZipCode;
+                    }
 
-                        _dbContext.users.Add(newUser);
-                        await _dbContext.SaveChangesAsync();
+                    _dbContext.users.Add(newUser);
+                    await _dbContext.SaveChangesAsync();
 
-                        ServiceAppModel newserviceApp = new ServiceAppModel();
-                        newserviceApp.UserId = newUser.Id;
+                    ServiceAppModel newserviceApp = new ServiceAppModel();
+                    newserviceApp.UserId = newUser.Id;
+                    if (!string.IsNullOrEmpty(bookFormModel.Service))
+                    {
                         newserviceApp.Service = bookFormModel.Service;
+                    }
+
+                    if (!string.IsNullOrEmpty(bookFormModel.Date))
+                    {
                         newserviceApp.Date = bookFormModel.Date;
+                    }
+
+                    if (!string.IsNullOrEmpty(bookFormModel.Time))
+                    {
                         newserviceApp.Time = bookFormModel.Time;
+                    }
+
+                    if (_dbContext.serviceApps != null)
+                    {
                         _dbContext.serviceApps.Add(newserviceApp);
                         await _dbContext.SaveChangesAsync();
-
-                        return Ok("New User Created with service");
                     }
+
+                    return Ok(string.Format("New user created {0}", newUser.Name));
                 }
             }
             return BadRequest();

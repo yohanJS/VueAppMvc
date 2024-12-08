@@ -265,6 +265,200 @@
   </div>
 </template>
 
+<!--CSS-->
+<style scoped>
+  .f-s {
+    font-size: 0.8rem;
+  }
+
+  .max-w {
+    max-width: 300px;
+  }
+
+  .my-bg {
+    background-color: #2C3539 !important;
+  }
+
+  .form-check-input {
+    background-color: #000000 !important;
+    border: 1px solid #2C3539;
+  }
+
+  p, label {
+    font-size: 0.9rem;
+  }
+
+  .steel-blue-color {
+    color: #4682B4;
+  }
+
+  .service-card {
+    border-bottom: 2px solid #2C3539;
+    background-color: #2C3539;
+  }
+
+  .form-label {
+    font-size: 0.8rem !important;
+  }
+
+  .form-select {
+    font-size: 0.8rem !important;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    color: #333;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+    border-radius: 5px;
+  }
+
+  .text-muted {
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  .price {
+    font-size: 0.7rem;
+  }
+  /*InPerson/Online CSS*/
+  .datepicker-container {
+    max-width: 300px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+  }
+
+  .calendar {
+    color: #ffffff;
+    padding: 10px;
+    background-color: #2C3539;
+  }
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  .nav-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 25px;
+    padding: 5px;
+    color: #4682B4;
+  }
+
+  .calendar-weekdays,
+  .calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    gap: 5px;
+  }
+
+  .weekday {
+    font-weight: bold;
+  }
+
+  .date {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+  }
+
+    .date:hover {
+      background-color: #4682B4;
+    }
+
+  .current-date {
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  .selected-date {
+    background-color: #4682B4;
+    color: #fff;
+  }
+  /*TIME PICKER CSS*/
+  .timepicker-container {
+    max-width: 300px;
+  }
+
+  .time-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 boxes per row */
+    gap: 7px;
+  }
+
+  .time-box {
+    font-size: 0.8rem;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #2C3539;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+    .time-box.taken {
+      background-color: #b15454;
+      cursor: not-allowed;
+      color: #ffffff;
+    }
+
+    .time-box.selected {
+      background-color: #4682B4;
+      color: white;
+    }
+
+    .time-box:hover:not(.taken):not(.selected) {
+      background-color: #FF2400;
+    }
+  /*MODAL*/
+  .modern-modal {
+    background: linear-gradient(135deg, #228B22, #1B5E20);
+    color: #fff;
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+    color: #ffffff;
+  }
+
+  .modal-body {
+    font-family: "Roboto", sans-serif;
+    line-height: 1.6;
+  }
+
+  .btn-close {
+    filter: invert(1); /* Makes the close button white for dark backgrounds */
+  }
+
+  .shadow-lg {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .rounded-3 {
+    border-radius: 1rem !important;
+  }
+</style>
+
 <!--JS-->
 <script>
   import moment from 'moment';
@@ -520,198 +714,5 @@
     },
   };
 </script>
-<!--CSS-->
-<style scoped>
-  .f-s {
-    font-size: 0.8rem;
-  }
-
-  .max-w {
-    max-width: 300px;
-  }
-
-  .my-bg {
-    background-color: #2C3539 !important;
-  }
-
-  .form-check-input {
-    background-color: #000000 !important;
-    border: 1px solid #2C3539;
-  }
-
-  p, label {
-    font-size: 0.9rem;
-  }
-
-  .steel-blue-color {
-    color: #4682B4;
-  }
-
-  .service-card {
-    border-bottom: 2px solid #2C3539;
-    background-color: #2C3539;
-  }
-
-  .form-label {
-    font-size: 0.8rem !important;
-  }
-
-  .form-select {
-    font-size: 0.8rem !important;
-  }
-
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  h2 {
-    font-size: 1.8rem;
-    color: #333;
-  }
-
-  button:hover {
-    background-color: #0056b3;
-    border-radius: 5px;
-  }
-
-  .text-muted {
-    font-size: 0.9rem;
-    font-style: italic;
-  }
-
-  .price {
-    font-size: 0.7rem;
-  }
-  /*InPerson/Online CSS*/
-  .datepicker-container {
-    max-width: 300px;
-    margin: 0 auto;
-    font-family: Arial, sans-serif;
-  }
-
-  .calendar {
-    color: #ffffff;
-    padding: 10px;
-    background-color: #2C3539;
-  }
-
-  .calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    font-weight: bold;
-  }
-
-  .nav-button {
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 25px;
-    padding: 5px;
-    color: #4682B4;
-  }
-
-  .calendar-weekdays,
-  .calendar-dates {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    gap: 5px;
-  }
-
-  .weekday {
-    font-weight: bold;
-  }
-
-  .date {
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background-color 0.3s ease;
-  }
-
-    .date:hover {
-      background-color: #4682B4;
-    }
-
-  .current-date {
-    background-color: #ffffff;
-    color: #000000;
-  }
-
-  .selected-date {
-    background-color: #4682B4;
-    color: #fff;
-  }
-  /*TIME PICKER CSS*/
-  .timepicker-container {
-    max-width: 300px;
-  }
-
-  .time-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 boxes per row */
-    gap: 7px;
-  }
-
-  .time-box {
-    font-size: 0.8rem;
-    text-align: center;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #2C3539;
-    color: #ffffff;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-    .time-box.taken {
-      background-color: #b15454;
-      cursor: not-allowed;
-      color: #ffffff;
-    }
-
-    .time-box.selected {
-      background-color: #4682B4;
-      color: white;
-    }
-
-    .time-box:hover:not(.taken):not(.selected) {
-      background-color: #FF2400;
-    }
-  /*MODAL*/
-  .modern-modal {
-    background: linear-gradient(135deg, #228B22, #1B5E20);
-    color: #fff;
-  }
-
-  .modal-title {
-    font-size: 1.5rem;
-    color: #ffffff;
-  }
-
-  .modal-body {
-    font-family: "Roboto", sans-serif;
-    line-height: 1.6;
-  }
-
-  .btn-close {
-    filter: invert(1); /* Makes the close button white for dark backgrounds */
-  }
-
-  .shadow-lg {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
-
-  .rounded-3 {
-    border-radius: 1rem !important;
-  }
-</style>
 
 

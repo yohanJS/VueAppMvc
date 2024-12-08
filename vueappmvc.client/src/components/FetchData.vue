@@ -72,7 +72,7 @@
         this.users = null;
         this.loading = true;
         try {
-          const response = await fetch('http://engfuel.com/Bookings');
+          const response = await fetch("http://engfuel.com/Bookings");
           //const response = await fetch("https://localhost:7144/Bookings");
           if (response.ok) {
             const data = await response.json();
