@@ -2,10 +2,6 @@
   <div class="container mt-4">
     <!-- Bookings Section -->
     <div class="mt-5">
-      <div class="text-center mb-4">
-        <h1 class="lead">Upcoming bookings</h1>
-      </div>
-
       <!-- Button to Fetch Bookings -->
       <div class="text-center">
         <button class="btn btn-success btn-sm" @click="fetchBookings">
