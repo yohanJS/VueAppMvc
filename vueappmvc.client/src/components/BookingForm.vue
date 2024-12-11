@@ -573,7 +573,10 @@
       },
       goToStep(stepNumber) {
         // Scroll up to the top of the page
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth' // Optional for smooth scrolling
+        });
 
         // Check if the step has changed
         if (this.step !== stepNumber) {

@@ -47,9 +47,10 @@ namespace VueAppMvc.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] BookFormModel bookFormModel)
         {
+            List<UserModel> users = new List<UserModel>();
             if (ModelState.IsValid && _dbContext.users != null)
             {
-                List<UserModel> users = _dbContext.users.ToList();
+                users = _dbContext.users.ToList();
                 if (users.Any())
                 {
                     UserModel? existingUser = users.Where(us => us.Email == bookFormModel.Email
@@ -89,8 +90,71 @@ namespace VueAppMvc.Server.Controllers
                             return Ok(string.Format("Existing user {0}. New service addedd to db...", existingUser.Name));
                         }
                     }
+                    else
+                    {
+                        UserModel newUser = new UserModel();
+                        if (!string.IsNullOrEmpty(bookFormModel.Name))
+                        {
+                            newUser.Name = bookFormModel.Name;
+                        }
+                        if (!string.IsNullOrEmpty(bookFormModel.Email))
+                        {
+                            newUser.Email = bookFormModel.Email;
+                        }
+                        if (!string.IsNullOrEmpty(bookFormModel.Phone))
+                        {
+                            newUser.Phone = bookFormModel.Phone;
+                        }
+
+                        if (!string.IsNullOrEmpty(bookFormModel.Street))
+                        {
+                            newUser.Street = bookFormModel.Street;
+                        }
+
+                        if (!string.IsNullOrEmpty(bookFormModel.City))
+                        {
+                            newUser.City = bookFormModel.City;
+                        }
+
+                        if (!string.IsNullOrEmpty(bookFormModel.State))
+                        {
+                            newUser.State = bookFormModel.State;
+                        }
+
+                        if (!string.IsNullOrEmpty(bookFormModel.ZipCode))
+                        {
+                            newUser.Zip = bookFormModel.ZipCode;
+                        }
+
+                        _dbContext.users.Add(newUser);
+                        await _dbContext.SaveChangesAsync();
+
+                        ServiceAppModel newserviceApp = new ServiceAppModel();
+                        newserviceApp.UserId = newUser.Id;
+                        if (!string.IsNullOrEmpty(bookFormModel.Service))
+                        {
+                            newserviceApp.Service = bookFormModel.Service;
+                        }
+
+                        if (!string.IsNullOrEmpty(bookFormModel.Date))
+                        {
+                            newserviceApp.Date = bookFormModel.Date;
+                        }
+
+                        if (!string.IsNullOrEmpty(bookFormModel.Time))
+                        {
+                            newserviceApp.Time = bookFormModel.Time;
+                        }
+
+                        if (_dbContext.serviceApps != null)
+                        {
+                            _dbContext.serviceApps.Add(newserviceApp);
+                            await _dbContext.SaveChangesAsync();
+                        }
+                        return Ok();
+                    }
                 }
-                else
+                else 
                 {
                     UserModel newUser = new UserModel();
                     if (!string.IsNullOrEmpty(bookFormModel.Name))
@@ -105,22 +169,18 @@ namespace VueAppMvc.Server.Controllers
                     {
                         newUser.Phone = bookFormModel.Phone;
                     }
-
                     if (!string.IsNullOrEmpty(bookFormModel.Street))
                     {
                         newUser.Street = bookFormModel.Street;
                     }
-
                     if (!string.IsNullOrEmpty(bookFormModel.City))
                     {
                         newUser.City = bookFormModel.City;
                     }
-
                     if (!string.IsNullOrEmpty(bookFormModel.State))
                     {
                         newUser.State = bookFormModel.State;
                     }
-
                     if (!string.IsNullOrEmpty(bookFormModel.ZipCode))
                     {
                         newUser.Zip = bookFormModel.ZipCode;
@@ -135,12 +195,10 @@ namespace VueAppMvc.Server.Controllers
                     {
                         newserviceApp.Service = bookFormModel.Service;
                     }
-
                     if (!string.IsNullOrEmpty(bookFormModel.Date))
                     {
                         newserviceApp.Date = bookFormModel.Date;
                     }
-
                     if (!string.IsNullOrEmpty(bookFormModel.Time))
                     {
                         newserviceApp.Time = bookFormModel.Time;
@@ -151,11 +209,10 @@ namespace VueAppMvc.Server.Controllers
                         _dbContext.serviceApps.Add(newserviceApp);
                         await _dbContext.SaveChangesAsync();
                     }
-
                     return Ok(string.Format("New user created {0}", newUser.Name));
                 }
             }
-            return BadRequest();
+            return BadRequest("Something went wrong...");
         }
     }
 }
