@@ -11,6 +11,7 @@
 
   <main>
     <BookingForm />
+    <FetchData></FetchData>
   </main>
 </template>
 

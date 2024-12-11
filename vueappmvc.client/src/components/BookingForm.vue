@@ -150,7 +150,7 @@
             <input type="text"
                    id="street"
                    class="form-control"
-                   v-model="formData.address.street"
+                   v-model="formData.street"
                    placeholder=""
                    required />
           </div>
@@ -161,7 +161,7 @@
               <input type="text"
                      id="city"
                      class="form-control"
-                     v-model="formData.address.city"
+                     v-model="formData.city"
                      placeholder=""
                      required />
             </div>
@@ -170,7 +170,7 @@
               <input type="text"
                      id="state"
                      class="form-control"
-                     v-model="formData.address.state"
+                     v-model="formData.state"
                      placeholder=""
                      required />
             </div>
@@ -179,7 +179,7 @@
               <input type="text"
                      id="zip"
                      class="form-control"
-                     v-model="formData.address.zip"
+                     v-model="formData.zip"
                      placeholder=""
                      required />
             </div>
@@ -265,234 +265,6 @@
   </div>
 </template>
 
-<!--JS-->
-<script>
-  import moment from 'moment';
-  import { Modal } from "bootstrap";
-
-  export default {
-    name: "BookingForm",
-    //components: {
-    //  DatePicker,
-    //},
-    data() {
-      const today = new Date();
-      const currentTime = new Date();
-      return {
-        currentYear: today.getFullYear(),
-        currentMonth: today.getMonth(),
-        selectedDate: today,
-        weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        monthNames: [
-          'January', 'February', 'March', 'April', 'May', 'June',
-          'July', 'August', 'September', 'October', 'November', 'December'
-        ],
-        timeSlots: this.generateTimeSlots(),
-        selectedTime: null,
-        takenTimes: ["9:00 AM", "9:15 AM", "12:00 PM"],
-        step: 1,
-        isInPerson: false,
-        formData: {
-          name: "",
-          email: "",
-          phone: "",
-          address: {
-            street: "",
-            city: "",
-            state: "",
-            zip: "",
-          },
-          service: "",
-          meetingType: "",
-          date: "",
-          time: "",
-        },
-        services: [
-          {
-            name: "Modern Pergola",
-            description: "A sleek, contemporary pergola to enhance your outdoor living space.",
-          },
-          {
-            name: "Outdoor Kitchens",
-            description: "Fully equipped outdoor kitchens for dining and entertaining.",
-          },
-          {
-            name: "Motorized Curtains",
-            description: "Convenient motorized curtains for outdoor or indoor use.",
-          },
-          {
-            name: "Fences and Gates",
-            description: "Durable and stylish fences and gates for added privacy and security.",
-          },
-          {
-            name: "Carports",
-            description: "Protect your vehicles with a custom-designed carport.",
-          },
-          {
-            name: "Decks",
-            description: "Beautiful and durable decks to elevate your outdoor experience.",
-          },
-        ],
-      };
-    },
-    computed: {
-      formattedTime() {
-        // Format as HH:MM AM/PM
-        if (this.selectedTime === "" || this.selectedTime === null) {
-          return "Select time"
-        }
-        return moment(this.selectedTime, 'HH:mm').format('h:mm A');
-      },
-      formattedDate() {
-        return moment(this.selectedDate).format('MM/DD/YYYY dddd');
-      }
-    },
-    methods: {
-      validateFormData(formData) {
-        for (const key in formData) {
-          const value = formData[key];
-
-          if (typeof value === 'object') {
-            // Recursively validate nested objects
-            if (this.validateFormData(value)) {
-              return true;
-            }
-          } else if (value === null || value === '') {
-            alert(`Please fill in the ${key} field.`);
-            return false;
-          }
-        }
-      },
-      selectService(service) {
-        this.formData.service = service.name; // Set the service name in formData
-        this.goToStep(2);
-      },
-      inPersonMeeting(bool) {
-        if (bool === true) {
-          this.formData.meetingType = "In Person";
-          this.isInPerson = true;
-        } else if (bool === false) {
-          this.isInPerson = false;
-          this.formData.meetingType = "Online/Phone";
-        }
-        this.goToStep(3);
-        console.log(this.formData.meetingType);
-      },
-      goToStep(stepNumber) {
-        if (this.step !== stepNumber) {
-          //Clears CSS
-          var previousStep = document.getElementById("step" + this.step);
-          previousStep.classList.remove('fw-bold', 'steel-blue-color');
-        }
-        this.step = stepNumber;
-        var step = document.getElementById("step" + stepNumber);
-        step.classList.add('fw-bold', 'steel-blue-color');
-      },
-      submitForm() {
-        const modalElement = document.getElementById("submissionModal");
-        const submissionModal = new Modal(modalElement);
-        console.log(this.formData);
-        console.log("Form submitted....");
-        // Clear the form
-        this.step = 1;
-        this.formData = {
-          name: "",
-          email: "",
-          phone: "",
-          address: {
-            street: "",
-            city: "",
-            state: "",
-            zip: "",
-          },
-          service: "",
-          date: "",
-          time: "",
-        };
-        //if (true) {
-        //  submissionModal.show();
-        //  console.log(this.formData);
-        //}
-        // Handle form submission (e.g., send to an API)
-        //alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
-      },
-      getDates() {
-        const dates = [];
-        const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
-        const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
-
-        // Add days from the previous month to fill the first week
-        const startDay = firstDayOfMonth.getDay();
-        for (let i = 0; i < startDay; i++) {
-          const prevDate = new Date(this.currentYear, this.currentMonth, -i);
-          dates.unshift(prevDate);
-        }
-
-        // Add all dates from the current month
-        for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
-          dates.push(new Date(this.currentYear, this.currentMonth, i));
-        }
-
-        // Add days from the next month to complete the grid
-        while (dates.length % 7 !== 0) {
-          const nextDate = new Date(this.currentYear, this.currentMonth + 1, dates.length % 7);
-          dates.push(nextDate);
-        }
-
-        return dates;
-      },
-      prevMonth() {
-        this.currentMonth -= 1;
-        if (this.currentMonth < 0) {
-          this.currentMonth = 11;
-          this.currentYear -= 1;
-        }
-      },
-      nextMonth() {
-        this.currentMonth += 1;
-        if (this.currentMonth > 11) {
-          this.currentMonth = 0;
-          this.currentYear += 1;
-        }
-      },
-      selectDate(date) {
-        this.selectedDate = date;
-        this.formData.date = moment(date).format('YYYY/MM/DD');
-        this.goToStep(4);
-      },
-      isToday(date) {
-        const today = new Date();
-        return (
-          date.getFullYear() === today.getFullYear() &&
-          date.getMonth() === today.getMonth() &&
-          date.getDate() === today.getDate()
-        );
-      },
-      isSelectedDate(date) {
-        return (
-          this.selectedDate.getFullYear() === date.getFullYear() &&
-          this.selectedDate.getMonth() === date.getMonth() &&
-          this.selectedDate.getDate() === date.getDate()
-        );
-      },
-      generateTimeSlots() {
-        const slots = [];
-        const startTime = moment().startOf('day').hour(8); // Start at 8:00 AM
-        const endTime = moment().startOf('day').hour(18); // End at 6:00 PM
-        while (startTime <= endTime) {
-          slots.push(startTime.format('h:mm A'));
-          startTime.add(15, 'minutes'); // Increment by 15 minutes
-        }
-        return slots;
-      },
-      selectTime(time) {
-        this.selectedTime = time;
-        this.formData.time = time;
-        this.goToStep(5);
-      },
-    },
-  };
-</script>
 <!--CSS-->
 <style scoped>
   .f-s {
@@ -686,5 +458,264 @@
     border-radius: 1rem !important;
   }
 </style>
+
+<!--JS-->
+<script>
+  import moment from 'moment';
+  import axios from "axios";
+  import { Modal } from "bootstrap";
+
+  export default {
+    name: "BookingForm",
+    //components: {
+    //  DatePicker,
+    //},
+    data() {
+      const today = new Date();
+      const currentTime = new Date();
+      return {
+        currentYear: today.getFullYear(),
+        currentMonth: today.getMonth(),
+        selectedDate: today,
+        weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        monthNames: [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ],
+        timeSlots: this.generateTimeSlots(),
+        selectedTime: null,
+        takenTimes: ["9:00 AM", "9:15 AM", "12:00 PM"],
+        step: 1,
+        isInPerson: false,
+        isSubmissionOk: false,
+        formData: {
+          name: "",
+          email: "",
+          phone: "",
+          street: "",
+          city: "",
+          state: "",
+          zip: "",
+          service: "",
+          meetingType: "",
+          date: "",
+          time: "",
+        },
+        services: [
+          {
+            name: "Modern Pergola",
+            description: "A sleek, contemporary pergola to enhance your outdoor living space.",
+          },
+          {
+            name: "Outdoor Kitchens",
+            description: "Fully equipped outdoor kitchens for dining and entertaining.",
+          },
+          {
+            name: "Motorized Curtains",
+            description: "Convenient motorized curtains for outdoor or indoor use.",
+          },
+          {
+            name: "Fences and Gates",
+            description: "Durable and stylish fences and gates for added privacy and security.",
+          },
+          {
+            name: "Carports",
+            description: "Protect your vehicles with a custom-designed carport.",
+          },
+          {
+            name: "Decks",
+            description: "Beautiful and durable decks to elevate your outdoor experience.",
+          },
+        ],
+      };
+    },
+    computed: {
+      formattedTime() {
+        // Format as HH:MM AM/PM
+        if (this.selectedTime === "" || this.selectedTime === null) {
+          return "Select time"
+        }
+        return moment(this.selectedTime, 'HH:mm').format('h:mm A');
+      },
+      formattedDate() {
+        return moment(this.selectedDate).format('MM/DD/YYYY dddd');
+      }
+    },
+    methods: {
+      validateFormData(formData) {
+        for (const key in formData) {
+          const value = formData[key];
+
+          if (typeof value === 'object') {
+            // Recursively validate nested objects
+            if (this.validateFormData(value)) {
+              return true;
+            }
+          } else if (value === null || value === '') {
+            alert(`Please fill in the ${key} field.`);
+            return false;
+          }
+        }
+      },
+      selectService(service) {
+        this.formData.service = service.name; // Set the service name in formData
+        this.goToStep(2);
+      },
+      inPersonMeeting(bool) {
+        if (bool === true) {
+          this.formData.meetingType = "In Person";
+          this.isInPerson = true;
+        } else if (bool === false) {
+          this.isInPerson = false;
+          this.formData.meetingType = "Online/Phone";
+        }
+        this.goToStep(3);
+      },
+      goToStep(stepNumber) {
+        // Scroll up to the top of the page
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth' // Optional for smooth scrolling
+        });
+
+        // Check if the step has changed
+        if (this.step !== stepNumber) {
+          // Clear previous step's styles
+          var previousStep = document.getElementById("step" + this.step);
+          previousStep.classList.remove('fw-bold', 'steel-blue-color');
+        }
+
+        // Set the new step
+        this.step = stepNumber;
+
+        // Add styles to the current step
+        var step = document.getElementById("step" + stepNumber);
+        step.classList.add('fw-bold', 'steel-blue-color');
+      },
+      async submitForm() {
+        console.log("Form submitted....");
+        try {
+          const response = await axios
+            .post(
+              "http://engfuel.com/Bookings",
+              {
+                Name: this.formData.name,
+                Email: this.formData.email,
+                Phone: this.formData.phone,
+                Street: this.formData.street,
+                City: this.formData.city,
+                State: this.formData.state,
+                ZipCode: this.formData.zip,
+                Service: this.formData.service,
+                date: this.formData.date,
+                Time: this.formData.time,
+              },
+            )
+            .then(this.isSubmissionOk = true);
+
+          const modalElement = document.getElementById("submissionModal");
+          const submissionModal = new Modal(modalElement);
+
+          if (this.isSubmissionOk) {
+            submissionModal.show();
+            console.log(this.response);
+          }
+        } catch (error) {
+          console.log("Failed to submit form. Please try again.");
+        }
+        // Clear the form
+        this.step = 1;
+        this.formData = {
+          name: "",
+          email: "",
+          phone: "",
+          street: "",
+          city: "",
+          state: "",
+          zip: "",
+          service: "",
+          date: "",
+          time: "",
+        };
+        // Handle form submission (e.g., send to an API)
+        //alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
+      },
+      getDates() {
+        const dates = [];
+        const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
+        const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
+
+        // Add days from the previous month to fill the first week
+        const startDay = firstDayOfMonth.getDay();
+        for (let i = 0; i < startDay; i++) {
+          const prevDate = new Date(this.currentYear, this.currentMonth, -i);
+          dates.unshift(prevDate);
+        }
+
+        // Add all dates from the current month
+        for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+          dates.push(new Date(this.currentYear, this.currentMonth, i));
+        }
+
+        // Add days from the next month to complete the grid
+        while (dates.length % 7 !== 0) {
+          const nextDate = new Date(this.currentYear, this.currentMonth + 1, dates.length % 7);
+          dates.push(nextDate);
+        }
+
+        return dates;
+      },
+      prevMonth() {
+        this.currentMonth -= 1;
+        if (this.currentMonth < 0) {
+          this.currentMonth = 11;
+          this.currentYear -= 1;
+        }
+      },
+      nextMonth() {
+        this.currentMonth += 1;
+        if (this.currentMonth > 11) {
+          this.currentMonth = 0;
+          this.currentYear += 1;
+        }
+      },
+      selectDate(date) {
+        this.selectedDate = date;
+        this.formData.date = moment(date).format('YYYY/MM/DD');
+        this.goToStep(4);
+      },
+      isToday(date) {
+        const today = new Date();
+        return (
+          date.getFullYear() === today.getFullYear() &&
+          date.getMonth() === today.getMonth() &&
+          date.getDate() === today.getDate()
+        );
+      },
+      isSelectedDate(date) {
+        return (
+          this.selectedDate.getFullYear() === date.getFullYear() &&
+          this.selectedDate.getMonth() === date.getMonth() &&
+          this.selectedDate.getDate() === date.getDate()
+        );
+      },
+      generateTimeSlots() {
+        const slots = [];
+        const startTime = moment().startOf('day').hour(8); // Start at 8:00 AM
+        const endTime = moment().startOf('day').hour(18); // End at 6:00 PM
+        while (startTime <= endTime) {
+          slots.push(startTime.format('h:mm A'));
+          startTime.add(15, 'minutes'); // Increment by 15 minutes
+        }
+        return slots;
+      },
+      selectTime(time) {
+        this.selectedTime = time;
+        this.formData.time = time;
+        this.goToStep(5);
+      },
+    },
+  };
+</script>
 
 
