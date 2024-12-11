@@ -6,12 +6,13 @@
 
 <template>
   <header>
-    <NavBar />
+    <router-link to="/UpcomingBookings" class="nav-link text-dark">Bookings</router-link>
+    <router-link to="/BookingForm" class="nav-link text-dark">Book Now</router-link>
   </header>
 
   <main>
-    <BookingForm />
-    <FetchData></FetchData>
+    <!--router-view is where the matched component will be rendered based on the URL.-->
+    <router-view></router-view>
   </main>
 </template>
 

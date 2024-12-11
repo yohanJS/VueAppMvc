@@ -1,6 +1,6 @@
 <!--Template-->
 <template>
-  <div class="container py-4 mt-5">
+  <div class="container py-4">
     <div class="text-center mb-4 mt-2">
       <div class="px-5" role="group" aria-label="First group">
         <button @click="goToStep(1)" id="step1" type="button" class="btn btn-primary m-1 rounded-5 my-bg border-0 fw-bold steel-blue-color">1</button>
