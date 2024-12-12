@@ -1,51 +1,49 @@
-<script setup>
-  import NavBar from './components/NavBar.vue'
-  import FetchData from './components/FetchData.vue'
-  import BookingForm from './components/BookingForm.vue'
-</script>
-
 <template>
   <header class="mobile-nav">
-    <ul class="nav nav-tabs justify-content-center p-2 fixed-bottom bg-steel m-1 rounded-2 shadow-lg">
+    <ul class="nav nav-tabs justify-content-around p-2 fixed-bottom bg-steel m-1 rounded-2 shadow-lg">
       <li class="nav-item">
         <router-link to="/" class="nav-link">
-          <i class="bi bi-calendar-check"></i>
+          <i class="bi bi-house m-0"></i>
           Home
         </router-link>
       </li>
       <li class="nav-item">
         <router-link to="/UpcomingBookings" class="nav-link">
-          <i class="bi bi-calendar-check"></i>
+          <i class="bi bi-calendar-check m-0"></i>
           Bookings
         </router-link>
       </li>
       <li class="nav-item">
         <router-link to="/BookingForm" class="nav-link">
-          <i class="bi bi-pencil-square"></i>
-          Book Now
+          <i class="bi bi-pencil-square m-0"></i>
+          Book
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link to="/BookingForm" class="nav-link">
+          <i class="bi bi-folder-symlink-fill m-0"></i>
+          Link
         </router-link>
       </li>
     </ul>
   </header>
 
   <main>
-    <!--router-view is where the matched component will be rendered based on the URL.-->
+    <!-- The matched component will be rendered here based on the URL -->
     <router-view></router-view>
   </main>
 </template>
 
 <style scoped>
+  /* Steel blue background for the nav bar */
   .bg-steel {
-    background-color: #4682B4;
+    background-color: #f8b195;
   }
+
   header {
     line-height: 1.5;
   }
 
-  .logo {
-    display: block;
-    margin: 0 auto 2rem;
-  }
   /* Mobile navigation bar styling */
   .mobile-nav {
     position: sticky;
@@ -56,13 +54,16 @@
 
   /* Style for the nav links */
   .nav-link {
-    color: #6c757d; /* Neutral gray for icons and text */
+    color: #3f72af; /* Neutral gray for icons and text */
     font-weight: 500;
     font-size: 0.7rem;
     text-align: center;
-    padding: 0.5rem;
-    background-color: #f1f3f5; /* Light pastel background */
-    border-radius: 0.5rem;
+    border: none !important;
+    height: 50px; /* Fixed height for buttons */
+    display: flex; /* Flexbox for centering content */
+    flex-direction: column; /* Stack icon and text vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
     margin: 0 0.25rem;
     transition: all 0.3s ease;
   }
@@ -70,39 +71,25 @@
   /* Active and hover states */
   .mobile-nav .nav-link.active,
   .mobile-nav .nav-link:hover {
-    background-color: #dbeafe; /* Light pastel blue */
-    color: #1d4ed8; /* Dark blue for text and icons */
+    color: #ffffff; /* Dark blue for text and icons */
   }
 
   /* Icons styling */
   .mobile-nav .nav-link i {
-    display: block;
     font-size: 1.2rem;
     margin-bottom: 0.25rem;
   }
 
-  /* Utility for fixed-bottom behavior */
+  /* Ensure nav items are evenly distributed */
+  .nav-tabs {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  /* Utility for fixed-bottom behavior on larger screens */
   @media (min-width: 768px) {
     .mobile-nav {
       position: relative;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    header {
-      display: flex;
-      place-items: center;
-      padding-right: calc(var(--section-gap) / 2);
-    }
-
-    .logo {
-      margin: 0 2rem 0 0;
-    }
-
-    header .wrapper {
-      display: flex;
-      place-items: flex-start;
-      flex-wrap: wrap;
     }
   }
 </style>

@@ -6,6 +6,7 @@
     </p>
     <router-link to="/BookingForm" class="btn btn-book-now">
       Book Now
+      <i class="bi bi-chevron-double-right"></i>
     </router-link>
   </div>
 </template>
@@ -30,9 +31,9 @@
 
   .btn-book-now {
     background-color: #f8b195;
-    color: white;
+    color: #3f72af;
     font-weight: bold;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 4.5rem;
     border-radius: 25px;
     transition: background-color 0.3s ease;
   }
