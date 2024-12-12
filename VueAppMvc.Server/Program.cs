@@ -1,31 +1,53 @@
 using Microsoft.EntityFrameworkCore;
 using VueAppMvc.Server.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-/******IMPORTANT*********/
-//If I deploy with the SQL servers added it I break the app beacuse is looking for the connection string
-//that does not exist
-// Add services to the container.
 //var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING_VUEJS") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 //This is used to update the PRD Db using Entity Framework
-var connectionString = Environment.GetEnvironmentVariable("BOOKING_CONNECTION_STRING") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING_VUEJS")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+// Add Identity services
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Add authentication and authorization services
+builder.Services.AddAuthentication()
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "your-issuer",
+            ValidAudience = "your-audience",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key"))
+        };
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin", builder =>
+    options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        builder.WithOrigins("https://localhost:54554", "http://engfuel.com") // Vue.js dev server
-               .AllowAnyHeader()
-               .AllowAnyMethod();
+        policy.WithOrigins("https://localhost:54554", "http://engfuel.com")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
@@ -35,7 +57,6 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseCors("AllowSpecificOrigin");
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -44,10 +65,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthentication();  // Enable authentication middleware
+app.UseAuthorization();   // Enable authorization middleware
 
 app.MapControllers();
-
 app.MapFallbackToFile("/index.html");
 
 app.Run();

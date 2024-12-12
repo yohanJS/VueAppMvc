@@ -20,9 +20,9 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/BookingForm" class="nav-link">
+        <router-link to="/Login" class="nav-link">
           <i class="bi bi-folder-symlink-fill m-0"></i>
-          Link
+          Login
         </router-link>
       </li>
     </ul>
