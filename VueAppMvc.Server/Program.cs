@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 //var connectionString = Environment.GetEnvironmentVariable("BOOKING_CONNECTION_STRING") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 //This is used to update the PRD Db using Entity Framework
 
-var connectionString = Environment.GetEnvironmentVariable("BOOKING_CONNECTION_STRING")
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING_VUEJS")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

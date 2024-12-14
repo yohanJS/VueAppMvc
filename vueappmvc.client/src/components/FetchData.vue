@@ -61,9 +61,10 @@
                   <p class="mb-1"><strong>Service:</strong> {{ service.service }}</p>
                   <p class="mb-1"><strong>Date:</strong> {{ service.date }}</p>
                   <p class="mb-1"><strong>Time:</strong> {{ service.time }}</p>
+
+                  <i @click="deleteService(service.id)" class="bi bi-trash3 text-danger mr">Delete</i>
+                  <i @click="test" class="bi bi-pencil text-primary">Edit</i>
                 </div>
-                <i @click="test" class="bi bi-trash3 text-danger mr">Delete</i>
-                <i @click="test" class="bi bi-pencil text-primary">Edit</i>
               </div>
 
             </div>
@@ -80,11 +81,14 @@
 </template>
 
 <script>
+  import axios from 'axios';
+
   export default {
     data() {
       return {
         loading: false,
         users: null,
+        serviceId: null,
       };
     },
     async created() {
@@ -95,20 +99,30 @@
         this.users = null;
         this.loading = true;
         try {
-          const response = await fetch("http://engfuel.com/Bookings");
-          //const response = await fetch("https://localhost:7144/Bookings");
-          if (response.ok) {
-            const data = await response.json();
-            this.users = data.users;
-          }
+          //const response = await fetch("http://engfuel.com/Bookings");
+          const response = await axios.get("https://localhost:7144/Bookings");
+          this.users = response.data.users;
         } catch (error) {
           console.error("Error fetching bookings:", error);
         } finally {
           this.loading = false;
         }
       },
-      async test() {
-        window.alert("Deleting or Editing a booking....");
+      async deleteService(id) {
+        try {
+          //const response = await fetch("http://engfuel.com/DeleteBookedService");
+          const response = await axios.post(
+            "https://localhost:7144/DeleteBookedService",
+            {
+              serviceId: id,
+            }
+          );
+        } catch (error) {
+          console.error("Error deleting bookings:", error);
+        } finally {
+          this.loading = false;
+          this.fetchBookings();
+        }
       },
     },
   };
@@ -149,7 +163,7 @@
 
     /* Card body styling */
     .pastel-card .card-body {
-      padding: 1.5rem;
+      padding: 1rem;
       background-color: #ffffff;
       flex: 1; /* Make the body fill available space */
       display: flex;
@@ -201,7 +215,6 @@
   }
 
   .mr {
-      margin-right: 10px;
+    margin-right: 10px;
   }
-
 </style>

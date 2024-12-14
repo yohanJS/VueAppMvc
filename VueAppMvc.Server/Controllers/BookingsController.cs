@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using VueAppMvc.Server.Data;
 using VueAppMvc.Server.Models;
 
@@ -46,6 +47,11 @@ namespace VueAppMvc.Server.Controllers
             }
             return bookings;
         }
+        /// <summary>
+        /// Inserts a new booking into the db
+        /// </summary>
+        /// <param name="bookFormModel"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] BookFormModel bookFormModel)
         {
