@@ -42,7 +42,8 @@
     methods: {
       async login() {
         try {
-          const response = await axios.post("http://engfuel.com/Account/login", {
+          const response = await axios.post("https://localhost:7144/Account/login", {
+          //const response = await axios.post("http://engfuel.com/Account/login", {
             email: this.email,
             password: this.password,
           });
@@ -53,6 +54,7 @@
 
           // Redirect to the home page or any desired page
           window.location.href = "http://engfuel.com";
+          //window.location.href = "https://localhost:54554";
         } catch (error) {
           this.message = error.response.data.message;
         }
