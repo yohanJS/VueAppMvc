@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VueAppMvc.Server.Data;
 using VueAppMvc.Server.Models;
 
 namespace VueAppMvc.Server.Controllers
 {
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class BookingsController : ControllerBase

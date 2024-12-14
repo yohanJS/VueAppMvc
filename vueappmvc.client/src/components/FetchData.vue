@@ -1,55 +1,76 @@
 <template>
-  <div class="container mt-4">
+  <div class="container mb-5">
     <!-- Bookings Section -->
-    <div class="mt-5">
-      <div class="text-center mb-4">
-        <h1 class="lead">Upcoming bookings</h1>
-      </div>
-
+    <div class="mt-3">
       <!-- Button to Fetch Bookings -->
-      <div class="text-center">
-        <button class="btn btn-success btn-sm" @click="fetchBookings">
-          Get Latest
+      <div class="text-end">
+        <button @click="fetchBookings"
+                class="btn rounded-pill py-2 fw-bold"
+                style="background-color: #f8b195; font-size: 0.8rem; ">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#3f72af" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+          </svg>
         </button>
       </div>
 
       <!-- Loading State -->
       <div v-if="loading" class="text-center text-success-emphasis">
         Loading bookings... Please wait.
+        <div class="d-flex justify-content-center mt-3">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
       </div>
 
       <!-- Display Bookings -->
       <div v-if="users && users.length > 0" class="row g-4 justify-content-center">
         <div v-for="user in users" :key="user.id" class="col-12 col-md-6 col-lg-4 d-flex align-items-stretch">
           <div class="pastel-card card h-100 w-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ user.name }}</h5>
-              <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
-              <p class="card-text"><strong>Phone:</strong> {{ user.phone }}</p>
+            <div class="card-body d-flex flex-column rounded-2">
+              <h4 class="card-title mb-2">{{ user.name }}</h4>
+              <p class="card-text mb-1"><strong>Email:</strong> <br /> {{ user.email }}</p>
+              <p class="card-text mb-1"><strong>Phone:</strong> <br /> {{ user.phone }}</p>
               <p class="card-text">
                 <strong>Address:</strong>
-                <div v-if="user.street === null || user.street === ''">
+                <div v-if="!user.street">
                   N/A
                 </div>
                 <div v-else>
                   {{ user.street }}, {{ user.city }}, {{ user.state }} - {{ user.zip }}
                 </div>
               </p>
-              <h6 class="mt-3">Services:</h6>
-              <ul class="list-group list-group-flush">
-                <li v-for="service in user.services" :key="service.id" class="pastel-list-item list-group-item">
-                  <p><strong>Service:</strong> {{ service.service }}</p>
-                  <p><strong>Date:</strong> {{ service.date }}</p>
-                  <p><strong>Time:</strong> {{ service.time }}</p>
+
+              <!-- Tabs for Services -->
+              <ul class="nav nav-tabs mt-3" :id="'serviceTabs' + user.id" role="tablist">
+                <li class="nav-item" v-for="(service, index) in user.services" :key="service.id" role="presentation">
+                  <button class="nav-link p-2 steel-blue-color" style="font-size:0.7rem;" :class="{ active: index === 0 }" :id="'tab' + user.id + '-' + service.id"
+                          data-bs-toggle="tab" :data-bs-target="'#content' + user.id + '-' + service.id" type="button" role="tab"
+                          :aria-controls="'content' + user.id + '-' + service.id" :aria-selected="index === 0">
+                    {{ service.date }}
+                  </button>
                 </li>
               </ul>
+
+              <div class="tab-content mt-2" style="font-size: 0.7rem;" :id="'serviceTabContent' + user.id">
+                <div v-for="(service, index) in user.services" :key="service.id"
+                     class="tab-pane fade" :class="{ 'show active': index === 0 }"
+                     :id="'content' + user.id + '-' + service.id" role="tabpanel"
+                     :aria-labelledby="'tab' + user.id + '-' + service.id">
+                  <p class="mb-1"><strong>Service:</strong> {{ service.service }}</p>
+                  <p class="mb-1"><strong>Date:</strong> {{ service.date }}</p>
+                  <p class="mb-1"><strong>Time:</strong> {{ service.time }}</p>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
       </div>
 
       <!-- No Bookings Message -->
-      <div v-else-if="!loading" class="text-center text-danger">
+      <div v-else-if="!loading" class="text-center text-danger mt-5">
         <p>No bookings available at the moment. Be the first to book!</p>
       </div>
     </div>
@@ -125,7 +146,6 @@
     .pastel-card .card-body {
       padding: 1.5rem;
       background-color: #ffffff;
-      border-radius: 16px;
       flex: 1; /* Make the body fill available space */
       display: flex;
       flex-direction: column;
@@ -133,16 +153,13 @@
 
     /* Card title styling */
     .pastel-card .card-title {
-      color: #6a5acd; /* Pastel blue-violet */
-      font-size: 1.2rem; /* Slightly smaller font for mobile look */
-      font-weight: 700;
+      font-size: 0.9rem; /* Slightly smaller font for mobile look */
       margin-bottom: 1rem;
     }
 
     /* Card text styling */
     .pastel-card .card-text {
-      color: #555;
-      font-size: 0.9rem; /* Smaller font for a modern mobile look */
+      font-size: 0.8rem; /* Smaller font for a modern mobile look */
       margin-bottom: 0.75rem;
     }
 
@@ -163,7 +180,7 @@
 
   /* Strong tag for emphasis */
   .pastel-card strong {
-    color: #9b59b6; /* Soft pastel purple */
+    color: #3f72af;
   }
 
   /* Centered grid layout */
@@ -176,22 +193,6 @@
   /* Ensure all columns stretch equally */
   .row > div {
     display: flex;
-  }
-
-  /* Responsive spacing adjustments */
-  @media (max-width: 768px) {
-    .pastel-card .card-body {
-      padding: 1.2rem; /* Smaller padding on smaller screens */
-    }
-
-    .pastel-card .card-title {
-      font-size: 1rem; /* Smaller font size for mobile screens */
-    }
-
-    .pastel-card .card-text,
-    .pastel-list-item {
-      font-size: 0.85rem; /* Smaller text for mobile */
-    }
   }
 
 </style>

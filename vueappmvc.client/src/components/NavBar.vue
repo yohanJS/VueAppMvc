@@ -16,10 +16,10 @@
               <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" href="#">Link</a>
+              <router-link to="/UpcomingBookings" class="nav-link text-white">Bookings</router-link>
+              <!--router-view is where the matched component will be rendered based on the URL.-->
             </li>
           </ul>
-          <!--<FetchData></FetchData>-->
         </div>
       </div>
     </div>
@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-  import FetchData from './FetchData.vue'
+
 </script>
 
 <style scoped>
