@@ -1,7 +1,7 @@
 ﻿using Humanizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using VueAppMvc.Server.Models;
 
 namespace VueAppMvc.Server.Controllers
 {
@@ -54,46 +54,40 @@ namespace VueAppMvc.Server.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var user = new IdentityUser { UserName = model.Email, Email = model.Email };
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
+            if (model != null && !string.IsNullOrEmpty(model.Password))
             {
-                // Assign the Admin role if the email matches a specific condition
-                if (model.Email == "yoanvaldes01@yahoo.es")
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "Admin");
+                    // Assign the Admin role if the email matches a specific condition
+                    if (model.Email == "yoanvaldes01@yahoo.es")
+                    {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    }
+
+                    return Ok(new { message = "User registered successfully." });
                 }
-
-                return Ok(new { message = "User registered successfully." });
+                else
+                {
+                    return BadRequest(result.Errors);
+                }
             }
-
-            return BadRequest(result.Errors);
+            return BadRequest();
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-
-            if (result.Succeeded)
+            if (model != null && !string.IsNullOrEmpty(model.Email) && !string.IsNullOrEmpty(model.Password))
             {
-                return Ok(new { message = "Login successful." });
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+                if (result.Succeeded)
+                {
+                    return Ok(new { message = "Login successful." });
+                }
             }
-
             return Unauthorized(new { message = "Invalid login attempt." });
         }
     }
-
-    public class RegisterModel
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class LoginModel
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-
 }

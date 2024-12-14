@@ -55,6 +55,7 @@
     },
     methods: {
       async logout() {
+        window.location.href = "http://engfuel.com";
         // Set a flag in localStorage to indicate successful login
         localStorage.setItem("isLoggedIn", "false");
         this.isLoggedIn = false;

@@ -62,6 +62,8 @@
                   <p class="mb-1"><strong>Date:</strong> {{ service.date }}</p>
                   <p class="mb-1"><strong>Time:</strong> {{ service.time }}</p>
                 </div>
+                <i @click="test" class="bi bi-trash3 text-danger mr">Delete</i>
+                <i @click="test" class="bi bi-pencil text-primary">Edit</i>
               </div>
 
             </div>
@@ -104,6 +106,9 @@
         } finally {
           this.loading = false;
         }
+      },
+      async test() {
+        window.alert("Deleting or Editing a booking....");
       },
     },
   };
@@ -193,6 +198,10 @@
   /* Ensure all columns stretch equally */
   .row > div {
     display: flex;
+  }
+
+  .mr {
+      margin-right: 10px;
   }
 
 </style>
