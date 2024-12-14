@@ -2,27 +2,39 @@
   <header class="mobile-nav">
     <ul class="nav nav-tabs justify-content-around p-2 fixed-bottom bg-steel m-1 rounded-2 shadow-lg">
       <li class="nav-item">
-        <router-link to="/" class="nav-link">
+        <router-link to="/" class="nav-link p-0">
           <i class="bi bi-house m-0"></i>
           Home
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/UpcomingBookings" class="nav-link">
+        <router-link to="/UpcomingBookings" class="nav-link p-0">
           <i class="bi bi-calendar-check m-0"></i>
           Bookings
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/BookingForm" class="nav-link">
+        <router-link to="/BookingForm" class="nav-link p-0">
           <i class="bi bi-pencil-square m-0"></i>
           Book
         </router-link>
       </li>
-      <li class="nav-item">
-        <router-link to="/Login" class="nav-link">
-          <i class="bi bi-folder-symlink-fill m-0"></i>
+      <li class="nav-item" v-if="!isLoggedIn">
+        <router-link to="/Login" class="nav-link p-0">
+          <i class="bi bi-person m-0"></i>
           Login
+        </router-link>
+      </li>
+      <li class="nav-item" v-if="!isLoggedIn">
+        <router-link to="/Register" class="nav-link p-0">
+          <i class="bi bi-person-add m-0"></i>
+          Register
+        </router-link>
+      </li>
+      <li class="nav-item" v-if="isLoggedIn" @click="logout">
+        <router-link to="/Login" class="nav-link p-0">
+          <i class="bi bi-escape m-0"></i>
+          Log out
         </router-link>
       </li>
     </ul>
@@ -33,6 +45,23 @@
     <router-view></router-view>
   </main>
 </template>
+
+<script>
+  export default {
+    data() {
+      return {
+        isLoggedIn: localStorage.getItem("isLoggedIn") === "true",
+      };
+    },
+    methods: {
+      async logout() {
+        // Set a flag in localStorage to indicate successful login
+        localStorage.setItem("isLoggedIn", "false");
+        this.isLoggedIn = false;
+      },
+    },
+  };
+</script>
 
 <style scoped>
   /* Steel blue background for the nav bar */
@@ -68,12 +97,13 @@
     transition: all 0.3s ease;
   }
 
-  /* Active and hover states */
-  .mobile-nav .nav-link.active,
-  .mobile-nav .nav-link:hover {
-    color: #ffffff; /* Dark blue for text and icons */
+  .nav-link:hover {
+    color: #ffffff;
+    background-color: transparent;
   }
-
+  .router-link-active {
+      color: #ffffff;
+  }
   /* Icons styling */
   .mobile-nav .nav-link i {
     font-size: 1.2rem;

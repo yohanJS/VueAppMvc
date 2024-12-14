@@ -6,10 +6,10 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING_VUEJS") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+//var connectionString = Environment.GetEnvironmentVariable("BOOKING_CONNECTION_STRING") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 //This is used to update the PRD Db using Entity Framework
 
-var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING_VUEJS")
+var connectionString = Environment.GetEnvironmentVariable("BOOKING_CONNECTION_STRING")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -52,6 +52,27 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Create roles when the app starts
+/*Creates a scope to access services (e.g., RoleManager) for dependency injection.
+Defines a list of roles (Admin, User).
+Checks if each role exists in the database.
+If a role doesn’t exist, it creates it using RoleManager.
+*/
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    var roles = new[] { "Admin", "User" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

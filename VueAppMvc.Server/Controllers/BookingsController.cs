@@ -5,7 +5,7 @@ using VueAppMvc.Server.Models;
 
 namespace VueAppMvc.Server.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class BookingsController : ControllerBase

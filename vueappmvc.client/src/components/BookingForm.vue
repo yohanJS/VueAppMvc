@@ -294,7 +294,7 @@
 
   .service-card {
     border-bottom: 2px solid #2C3539;
-    background-color: #f6fafa;
+    background-color: #2C3539;
   }
 
   .form-label {
