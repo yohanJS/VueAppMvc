@@ -19,20 +19,22 @@ namespace VueAppMvc.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] DeleteModel deleteModel)
         {
-
-            if (_dbContext.serviceApps != null)
+            using (var dbContext = _dbContext)
             {
-                DbSet<ServiceAppModel> services = _dbContext.serviceApps;
-                foreach (ServiceAppModel service in services)
+                if (dbContext.serviceApps != null)
                 {
-                    if (service.Id.Equals(deleteModel.serviceId))
+                    DbSet<ServiceAppModel> services = dbContext.serviceApps;
+                    foreach (ServiceAppModel service in services)
                     {
-                        services.Remove(service);
-                        await _dbContext.SaveChangesAsync();
-                        return Ok();
+                        if (service.Id.Equals(deleteModel.serviceId))
+                        {
+                            services.Remove(service);
+                            await dbContext.SaveChangesAsync();
+                            return Ok();
+                        }
                     }
+                    await dbContext.SaveChangesAsync();
                 }
-                await _dbContext.SaveChangesAsync();
             }
             return BadRequest(string.Format("Could not delete service with booking Id:{0}", deleteModel.serviceId));
         }

@@ -3,13 +3,14 @@ using VueAppMvc.Server.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//var connectionString = Environment.GetEnvironmentVariable("BOOKING_CONNECTION_STRING") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-//This is used to update the PRD Db using Entity Framework
+//CONNECTION_STRING_VUEJS
 
-var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING_VUEJS")
+//string logDbConnectionString = configuration.GetConnectionString("");
+var connectionString = Environment.GetEnvironmentVariable("BOOKING_CONNECTION_STRING")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

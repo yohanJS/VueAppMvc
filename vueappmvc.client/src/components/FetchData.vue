@@ -95,13 +95,26 @@
       await this.fetchBookings();
     },
     methods: {
+      //async fetchBookings() {
+      //  this.users = null;
+      //  this.loading = true;
+      //  try {
+      //    const response = await fetch("http://engfuel.com/Bookings");
+      //    //const response = await axios.get("https://localhost:7144/Bookings");
+      //    this.users = response.data.users;
+      //  } catch (error) {
+      //    console.error("Error fetching bookings:", error);
+      //  } finally {
+      //    this.loading = false;
+      //  }
+      //},
       async fetchBookings() {
         this.users = null;
         this.loading = true;
         try {
-          //const response = await fetch("http://engfuel.com/Bookings");
-          const response = await axios.get("https://localhost:7144/Bookings");
-          this.users = response.data.users;
+          const response = await fetch("http://engfuel.com/Bookings");
+          const data = await response.json(); // Parse the response as JSON
+          this.users = data.users;            // Access users from the parsed data
         } catch (error) {
           console.error("Error fetching bookings:", error);
         } finally {
@@ -112,7 +125,7 @@
         try {
           //const response = await fetch("http://engfuel.com/DeleteBookedService");
           const response = await axios.post(
-            "https://localhost:7144/DeleteBookedService",
+            "http://engfuel.com/DeleteBookedService",
             {
               serviceId: id,
             }
