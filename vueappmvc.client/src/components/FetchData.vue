@@ -89,43 +89,29 @@
         loading: false,
         users: null,
         serviceId: null,
+        isPrd: true,
+        GetBookingsUrl: "",
+        DeleteBookingsUrl: "",
       };
     },
     async created() {
+      this.GetBookingsUrl = this.isPrd ? "http://engfuel.com/Bookings" : "https://localhost:7144/Bookings";
+      this.DeleteBookingsUrl = this.isPrd ? "http://engfuel.com/DeleteBookedService" : "https://localhost:7144/DeleteBookedService";
       await this.fetchBookings();
     },
     methods: {
-      //async fetchBookings() {
-      //  this.users = null;
-      //  this.loading = true;
-      //  try {
-      //    const response = await fetch("http://engfuel.com/Bookings");
-      //    //const response = await axios.get("https://localhost:7144/Bookings");
-      //    this.users = response.data.users;
-      //  } catch (error) {
-      //    console.error("Error fetching bookings:", error);
-      //  } finally {
-      //    this.loading = false;
-      //  }
-      //},
       async fetchBookings() {
         this.users = null;
         this.loading = true;
-        try {
-          const response = await fetch("http://engfuel.com/Bookings");
-          const data = await response.json(); // Parse the response as JSON
-          this.users = data.users;            // Access users from the parsed data
-        } catch (error) {
-          console.error("Error fetching bookings:", error);
-        } finally {
-          this.loading = false;
-        }
+        axios.get(this.GetBookingsUrl)
+          .then((response) => {
+            this.users = response.data.users;
+            this.loading = false;
+          });
       },
       async deleteService(id) {
         try {
-          //const response = await fetch("http://engfuel.com/DeleteBookedService");
-          const response = await axios.post(
-            "http://engfuel.com/DeleteBookedService",
+          const response = await axios.post(this.DeleteBookingsUrl,
             {
               serviceId: id,
             }

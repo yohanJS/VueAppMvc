@@ -3,15 +3,15 @@ using VueAppMvc.Server.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //CONNECTION_STRING_VUEJS
 
-//string logDbConnectionString = configuration.GetConnectionString("");
-var connectionString = Environment.GetEnvironmentVariable("BOOKING_CONNECTION_STRING")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+string? localDbConnectionString = builder.Configuration.GetConnectionString("defaultConnectionString");
+string? prdDbConnectionString = Environment.GetEnvironmentVariable("BOOKING_CONNECTION_STRING");
+
+string? connectionString = string.IsNullOrEmpty(prdDbConnectionString) ? localDbConnectionString : prdDbConnectionString ;
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));

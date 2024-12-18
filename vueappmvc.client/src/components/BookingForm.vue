@@ -285,6 +285,8 @@
       const today = new Date();
       const currentTime = new Date();
       return {
+        isPrd: true,
+        GetBookingsUrl: "",
         currentYear: today.getFullYear(),
         currentMonth: today.getMonth(),
         selectedDate: today,
@@ -352,6 +354,9 @@
         return moment(this.selectedDate).format('MM/DD/YYYY dddd');
       }
     },
+    async created() {
+      this.GetBookingsUrl =this.isPrd ? "http://engfuel.com/Bookings" : "https://localhost:7144/Bookings";
+    },
     methods: {
       validateFormData(formData) {
         for (const key in formData) {
@@ -405,11 +410,10 @@
         step.classList.add('fw-bold', 'steel-blue-color');
       },
       async submitForm() {
-        console.log("Form submitted....");
         try {
           const response = await axios
             .post(
-              "http://engfuel.com/Bookings",
+              this.GetBookingsUrl,
               {
                 Name: this.formData.name,
                 Email: this.formData.email,
@@ -430,7 +434,6 @@
 
           if (this.isSubmissionOk) {
             submissionModal.show();
-            console.log(this.response);
           }
         } catch (error) {
           console.log("Failed to submit form. Please try again.");

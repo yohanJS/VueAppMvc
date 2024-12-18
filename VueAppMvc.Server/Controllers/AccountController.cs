@@ -1,6 +1,7 @@
 ﻿using Humanizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Configuration;
 using VueAppMvc.Server.Models;
 
 namespace VueAppMvc.Server.Controllers
@@ -11,11 +12,24 @@ namespace VueAppMvc.Server.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IConfiguration _iConfiguration;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configBuilder)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _iConfiguration = configBuilder;
+        }
+
+        [HttpGet("IsDev")]
+        public IActionResult IsDev()
+        {
+            string? connectionString =  _iConfiguration.GetConnectionString("defaultConnectionString");
+            if (!string.IsNullOrEmpty(connectionString) && connectionString.Contains("LAPTOP-GARCIA"))
+            {
+                return Ok("false");
+            }
+            return Ok("true");
         }
 
         /// <summary>
