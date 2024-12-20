@@ -14,17 +14,41 @@
         </button>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="loading" class="text-center text-success-emphasis">
-        Loading bookings... Please wait.
-        <div class="d-flex justify-content-center mt-3">
-          <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
+      <!-- Loading State with Placeholder Cards -->
+      <div v-if="loading" class="mt-4">
+        <div class="skeleton-card mb-3" v-for="n in 3" :key="n">
+          <div class="skeleton-title"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
         </div>
       </div>
 
       <!-- Display Bookings -->
+      <div class="row justify-content-around mt-4 mb-3">
+        <div class="col-2">
+          <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
+        </div>
+        <div class="col-6 justify-content-center">
+          <h4 class="">{{ currentMonth }}</h4>
+        </div>
+        <div class="col-2">
+          <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-md-6 justify-content-center">
+          <h5 class="lead">{{ weekRange }}</h5>
+        </div>
+        <button class="btn btn-sm btn-primary" @click="nextWeek()">Next Week</button>
+      </div>
+      <!--<div v-if="weekDays && weekDays.length > 0">
+    <div v-for="day in weekDays">
+      <p class="text-bg-danger">{{ day }}</p>
+    </div>
+  </div>-->
+
       <div v-if="users && users.length > 0" class="row g-4 justify-content-center">
         <div v-for="user in users" :key="user.id" class="col-12 col-md-6 col-lg-4 d-flex align-items-stretch">
           <div class="pastel-card card h-100 w-100 shadow-sm">
@@ -82,24 +106,56 @@
 
 <script>
   import axios from 'axios';
+  import moment from 'moment';
 
   export default {
     data() {
       return {
+        today: moment().format('YYYY-MM-DD'),
+        currentMonth: moment().startOf('month').format('MMM YYYY'),
+        weekDays: moment.weekdays(), // ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        // Format the week range
+        weekRange: "",
         loading: false,
         users: null,
         serviceId: null,
         isPrd: true,
+        startOfWeek: moment().startOf('week').format('DD'),
+        endOfWeek: moment().endOf('week').format('DD'),
         GetBookingsUrl: "",
         DeleteBookingsUrl: "",
       };
     },
     async created() {
-      this.GetBookingsUrl = this.isPrd ? "http://engfuel.com/Bookings" : "https://localhost:7144/Bookings";
-      this.DeleteBookingsUrl = this.isPrd ? "http://engfuel.com/DeleteBookedService" : "https://localhost:7144/DeleteBookedService";
+      this.getWeekRange();
+      this.GetBookingsUrl = this.isPrd ? "http://engfuel.com/Bookings/GetAllBookings" : "https://localhost:7144/Bookings/GetAllBookings";
+      this.DeleteBookingsUrl = this.isPrd ? "http://engfuel.com/Bookings/DeleteBooking" : "https://localhost:7144/Bookings/DeleteBooking";
       await this.fetchBookings();
     },
     methods: {
+      previousMonth() {
+        this.currentMonth = moment(this.currentMonth, 'MMM YYYY').subtract(1, 'months').startOf('month').format('MMM YYYY')
+      },
+      nextMonth() {
+        this.currentMonth = moment(this.currentMonth, 'MMM YYYY').add(1, 'months').startOf('month').format('MMM YYYY')
+      },
+      getWeekRange() {
+        this.weekRange = `Week ${this.startOfWeek} - ${this.endOfWeek}`;
+      },
+      nextWeek() {
+        this.weekRange = `Week ${this.startOfWeek} - ${this.endOfWeek}`;
+        var newStartWeek = this.startOfWeek = parseInt(this.startOfWeek) + 7;
+        if (newStartWeek > 31) {
+          this.startOfWeek = newStartWeek - 31;
+        }
+
+        var newEndWeek = this.endOfWeek = parseInt(this.startOfWeek) + 6;
+        if (newEndWeek > 31) {
+          this.endOfWeek = newEndWeek - 31;
+        }
+
+        this.weekRange = `Week ${this.startOfWeek} - ${this.endOfWeek}`;
+      },
       async fetchBookings() {
         this.users = null;
         this.loading = true;
@@ -128,6 +184,47 @@
 </script>
 
 <style scoped>
+  /* Loading Skeleton */
+  .skeleton-card {
+    background-color: #e0e0e0;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+
+  .skeleton-title {
+    height: 20px;
+    background-color: #cfcfcf;
+    width: 50%;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+  }
+
+  .skeleton-line {
+    height: 15px;
+    background-color: #d9d9d9;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+  }
+
+    .skeleton-line.short {
+      width: 70%;
+    }
+
+  @keyframes pulse {
+    0% {
+      background-color: #e0e0e0;
+    }
+
+    50% {
+      background-color: #f0f0f0;
+    }
+
+    100% {
+      background-color: #e0e0e0;
+    }
+  }
   /* General body styling for consistency */
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

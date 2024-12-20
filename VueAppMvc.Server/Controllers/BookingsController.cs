@@ -22,7 +22,7 @@ namespace VueAppMvc.Server.Controllers
         /// Returns all bookings
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("GetAllBookings")]
         public BookingModel Get()
         {
             BookingModel bookings = new BookingModel();
@@ -37,8 +37,8 @@ namespace VueAppMvc.Server.Controllers
 
                         if (_dbContext.users != null && _dbContext.serviceApps != null)
                         {
-                            users = _dbContext.users.ToList();
-                            serviceApps = _dbContext.serviceApps.ToList();
+                            users = _dbContext.users.FromSql($"EXEC GetAllUsers").ToList();
+                            serviceApps = _dbContext.serviceApps.FromSql($"EXEC GetAllServiceApps").ToList();
                             bookings.Users = users;
                         }
                     }
@@ -59,7 +59,7 @@ namespace VueAppMvc.Server.Controllers
         /// </summary>
         /// <param name="bookFormModel"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("CreateBooking")]
         public async Task<IActionResult> PostAsync([FromBody] BookFormModel bookFormModel)
         {
             using (_dbContext)
@@ -122,7 +122,29 @@ namespace VueAppMvc.Server.Controllers
                 return BadRequest("Something went wrong...");
             }
         }
-
+        
+        [HttpPost("DeleteBooking")]
+        public async Task<IActionResult> PostAsync([FromBody] DeleteModel deleteModel)
+        {
+            using (var dbContext = _dbContext)
+            {
+                if (dbContext.serviceApps != null)
+                {
+                    DbSet<ServiceAppModel> services = dbContext.serviceApps;
+                    foreach (ServiceAppModel service in services)
+                    {
+                        if (service.Id.Equals(deleteModel.serviceId))
+                        {
+                            services.Remove(service);
+                            await dbContext.SaveChangesAsync();
+                            return Ok();
+                        }
+                    }
+                    await dbContext.SaveChangesAsync();
+                }
+            }
+            return BadRequest(string.Format("Could not delete service with booking Id:{0}", deleteModel.serviceId));
+        }
         private async Task<IActionResult> CreateNewUserAndService(BookFormModel bookFormModel)
         {
             UserModel newUser = new UserModel

@@ -285,7 +285,7 @@
       const today = new Date();
       const currentTime = new Date();
       return {
-        isPrd: true,
+        isPrd: false,
         GetBookingsUrl: "",
         currentYear: today.getFullYear(),
         currentMonth: today.getMonth(),
@@ -355,7 +355,7 @@
       }
     },
     async created() {
-      this.GetBookingsUrl =this.isPrd ? "http://engfuel.com/Bookings" : "https://localhost:7144/Bookings";
+      this.GetBookingsUrl = this.isPrd ? "http://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
     },
     methods: {
       validateFormData(formData) {
