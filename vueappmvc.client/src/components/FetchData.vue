@@ -25,76 +25,85 @@
       </div>
 
       <!-- Display Bookings -->
-      <div class="row justify-content-around mt-4 mb-3">
-        <div class="col-2">
-          <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
-        </div>
-        <div class="col-6 justify-content-center">
-          <h4 class="">{{ currentMonth }}</h4>
-        </div>
-        <div class="col-2">
-          <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-12 col-md-6 justify-content-center">
-          <h5 class="lead">{{ weekRange }}</h5>
-        </div>
-        <button class="btn btn-sm btn-primary" @click="nextWeek()">Next Week</button>
-      </div>
       <!--<div v-if="weekDays && weekDays.length > 0">
     <div v-for="day in weekDays">
       <p class="text-bg-danger">{{ day }}</p>
     </div>
   </div>-->
 
-      <div v-if="users && users.length > 0" class="row g-4 justify-content-center">
-        <div v-for="user in users" :key="user.id" class="col-12 col-md-6 col-lg-4 d-flex align-items-stretch">
-          <div class="pastel-card card h-100 w-100 shadow-sm">
-            <div class="card-body d-flex flex-column rounded-2">
-              <h4 class="card-title mb-2">{{ user.name }}</h4>
-              <p class="card-text mb-1"><strong>Email:</strong> <br /> {{ user.email }}</p>
-              <p class="card-text mb-1"><strong>Phone:</strong> <br /> {{ user.phone }}</p>
-              <p class="card-text">
-                <strong>Address:</strong>
-                <div v-if="!user.street">
-                  N/A
-                </div>
-                <div v-else>
-                  {{ user.street }}, {{ user.city }}, {{ user.state }} - {{ user.zip }}
-                </div>
-              </p>
+    <div v-if="users && users.length > 0" class="row g-4 justify-content-center">
 
-              <!-- Tabs for Services -->
-              <ul class="nav nav-tabs mt-3" :id="'serviceTabs' + user.id" role="tablist">
-                <li class="nav-item" v-for="(service, index) in user.services" :key="service.id" role="presentation">
+      <div class="row justify-content-around mt-4 mb-3">
+        <!--<div class="col-2">
+      <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
+    </div>-->
+        <div class="col-6 justify-content-center">
+          <h4 class="">{{ currentMonth }}</h4>
+        </div>
+        <!--<div class="col-2">
+      <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
+    </div>-->
+      </div>
+
+      <div class="row justify-content-around mb-2">
+        <div class="col-2">
+          <i class="bi bi-caret-left-fill" @click="previousWeek"></i>
+        </div>
+        <div class="col-6 justify-content-center">
+          <h4 class="lead">{{ weekRange }}</h4>
+        </div>
+        <div class="col-2">
+          <i class="bi bi-caret-right-fill" @click="nextWeek"></i>
+        </div>
+      </div>
+
+      <div v-for="user in users" :key="user.id" class="col-12 col-md-6 col-lg-4 d-flex align-items-stretch">
+        <div class="pastel-card card h-100 w-100 shadow-sm">
+          <div class="card-body d-flex flex-column rounded-2">
+            <h4 class="card-title mb-2">{{ user.name }}</h4>
+            <p class="card-text mb-1"><strong>Email:</strong> <br /> {{ user.email }}</p>
+            <p class="card-text mb-1"><strong>Phone:</strong> <br /> {{ user.phone }}</p>
+            <p class="card-text">
+              <strong>Address:</strong>
+              <div v-if="!user.street">
+                N/A
+              </div>
+              <div v-else>
+                {{ user.street }}, {{ user.city }}, {{ user.state }} - {{ user.zip }}
+              </div>
+            </p>
+
+            <!-- Tabs for Services -->
+            <ul class="nav nav-tabs mt-3" :id="'serviceTabs' + user.id" role="tablist">
+              <li class="nav-item" v-for="(service, index) in user.services" :key="service.id" role="presentation">
+                <div v-if="isDateInWeekRange(service.date)">
                   <button class="nav-link p-2 steel-blue-color" style="font-size:0.7rem;" :class="{ active: index === 0 }" :id="'tab' + user.id + '-' + service.id"
                           data-bs-toggle="tab" :data-bs-target="'#content' + user.id + '-' + service.id" type="button" role="tab"
                           :aria-controls="'content' + user.id + '-' + service.id" :aria-selected="index === 0">
                     {{ service.date }}
                   </button>
-                </li>
-              </ul>
+                </div></li>
+            </ul>
 
-              <div class="tab-content mt-2" style="font-size: 0.7rem;" :id="'serviceTabContent' + user.id">
-                <div v-for="(service, index) in user.services" :key="service.id"
-                     class="tab-pane fade" :class="{ 'show active': index === 0 }"
-                     :id="'content' + user.id + '-' + service.id" role="tabpanel"
-                     :aria-labelledby="'tab' + user.id + '-' + service.id">
+            <div class="tab-content mt-2" style="font-size: 0.7rem;" :id="'serviceTabContent' + user.id">
+              <div v-for="(service, index) in user.services" :key="service.id"
+                   class="tab-pane fade" :class="{ 'show active': index === 0 }"
+                   :id="'content' + user.id + '-' + service.id" role="tabpanel"
+                   :aria-labelledby="'tab' + user.id + '-' + service.id">
+                <div v-if="isDateInWeekRange(service.date)">
                   <p class="mb-1"><strong>Service:</strong> {{ service.service }}</p>
                   <p class="mb-1"><strong>Date:</strong> {{ service.date }}</p>
                   <p class="mb-1"><strong>Time:</strong> {{ service.time }}</p>
-
                   <i @click="deleteService(service.id)" class="bi bi-trash3 text-danger mr">Delete</i>
                   <i @click="test" class="bi bi-pencil text-primary">Edit</i>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
       </div>
+
+    </div>
 
       <!-- No Bookings Message -->
       <div v-else-if="!loading" class="text-center text-danger mt-5">
@@ -119,7 +128,7 @@
         loading: false,
         users: null,
         serviceId: null,
-        isPrd: true,
+        isPrd: false,
         startOfWeek: moment().startOf('week').format('DD'),
         endOfWeek: moment().endOf('week').format('DD'),
         GetBookingsUrl: "",
@@ -132,29 +141,69 @@
       this.DeleteBookingsUrl = this.isPrd ? "http://engfuel.com/Bookings/DeleteBooking" : "https://localhost:7144/Bookings/DeleteBooking";
       await this.fetchBookings();
     },
+    watch: {
+      weekRange(newVal, oldVal) {
+        console.log(`Week range changed from ${oldVal} to ${newVal}`);
+        this.getWeekRange();
+      },
+      startOfWeek() {
+        this.updateDisplayedServices();
+      },
+      endOfWeek() {
+        this.updateDisplayedServices();
+      },
+      currentMonth() {
+        this.updateDisplayedServices();
+      }
+    },
     methods: {
+      updateDisplayedServices() {
+        // Force re-evaluation of services by simply triggering Vue's reactivity
+        //TODO read more about this*************************
+        this.users = [...this.users]; // Shallow copy to trigger re-render
+      },
       previousMonth() {
-        this.currentMonth = moment(this.currentMonth, 'MMM YYYY').subtract(1, 'months').startOf('month').format('MMM YYYY')
+        this.currentMonth = moment(this.currentMonth, 'MMM YYYY').subtract(1, 'months').startOf('month').format('MMM YYYY');
       },
       nextMonth() {
-        this.currentMonth = moment(this.currentMonth, 'MMM YYYY').add(1, 'months').startOf('month').format('MMM YYYY')
+        this.currentMonth = moment(this.currentMonth, 'MMM YYYY').add(1, 'months').startOf('month').format('MMM YYYY');
       },
       getWeekRange() {
         this.weekRange = `Week ${this.startOfWeek} - ${this.endOfWeek}`;
       },
+      isDateInWeekRange(serviceDate) {
+        const currentStartDate = moment(this.currentMonth, 'MMM YYYY').date(this.startOfWeek);
+        const currentEndDate = currentStartDate.clone().add(6, 'days');
+
+        const serviceMoment = moment(serviceDate, 'YYYY-MM-DD');
+        return serviceMoment.isBetween(currentStartDate, currentEndDate, null, '[]');
+      },
       nextWeek() {
-        this.weekRange = `Week ${this.startOfWeek} - ${this.endOfWeek}`;
-        var newStartWeek = this.startOfWeek = parseInt(this.startOfWeek) + 7;
-        if (newStartWeek > 31) {
-          this.startOfWeek = newStartWeek - 31;
-        }
+        const currentDate = moment(this.currentMonth, 'MMM YYYY');
+        const currentStartDate = currentDate.date(this.startOfWeek);
 
-        var newEndWeek = this.endOfWeek = parseInt(this.startOfWeek) + 6;
-        if (newEndWeek > 31) {
-          this.endOfWeek = newEndWeek - 31;
-        }
+        const nextStartOfWeek = currentStartDate.clone().add(7, 'days');
+        this.startOfWeek = nextStartOfWeek.date();
+        this.currentMonth = nextStartOfWeek.format('MMM YYYY');
 
-        this.weekRange = `Week ${this.startOfWeek} - ${this.endOfWeek}`;
+        const nextEndOfWeek = nextStartOfWeek.clone().add(6, 'days');
+        this.endOfWeek = nextEndOfWeek.date();
+
+        this.getWeekRange(); // Update week range display
+      },
+
+      previousWeek() {
+        const currentDate = moment(this.currentMonth, 'MMM YYYY');
+        const currentStartDate = currentDate.date(this.startOfWeek);
+
+        const prevStartOfWeek = currentStartDate.clone().subtract(7, 'days');
+        this.startOfWeek = prevStartOfWeek.date();
+        this.currentMonth = prevStartOfWeek.format('MMM YYYY');
+
+        const prevEndOfWeek = prevStartOfWeek.clone().add(6, 'days');
+        this.endOfWeek = prevEndOfWeek.date();
+
+        this.getWeekRange(); // Update week range display
       },
       async fetchBookings() {
         this.users = null;
@@ -162,6 +211,7 @@
         axios.get(this.GetBookingsUrl)
           .then((response) => {
             this.users = response.data.users;
+/*            console.log(this.users);*/
             this.loading = false;
           });
       },
