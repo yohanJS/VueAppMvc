@@ -1,38 +1,38 @@
 <template>
   <header class="mobile-nav">
-    <ul class="nav nav-tabs justify-content-around p-2 fixed-bottom bg-steel m-1 rounded-2 shadow-lg">
+    <ul class="nav nav-tabs justify-content-around p-0 fixed-bottom orange-bg rounded-1">
       <li class="nav-item">
-        <router-link to="/" class="nav-link p-0">
+        <router-link to="/" class="nav-link p-0 text-white">
           <i class="bi bi-house m-0"></i>
           Home
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/UpcomingBookings" class="nav-link p-0">
+        <router-link to="/UpcomingBookings" class="nav-link p-0 text-white">
           <i class="bi bi-calendar-check m-0"></i>
           Bookings
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/BookingForm" class="nav-link p-0">
+        <router-link to="/BookingForm" class="nav-link p-0 text-white">
           <i class="bi bi-pencil-square m-0"></i>
           Book
         </router-link>
       </li>
       <li class="nav-item" v-if="!isLoggedIn">
-        <router-link to="/Login" class="nav-link p-0">
+        <router-link to="/Login" class="nav-link p-0 text-white">
           <i class="bi bi-person m-0"></i>
           Login
         </router-link>
       </li>
       <li class="nav-item" v-if="!isLoggedIn">
-        <router-link to="/Register" class="nav-link p-0">
+        <router-link to="/Register" class="nav-link p-0 text-white">
           <i class="bi bi-person-add m-0"></i>
           Register
         </router-link>
       </li>
       <li class="nav-item" v-if="isLoggedIn" @click="logout">
-        <router-link to="/Login" class="nav-link p-0">
+        <router-link to="/Login" class="nav-link p-0 text-white">
           <i class="bi bi-escape m-0"></i>
           Log out
         </router-link>
@@ -55,6 +55,7 @@
     },
     methods: {
       async logout() {
+        window.location.href = "http://engfuel.com";
         // Set a flag in localStorage to indicate successful login
         localStorage.setItem("isLoggedIn", "false");
         this.isLoggedIn = false;
@@ -65,8 +66,8 @@
 
 <style scoped>
   /* Steel blue background for the nav bar */
-  .bg-steel {
-    background-color: #f8b195;
+  .orange-bg {
+    background-color: #F28C28;
   }
 
   header {
@@ -97,12 +98,12 @@
     transition: all 0.3s ease;
   }
 
-  .nav-link:hover {
-    color: #ffffff;
-    background-color: transparent;
-  }
+    .nav-link:hover {
+      color: #3f72af !important;
+      background-color: transparent;
+    }
   .router-link-active {
-      color: #ffffff;
+    color: #3f72af !important;
   }
   /* Icons styling */
   .mobile-nav .nav-link i {

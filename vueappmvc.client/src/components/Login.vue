@@ -30,6 +30,7 @@
 
 <script>
   import axios from "axios";
+  import isDev from './util.js';
 
   export default {
     data() {
@@ -37,13 +38,17 @@
         email: "",
         password: "",
         message: "",
+        isPrd: true,
+        LoginUrl: "",
       };
     },
     methods: {
+      async created() {
+        this.LoginUrl = this.isPrd ? "http://engfuel.com/Login" : "https://localhost:7144/Login";
+      },
       async login() {
         try {
-          const response = await axios.post("https://localhost:7144/Account/login", {
-          //const response = await axios.post("http://engfuel.com/Account/login", {
+          const response = await axios.post(this.LoginUrl, {
             email: this.email,
             password: this.password,
           });
@@ -53,8 +58,7 @@
           localStorage.setItem("isLoggedIn", "true");
 
           // Redirect to the home page or any desired page
-          window.location.href = "http://engfuel.com";
-          //window.location.href = "https://localhost:54554";
+          window.location.href = isDev() ? "http://engfuel.com" : "https://localhost:54554 ";
         } catch (error) {
           this.message = error.response.data.message;
         }

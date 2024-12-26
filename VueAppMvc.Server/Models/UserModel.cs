@@ -1,11 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace VueAppMvc.Server.Models
 {
     public class UserModel
     {
         public int Id { get; set; }
+
+        public int ServiceId { get; set; }
 
         [MaxLength(100)] // Limit Name to 100 characters
         public string Name { get; set; } = string.Empty;
@@ -28,6 +31,9 @@ namespace VueAppMvc.Server.Models
         [MaxLength(10)] // Limit Zip to 10 characters
         public string Zip { get; set; } = string.Empty;
 
-        public List<ServiceAppModel> Services { get; set; } = new List<ServiceAppModel>();
+        // Navigation property
+        [ForeignKey("ServiceId")]
+        [JsonIgnore]
+        public ServiceAppModel? Services { get; set; }
     }
 }

@@ -5,6 +5,12 @@
   font-weight: normal;
 }
 
+body {
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    width: 100vw;
+}
 a,
 .green {
   text-decoration: none;

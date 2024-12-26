@@ -243,14 +243,9 @@ namespace VueAppMvc.Server.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("serviceApps");
+                    b.ToTable("services");
                 });
 
             modelBuilder.Entity("VueAppMvc.Server.Models.UserModel", b =>
@@ -281,6 +276,9 @@ namespace VueAppMvc.Server.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
                     b.Property<string>("State")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -297,6 +295,8 @@ namespace VueAppMvc.Server.Migrations
                         .HasColumnType("nvarchar(10)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("users");
                 });
@@ -352,20 +352,20 @@ namespace VueAppMvc.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VueAppMvc.Server.Models.ServiceAppModel", b =>
+            modelBuilder.Entity("VueAppMvc.Server.Models.UserModel", b =>
                 {
-                    b.HasOne("VueAppMvc.Server.Models.UserModel", "User")
-                        .WithMany("Services")
-                        .HasForeignKey("UserId")
+                    b.HasOne("VueAppMvc.Server.Models.ServiceAppModel", "Services")
+                        .WithMany("Users")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Services");
                 });
 
-            modelBuilder.Entity("VueAppMvc.Server.Models.UserModel", b =>
+            modelBuilder.Entity("VueAppMvc.Server.Models.ServiceAppModel", b =>
                 {
-                    b.Navigation("Services");
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
