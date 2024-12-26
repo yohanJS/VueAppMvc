@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 string? localDbConnectionString = builder.Configuration.GetConnectionString("defaultConnectionString");
 string? prdDbConnectionString = Environment.GetEnvironmentVariable("BOOKING_CONNECTION_STRING");
 
-string? connectionString = string.IsNullOrEmpty(prdDbConnectionString) ? localDbConnectionString : prdDbConnectionString ;
+string? connectionString = string.IsNullOrEmpty(prdDbConnectionString) ? localDbConnectionString : prdDbConnectionString;
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));

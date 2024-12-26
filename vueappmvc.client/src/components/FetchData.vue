@@ -1,19 +1,18 @@
 <template>
-  <div class="container mb-5">
-    <!-- Bookings Section -->
-    <div class="mt-3">
-      <!-- Button to Fetch Bookings -->
-      <div class="text-end">
-        <button @click="fetchBookings"
-                class="btn rounded-pill py-2 fw-bold"
-                style="background-color: #f8b195; font-size: 0.8rem; ">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#3f72af" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+  <div class="container py-2 mb-5 text-white min-vh-100">
+    <!-- services Section -->
+    <div class="mt-3 mb-5">
+      <!-- Button to Fetch services -->
+      <!--<div class="text-end">
+        <button @click="fetchServices"
+                class="btn btn-small rounded-pill py-2 fw-bold"
+                style="background-color: #f8b195; font-size: 0.8rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ffffff" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
             <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
           </svg>
         </button>
-      </div>
-
+      </div>-->
       <!-- Loading State with Placeholder Cards -->
       <div v-if="loading" class="mt-4">
         <div class="skeleton-card mb-3" v-for="n in 3" :key="n">
@@ -24,91 +23,193 @@
         </div>
       </div>
 
-      <!-- Display Bookings -->
-      <!--<div v-if="weekDays && weekDays.length > 0">
-    <div v-for="day in weekDays">
-      <p class="text-bg-danger">{{ day }}</p>
-    </div>
-  </div>-->
-
-    <div v-if="users && users.length > 0" class="row g-4 justify-content-center">
-
-      <div class="row justify-content-around mt-4 mb-3">
-        <!--<div class="col-2">
-      <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
-    </div>-->
-        <div class="col-6 justify-content-center">
-          <h4 class="">{{ currentMonth }}</h4>
+      <div v-if="services !== null">
+        <!-- Month and Year Section -->
+        <div class="row justify-content-between align-items-center mt-4 mb-3">
+          <!--<div class="col-auto">
+            <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
+          </div>-->
+          <div class="col text-center">
+            <h4>{{ currentMonth }}</h4>
+          </div>
+          <!--<div class="col-auto">
+            <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
+          </div>-->
         </div>
-        <!--<div class="col-2">
-      <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
-    </div>-->
+
+        <!-- Week Range Section -->
+        <div class="row justify-content-between align-items-center mb-5">
+          <div class="col-auto">
+            <i class="bi bi-caret-left-fill orange-bg p-1 rounded-5" @click="previousWeek"></i>
+          </div>
+          <div class="col text-center">
+            <p class="fw-bold orange-bg p-1 rounded-5 m-0">{{ weekRange }}</p>
+          </div>
+          <div class="col-auto">
+            <i class="bi bi-caret-right-fill orange-bg p-1 rounded-5" @click="nextWeek"></i>
+          </div>
+        </div>
+
+        <div v-for="service in services" class="row">
+          <p>{{ service.date }}</p>
+          <div class="col-3 col-md-6">
+            <p>{{ service.time }}</p>
+          </div>
+
+          <div class="col-8 col-md-6 details-card rounded-3" v-for="user in service.users">
+            <h5>{{ user.name }}</h5>
+            <p class="mb-1">{{ service.service }}</p>
+            <p>{{ user.phone }}</p>
+
+            <!--Collapse Button -->
+            <button class="btn btn-sm w-100 btn-details mb-2" type="button"
+                    :data-bs-toggle="'collapse'" :data-bs-target="'#collapse' + user.id"
+                    :aria-expanded="false" :aria-controls="'collapse' + user.id">
+              <i class="bi bi-chevron-double-down"></i> Contact Info
+            </button>
+            <!--Collapsible Section-->
+            <div :id="'collapse' + user.id" class="collapse">
+              <p class="card-text mb-1">
+                <strong>
+                  Email: 
+                </strong>
+                <a href="mailto:'user.email'" class="text-decoration-none text-white-50">
+                  {{ user.email }}
+                  <i class="bi bi-envelope-plus"></i>
+                </a>
+              </p>
+              <p class="card-text mb-1">
+                <strong>
+                  Phone:
+                </strong>
+                <a href="tel:+'user.phone'" class="text-decoration-none text-white-50">
+                  {{ user.phone }}
+                  <i class="bi bi-telephone-outbound"></i>
+                </a>
+              </p>
+              <p class="card-text">
+                <strong>Address:</strong>
+                <div v-if="!user.street">N/A</div>
+                <div v-else>{{ user.street }}, {{ user.city }}, {{ user.state }} - {{ user.zip }}</div>
+              </p>
+            </div>
+          </div>
+          <hr class="border-2 mt-5 w-75 m-4">
+        </div>
       </div>
 
-      <div class="row justify-content-around mb-2">
-        <div class="col-2">
-          <i class="bi bi-caret-left-fill" @click="previousWeek"></i>
+      <!-- Display services -->
+      <!--<div v-if="services.length > 0" class="row g-3 justify-content-center">-->
+      <!-- Month and Year Section -->
+      <!--<div class="row justify-content-between align-items-center mt-4 mb-3">-->
+      <!--<div class="col-auto">
+        <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
+      </div>-->
+      <!--<div class="col text-center">
+        <h4>{{ currentMonth }}</h4>
+      </div>-->
+      <!--<div class="col-auto">
+        <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
+      </div>-->
+      <!--</div>-->
+      <!-- Week Range Section -->
+      <!--<div class="row justify-content-between align-items-center mb-3">
+        <div class="col-auto">
+          <i class="bi bi-caret-left-fill orange-bg p-1 rounded-5" @click="previousWeek"></i>
         </div>
-        <div class="col-6 justify-content-center">
-          <h4 class="lead">{{ weekRange }}</h4>
+        <div class="col text-center">
+          <p class="fw-bold orange-bg p-1 rounded-5 m-0">{{ weekRange }}</p>
         </div>
-        <div class="col-2">
-          <i class="bi bi-caret-right-fill" @click="nextWeek"></i>
+        <div class="col-auto">
+          <i class="bi bi-caret-right-fill orange-bg p-1 rounded-5" @click="nextWeek"></i>
         </div>
       </div>
 
-      <div v-for="user in users" :key="user.id" class="col-12 col-md-6 col-lg-4 d-flex align-items-stretch">
-        <div class="pastel-card card h-100 w-100 shadow-sm">
-          <div class="card-body d-flex flex-column rounded-2">
-            <h4 class="card-title mb-2">{{ user.name }}</h4>
-            <p class="card-text mb-1"><strong>Email:</strong> <br /> {{ user.email }}</p>
-            <p class="card-text mb-1"><strong>Phone:</strong> <br /> {{ user.phone }}</p>
-            <p class="card-text">
-              <strong>Address:</strong>
-              <div v-if="!user.street">
-                N/A
-              </div>
-              <div v-else>
-                {{ user.street }}, {{ user.city }}, {{ user.state }} - {{ user.zip }}
-              </div>
-            </p>
-
-            <!-- Tabs for Services -->
-            <ul class="nav nav-tabs mt-3" :id="'serviceTabs' + user.id" role="tablist">
-              <li class="nav-item" v-for="(service, index) in user.services" :key="service.id" role="presentation">
+      <div class="row">
+        {{ isTodayBooking() }}
+      </div>-->
+      <!-- Services and Clients -->
+      <!--<div v-for="service in services" :key="booking.id" class="col-12 col-md-6 col-lg-4">
+      {{ service.date }}-->
+      <!--<div v-if="isbookingBookedInWeek(booking)" class="card pastel-card h-100 shadow-sm">
+      <div class="card-body d-flex flex-column rounded-2 text-dark">-->
+      <!--Collapse Button-->
+      <!--<button class="btn btn-sm btn-details mb-2" type="button"
+              :data-bs-toggle="'collapse'" :data-bs-target="'#collapse' + booking.id"
+              :aria-expanded="false" :aria-controls="'collapse' + booking.id">
+        <i class="bi bi-chevron-double-down"></i> Contact Info
+      </button>-->
+      <!--Collapsible Section-->
+      <!--<div :id="'collapse' + booking.id" class="collapse">
+        <p class="card-text mb-1">
+          <strong>
+            Email:
+          </strong>
+          <a href="mailto:'booking.email'" class="text-decoration-none text-info-emphasis">
+            {{ booking.email }}
+            <i class="bi bi-envelope-plus"></i>
+          </a>
+        </p>
+        <p class="card-text mb-1">
+          <strong>
+            Phone:
+          </strong>
+          <a href="tel:+'booking.phone'" class="text-decoration-none text-info-emphasis">
+            {{ booking.phone }}
+            <i class="bi bi-telephone-outbound"></i>
+          </a>
+        </p>
+        <p class="card-text">
+          <strong>Address:</strong>
+          <div v-if="!booking.street">N/A</div>
+          <div v-else>{{ booking.street }}, {{ booking.city }}, {{ booking.state }} - {{ booking.zip }}</div>
+        </p>
+      </div>-->
+      <!--Tabs for Services-->
+      <!--<div>
+            <ul class="nav nav-tabs mt-3" :id="'serviceTabs' + booking.id" role="tablist">
+              <li class="nav-item" v-for="(service, index) in booking.services" :key="service.id" role="presentation">
                 <div v-if="isDateInWeekRange(service.date)">
-                  <button class="nav-link p-2 steel-blue-color" style="font-size:0.7rem;" :class="{ active: index === 0 }" :id="'tab' + user.id + '-' + service.id"
-                          data-bs-toggle="tab" :data-bs-target="'#content' + user.id + '-' + service.id" type="button" role="tab"
-                          :aria-controls="'content' + user.id + '-' + service.id" :aria-selected="index === 0">
-                    {{ service.date }}
+                  <button class="nav-link p-2 border-0 text-dark-emphasis"
+                          :class="{ active: index === 0 }"
+                          :id="'tab' + booking.id + '-' + service.id"
+                          data-bs-toggle="tab"
+                          :data-bs-target="'#content' + booking.id + '-' + service.id"
+                          type="button"
+                          role="tab"
+                          :aria-controls="'content' + booking.id + '-' + service.id"
+                          :aria-selected="index === 0">
+                    {{ getDay(service.date) }}
+                    <br />
+                    <span style="font-size: 0.6rem;" class="fst-italic">{{ service.date }}</span>
                   </button>
-                </div></li>
+                </div>
+              </li>
             </ul>
 
-            <div class="tab-content mt-2" style="font-size: 0.7rem;" :id="'serviceTabContent' + user.id">
-              <div v-for="(service, index) in user.services" :key="service.id"
-                   class="tab-pane fade" :class="{ 'show active': index === 0 }"
-                   :id="'content' + user.id + '-' + service.id" role="tabpanel"
-                   :aria-labelledby="'tab' + user.id + '-' + service.id">
+            <div class="tab-content p-3 bg-white rounded-bottom-2" :id="'serviceTabContent' + booking.id">
+              <div v-for="(service, index) in booking.services"
+                   :key="service.id"
+                   class="tab-pane fade"
+                   :class="{ 'show active': index === 0 }"
+                   :id="'content' + booking.id + '-' + service.id"
+                   role="tabpanel"
+                   :aria-labelledby="'tab' + booking.id + '-' + service.id">
                 <div v-if="isDateInWeekRange(service.date)">
                   <p class="mb-1"><strong>Service:</strong> {{ service.service }}</p>
                   <p class="mb-1"><strong>Date:</strong> {{ service.date }}</p>
                   <p class="mb-1"><strong>Time:</strong> {{ service.time }}</p>
-                  <i @click="deleteService(service.id)" class="bi bi-trash3 text-danger mr">Delete</i>
+                  <i @click="deleteService(service.id)" class="bi bi-trash3 text-danger me-2">Delete</i>
                   <i @click="test" class="bi bi-pencil text-primary">Edit</i>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div>-->
+      <!--</div>
 
-    </div>
-
-      <!-- No Bookings Message -->
-      <div v-else-if="!loading" class="text-center text-danger mt-5">
-        <p>No bookings available at the moment. Be the first to book!</p>
-      </div>
+      </div>-->
     </div>
   </div>
 </template>
@@ -120,30 +221,28 @@
   export default {
     data() {
       return {
-        today: moment().format('YYYY-MM-DD'),
-        currentMonth: moment().startOf('month').format('MMM YYYY'),
-        weekDays: moment.weekdays(), // ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-        // Format the week range
+        today: moment().format('MMM DD'),
+        currentMonth: moment().format('MMMM Y'),
+        weekDays: moment.weekdays(),
         weekRange: "",
         loading: false,
-        users: null,
+        services: null,
         serviceId: null,
-        isPrd: false,
+        isPrd: true,
         startOfWeek: moment().startOf('week').format('DD'),
         endOfWeek: moment().endOf('week').format('DD'),
-        GetBookingsUrl: "",
-        DeleteBookingsUrl: "",
+        GetservicesUrl: "",
+        DeleteservicesUrl: "",
       };
     },
     async created() {
       this.getWeekRange();
-      this.GetBookingsUrl = this.isPrd ? "http://engfuel.com/Bookings/GetAllBookings" : "https://localhost:7144/Bookings/GetAllBookings";
-      this.DeleteBookingsUrl = this.isPrd ? "http://engfuel.com/Bookings/DeleteBooking" : "https://localhost:7144/Bookings/DeleteBooking";
-      await this.fetchBookings();
+      this.GetservicesUrl = this.isPrd ? "http://engfuel.com/Bookings/GetAllBookings" : "https://localhost:7144/Bookings/GetAllBookings";
+      this.DeleteservicesUrl = this.isPrd ? "http://engfuel.com/Bookings/DeleteBooking" : "https://localhost:7144/Bookings/DeleteBooking";
+      await this.fetchServices();
     },
     watch: {
       weekRange(newVal, oldVal) {
-        console.log(`Week range changed from ${oldVal} to ${newVal}`);
         this.getWeekRange();
       },
       startOfWeek() {
@@ -157,10 +256,31 @@
       }
     },
     methods: {
+      isTodayBooking() {
+        const today = moment(); // Get today's date
+        const endOfWeek = moment().endOf('week'); // Get the end of the current week
+        const days = [];
+
+        // Loop from today to the end of the week
+        while (today.isSameOrBefore(endOfWeek, 'day')) {
+          days.push(today.format('dddd')); // Add day of the week (e.g., Monday, Tuesday) to the list
+          today.add(1, 'day'); // Move to the next day
+        }
+
+        for (var i = 0; i < days.length; i++) {
+          if (days[i] === moment().format('dddd')) {
+            return moment().format('MMM YY') + " Today";
+          }
+          return day
+        }
+      },
       updateDisplayedServices() {
         // Force re-evaluation of services by simply triggering Vue's reactivity
         //TODO read more about this*************************
-        this.users = [...this.users]; // Shallow copy to trigger re-render
+        this.services = [...this.services]; // Shallow copy to trigger re-render
+      },
+      getDay(date) {
+        return moment(new Date(date)).format('dddd');
       },
       previousMonth() {
         this.currentMonth = moment(this.currentMonth, 'MMM YYYY').subtract(1, 'months').startOf('month').format('MMM YYYY');
@@ -177,6 +297,16 @@
 
         const serviceMoment = moment(serviceDate, 'YYYY-MM-DD');
         return serviceMoment.isBetween(currentStartDate, currentEndDate, null, '[]');
+      },
+      isbookingBookedInWeek(booking) {
+        if (booking.services.length > 0) {
+          for (let i = 0; i < booking.services.length; i++) {
+            if (this.isDateInWeekRange(booking.services[i].date)) {
+              return true;
+            }
+          }
+        }
+        return false;
       },
       nextWeek() {
         const currentDate = moment(this.currentMonth, 'MMM YYYY');
@@ -205,28 +335,29 @@
 
         this.getWeekRange(); // Update week range display
       },
-      async fetchBookings() {
-        this.users = null;
+      async fetchServices() {
+        this.services = null;
         this.loading = true;
-        axios.get(this.GetBookingsUrl)
+        axios.get(this.GetservicesUrl)
           .then((response) => {
-            this.users = response.data.users;
-/*            console.log(this.users);*/
+            this.services = response.data.services;
+            console.log(response.data);
+            console.log(this.services);
             this.loading = false;
           });
       },
       async deleteService(id) {
         try {
-          const response = await axios.post(this.DeleteBookingsUrl,
+          const response = await axios.post(this.DeleteservicesUrl,
             {
               serviceId: id,
             }
           );
         } catch (error) {
-          console.error("Error deleting bookings:", error);
+          console.error("Error deleting services:", error);
         } finally {
           this.loading = false;
-          this.fetchBookings();
+          this.fetchServices();
         }
       },
     },
@@ -234,6 +365,9 @@
 </script>
 
 <style scoped>
+  .container {
+    background-color: #001524;
+  }
   /* Loading Skeleton */
   .skeleton-card {
     background-color: #e0e0e0;
@@ -258,7 +392,7 @@
     border-radius: 4px;
   }
 
-    .skeleton-line.short {
+   .skeleton-line.short {
       width: 70%;
     }
 
@@ -275,24 +409,30 @@
       background-color: #e0e0e0;
     }
   }
-  /* General body styling for consistency */
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
-    margin: 0;
-    padding: 0;
+
+  .orange-bg {
+    background-color: #F28C28;
   }
 
-  /* Container for overall layout */
-  .row {
-    margin: 0 auto;
-    max-width: 1200px;
+  .btn-details {
+    background-color: #F28C28;
+    color: #ffffff;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
   }
 
+    .btn-details:active {
+      color: #192c39;
+    }
+  .details-card {
+      font-size: 0.8rem;
+      background-color: #003357;
+      padding: 15px;
+      box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
+  }
   /* Modern pastel card styling */
   .pastel-card {
-    background: linear-gradient(145deg, #fdf7ff, #f5f0fa); /* Soft gradient */
+    background-color: #192c39; /* Soft gradient */
     border-radius: 16px;
     border: none;
     box-shadow: 0 6px 15px rgba(200, 200, 200, 0.2);
@@ -310,7 +450,8 @@
     /* Card body styling */
     .pastel-card .card-body {
       padding: 1rem;
-      background-color: #ffffff;
+      font-size: 0.8rem;
+      background-color: #e0e0e0;
       flex: 1; /* Make the body fill available space */
       display: flex;
       flex-direction: column;
@@ -343,21 +484,11 @@
       background-color: #e5e7ff; /* Slightly darker pastel blue on hover */
     }
 
-  /* Strong tag for emphasis */
-  .pastel-card strong {
-    color: #3f72af;
-  }
-
   /* Centered grid layout */
   .justify-content-center {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-  }
-
-  /* Ensure all columns stretch equally */
-  .row > div {
-    display: flex;
   }
 
   .mr {

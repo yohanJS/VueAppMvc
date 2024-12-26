@@ -2,6 +2,6 @@
 {
     public class BookingModel
     {
-        public List<UserModel>? Users { get; set; }
+        public List<ServiceAppModel>? Services { get; set; }
     }
 }

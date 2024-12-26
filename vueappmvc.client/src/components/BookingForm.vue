@@ -1,6 +1,6 @@
 <!--Template-->
 <template>
-  <div class="container py-4 mb-5">
+  <div class="container py-2 p-2 mb-5 text-dark min-vh-100">
     <div class="text-center mb-4 mt-2">
       <div class="px-5" role="group" aria-label="First group">
         <button @click="goToStep(1)" id="step1" type="button" class="btn btn-primary m-1 rounded-5 my-bg border-0 small-btn fw-bold steel-blue-color">1</button>
@@ -25,7 +25,7 @@
       <!-- Step 1: Booking Service -->
       <div v-if="step === 1">
         <p class="text-center mb-1 steel-blue-color">Quote service</p>
-        <div class="d-flex flex-column gap-3">
+        <div class="d-flex flex-column gap-3 mb-5">
           <div v-for="service in services"
                :key="service.id"
                class="service-card p-2 rounded-2 shadow-lg text-start"
@@ -33,7 +33,7 @@
             <div class="">
               <h4 class="mb-1 card-header">{{ service.name }}</h4>
             </div>
-            <p class="mb-2" style="font-size: 0.7rem;">{{ service.description }}</p>
+            <p class="mb-2" style="font-size: 0.8rem;">{{ service.description }}</p>
             <div class="text-end">
               <i class="bi bi-arrow-right-circle steel-blue-color"></i>
             </div>
@@ -118,7 +118,7 @@
       <div v-if="step === 5">
         <p class="text-center mt-4 mb-2 steel-blue-color">Enter personal details</p>
         <!--In Person-->
-        <div v-if="isInPerson === true" class="p-2 rounded-2 shadow-sm bg-white shadow-lg">
+        <div v-if="isInPerson === true" class="p-2 mb-5 rounded-2 shadow-sm bg-white shadow-lg">
 
           <div class="mb-2">
             <label for="name" class="form-label text-dark">Name</label>
@@ -202,7 +202,7 @@
           </div>
         </div>
         <!--Online/Phone-->
-        <div v-if="isInPerson === false" class=" p-2 rounded-2 shadow-sm bg-white shadow-lg">
+        <div v-if="isInPerson === false" class="p-2 mb-5 rounded-2 shadow-sm bg-white shadow-lg">
 
           <div class="mb-2">
             <label for="name" class="form-label text-dark">Name</label>
@@ -252,12 +252,13 @@
     <div>
       <div class="modal fade" id="submissionModal" tabindex="-1" aria-labelledby="submissionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content modern-modal rounded-3 border-0 shadow-lg">
+          <div class="modal-content modern-modal rounded-2 border-0 shadow-lg">
             <div class="modal-header border-0">
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center p-4">
-              <h5 class="modal-title fw-bold mb-3">Thank You!</h5>
+              <h5 class="modal-title fw-bold mb-1">Thank You!</h5>
+              <i class="bi bi-emoji-smile-fill"></i>
               <p>Your quote appointment has been successfully scheduled. We’ll be in touch soon!</p>
             </div>
           </div>
@@ -285,7 +286,7 @@
       const today = new Date();
       const currentTime = new Date();
       return {
-        isPrd: false,
+        isPrd: true,
         GetBookingsUrl: "",
         currentYear: today.getFullYear(),
         currentMonth: today.getMonth(),
@@ -564,7 +565,7 @@
   }
 
   .service-card {
-    background-color: #ffffff;
+    background-color: #e0e0e0;
   }
 
   .card-header {
@@ -581,9 +582,7 @@
   .container {
     max-width: 600px;
     margin: 0 auto;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
+    background-color: #001524;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
@@ -676,11 +675,11 @@
   .time-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3 boxes per row */
-    gap: 7px;
+    gap: 5px;
   }
 
   .time-box {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     text-align: center;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -706,8 +705,8 @@
     }
   /*MODAL*/
   .modern-modal {
-    background: linear-gradient(135deg, #228B22, #1B5E20);
-    color: #fff;
+      background-color: #001524;
+      color: #fff;
   }
 
   .modal-title {
