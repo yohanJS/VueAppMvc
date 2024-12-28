@@ -50,51 +50,49 @@
           </div>
         </div>
 
-        <div v-for="service in services" class="row">
-          <p>{{ service.date }}</p>
-          <div class="col-3 col-md-6">
-            <p>{{ service.time }}</p>
-          </div>
-
-          <div class="col-8 col-md-6 details-card rounded-3" v-for="user in service.users">
-            <h5>{{ user.name }}</h5>
-            <p class="mb-1">{{ service.service }}</p>
-            <p>{{ user.phone }}</p>
-
-            <!--Collapse Button -->
-            <button class="btn btn-sm w-100 btn-details mb-2" type="button"
-                    :data-bs-toggle="'collapse'" :data-bs-target="'#collapse' + user.id"
-                    :aria-expanded="false" :aria-controls="'collapse' + user.id">
-              <i class="bi bi-chevron-double-down"></i> Contact Info
-            </button>
-            <!--Collapsible Section-->
-            <div :id="'collapse' + user.id" class="collapse">
-              <p class="card-text mb-1">
-                <strong>
-                  Email: 
-                </strong>
-                <a href="mailto:'user.email'" class="text-decoration-none text-white-50">
-                  {{ user.email }}
-                  <i class="bi bi-envelope-plus"></i>
-                </a>
-              </p>
-              <p class="card-text mb-1">
-                <strong>
-                  Phone:
-                </strong>
-                <a href="tel:+'user.phone'" class="text-decoration-none text-white-50">
-                  {{ user.phone }}
-                  <i class="bi bi-telephone-outbound"></i>
-                </a>
-              </p>
-              <p class="card-text">
-                <strong>Address:</strong>
-                <div v-if="!user.street">N/A</div>
-                <div v-else>{{ user.street }}, {{ user.city }}, {{ user.state }} - {{ user.zip }}</div>
-              </p>
+        <div v-for="record in services">
+          <p v-if="isDateInWeekRange(record.serviceDate)" class="mb-1 fs-5 orange-txt">{{ formatMonthAndDay(record.serviceDate) }}</p>
+          <div>
+            <div class="row" v-if="isDateInWeekRange(record.serviceDate)" v-for="service in record.services">
+              <div class="col-12 mb-2">
+                <p class="mb-1">{{ service.time }}</p>
+              </div>
+              <div>
+                <div class="col-12 m-0 details-card mb-5 rounded-3">
+                  <p class="mb-0"><span class="fw-bold">Client: </span>{{ service.name }}</p>
+                  <p class="mb-0"><span class="fw-bold">Service requested: </span>{{ service.serviceName }}</p>
+                  <p class="m-0 mt-3">Contact Details</p>
+                  <p class="card-text mb-1">
+                    <strong>
+                      Email:
+                    </strong>
+                    <a href="mailto:'user.email'" class="text-decoration-none text-white-50">
+                      {{ service.email }}
+                      <i class="bi bi-envelope-plus"></i>
+                    </a>
+                  </p>
+                  <p class="card-text mb-1">
+                    <strong>
+                      Phone:
+                    </strong>
+                    <a href="tel:+'user.phone'" class="text-decoration-none text-white-50">
+                      {{ service.phone }}
+                      <i class="bi bi-telephone-outbound"></i>
+                    </a>
+                  </p>
+                  <p class="card-text">
+                    <strong>Address:</strong>
+                    <div>{{ service.address }}</div>
+                  </p>
+                  <div>
+                    <i @click="deleteService(service.serviceId)" class="bi bi-trash3 text-danger me-2">Delete</i>
+                    <i @click="test" class="bi bi-pencil text-primary">Edit</i>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <hr class="border-2 mt-5 w-75 m-4">
+          <hr v-if="isDateInWeekRange(record.serviceDate)" class="border-2 mt-5 w-75 m-4">
         </div>
       </div>
 
@@ -256,6 +254,13 @@
       }
     },
     methods: {
+      formatMonthAndDay(serviceDate) {
+        const today = moment().format("YYYY/MM/DD"); // Get today's date in the same format as serviceDate
+        if (moment(serviceDate, "YYYY/MM/DD").isSame(today, 'day')) {
+          return moment(serviceDate, "YYYY/MM/DD").format("MMM D") + " Today";
+        }
+        return moment(serviceDate, "YYYY/MM/DD").format("MMM D");
+      },
       isTodayBooking() {
         const today = moment(); // Get today's date
         const endOfWeek = moment().endOf('week'); // Get the end of the current week
@@ -340,9 +345,7 @@
         this.loading = true;
         axios.get(this.GetservicesUrl)
           .then((response) => {
-            this.services = response.data.services;
-            console.log(response.data);
-            console.log(this.services);
+            this.services = response.data;
             this.loading = false;
           });
       },
@@ -354,7 +357,7 @@
             }
           );
         } catch (error) {
-          console.error("Error deleting services:", error);
+          alert("Error deleting services:", error);
         } finally {
           this.loading = false;
           this.fetchServices();
@@ -412,6 +415,9 @@
 
   .orange-bg {
     background-color: #F28C28;
+  }
+  .orange-txt {
+    color: #F28C28;
   }
 
   .btn-details {

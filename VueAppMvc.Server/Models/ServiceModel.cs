@@ -1,10 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace VueAppMvc.Server.Models
 {
-    public class ServiceAppModel
+    public class ServiceModel
     {
         public int Id { get; set; }
+
+        // Foreign key to User
+        public int UserId { get; set; }
 
         [MaxLength(50)] // Limit Service to 50 characters
         public string Service { get; set; } = string.Empty;
@@ -15,6 +20,9 @@ namespace VueAppMvc.Server.Models
         [MaxLength(8)] // Limit Time to 8 characters (e.g., "HH:mm AM/PM")
         public string Time { get; set; } = string.Empty;
 
-        public List<UserModel> Users { get; set; } = new List<UserModel>();
+        // Navigation property
+        [ForeignKey("UserId")]
+        [JsonIgnore]
+        public UserModel? User { get; set; }
     }
 }

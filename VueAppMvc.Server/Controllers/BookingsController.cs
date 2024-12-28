@@ -23,35 +23,55 @@ namespace VueAppMvc.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetAllBookings")]
-        public BookingModel Get()
+        public List<ResponseDataModel> Get()
         {
-            BookingModel Services = new BookingModel();
+            List<ResponseDataModel> response = new List<ResponseDataModel>();
             try
             {
                 if (_dbContext != null)
                 {
                     using (_dbContext)
                     {
+                        // Users in db
                         List<UserModel> users = new List<UserModel>();
-                        List<ServiceAppModel> services = new List<ServiceAppModel>();
+                        // Services in db
+                        List<ServiceModel> services = new List<ServiceModel>();
 
                         if (_dbContext.users != null && _dbContext.services != null)
                         {
-                            users = _dbContext.users.FromSql($"EXEC GetUsers").ToList();
-                            services = _dbContext.services.FromSql($"EXEC GetServices").ToList();
-                            Services.Services = services;
+                            users = _dbContext.users.ToList();
+                            services = _dbContext.services.ToList();
+
+                            // Group services by date
+                            var groupedServicesByDate = services.GroupBy(s => s.Date)
+                                .Select(group => new ResponseDataModel
+                                {
+                                    ServiceDate = group.Key,
+                                    Services = group.Select(s =>
+                                    {
+                                        var user = users.FirstOrDefault(u => u.Id.Equals(s.UserId));
+                                        return new Service
+                                        {
+                                            Time = s.Time,
+                                            Name = user != null ? user.Name : string.Empty,
+                                            ServiceId = s.Id,
+                                            ServiceName = s.Service,
+                                            Phone = user != null ? user.Phone : string.Empty,
+                                            Email = user != null ? user.Email : string.Empty,
+                                            Address = user != null ? user.Street + user.City + user.State + user.Zip : string.Empty,
+                                        };
+                                    }).ToList()
+                                }).ToList();
+                            response = groupedServicesByDate;
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-#pragma warning disable CA2200 // Rethrow to preserve stack details
-                throw ex;
-#pragma warning restore CA2200 // Rethrow to preserve stack details
+                throw new ApplicationException("An error occurred while fetching bookings.", ex);
             }
-
-            return Services;
+            return response;
         }
 
         /// <summary>
@@ -72,10 +92,7 @@ namespace VueAppMvc.Server.Controllers
 
                     if (users.Any())
                     {
-                        UserModel? existingUser = users.FirstOrDefault(us =>
-                            us.Email == bookFormModel.Email ||
-                            us.Name == bookFormModel.Name ||
-                            us.Phone == bookFormModel.Phone);
+                        UserModel? existingUser = users.FirstOrDefault(us => us.Email == bookFormModel.Email || us.Phone == bookFormModel.Phone);
 
                         if (existingUser != null)
                         {
@@ -93,8 +110,9 @@ namespace VueAppMvc.Server.Controllers
 
                             await _dbContext.SaveChangesAsync();
 
-                            ServiceAppModel serviceAppModel = new ServiceAppModel
+                            ServiceModel serviceAppModel = new ServiceModel
                             {
+                                UserId = existingUser.Id,
                                 Service = bookFormModel.Service ?? "",
                                 Date = bookFormModel.Date ?? "",
                                 Time = bookFormModel.Time ?? ""
@@ -121,52 +139,32 @@ namespace VueAppMvc.Server.Controllers
                 return BadRequest("Something went wrong...");
             }
         }
-        
+
         [HttpPost("DeleteBooking")]
         public async Task<IActionResult> PostAsync([FromBody] DeleteModel deleteModel)
         {
-            using (var dbContext = _dbContext)
+            if (_dbContext.services != null)
             {
-                if (dbContext.services != null)
+                var serviceToBeRemoved = await _dbContext.services.FirstOrDefaultAsync(s => s.Id == deleteModel.serviceId);
+
+                if (serviceToBeRemoved != null)
                 {
-                    DbSet<ServiceAppModel> services = dbContext.services;
-                    foreach (ServiceAppModel service in services)
-                    {
-                        if (service.Id.Equals(deleteModel.serviceId))
-                        {
-                            services.Remove(service);
-                            await dbContext.SaveChangesAsync();
-                            return Ok();
-                        }
-                    }
-                    await dbContext.SaveChangesAsync();
+                    _dbContext.services.Remove(serviceToBeRemoved);
+                    await _dbContext.SaveChangesAsync();
+                    return Ok("Service deleted");
                 }
             }
-            return BadRequest(string.Format("Could not delete service with booking Id:{0}", deleteModel.serviceId));
+            return BadRequest($"Could not delete service with Id: {deleteModel.serviceId}");
         }
         /// <summary>
-        /// Helper function
+        /// Helper function that creates a new User and Service
         /// </summary>
         /// <param name="bookFormModel"></param>
         /// <returns></returns>
         private async Task<IActionResult> CreateNewUserAndService(BookFormModel bookFormModel)
         {
-            ServiceAppModel newServiceApp = new ServiceAppModel
-            {
-                Service = bookFormModel.Service ?? "",
-                Date = bookFormModel.Date ?? "",
-                Time = bookFormModel.Time ?? ""
-            };
-
-            if (_dbContext.services != null)
-            {
-                _dbContext.services.Add(newServiceApp);
-                await _dbContext.SaveChangesAsync();
-            }
-
             UserModel newUser = new UserModel
             {
-                ServiceId = newServiceApp.Id,
                 Name = bookFormModel.Name ?? "",
                 Email = bookFormModel.Email ?? "",
                 Phone = bookFormModel.Phone ?? "",
@@ -179,6 +177,20 @@ namespace VueAppMvc.Server.Controllers
             if (_dbContext.users != null)
             {
                 _dbContext.users.Add(newUser);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            ServiceModel newServiceApp = new ServiceModel
+            {
+                UserId = newUser.Id,
+                Service = bookFormModel.Service ?? "",
+                Date = bookFormModel.Date ?? "",
+                Time = bookFormModel.Time ?? ""
+            };
+
+            if (_dbContext.services != null)
+            {
+                _dbContext.services.Add(newServiceApp);
                 await _dbContext.SaveChangesAsync();
             }
 
