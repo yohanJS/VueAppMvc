@@ -32,7 +32,9 @@ namespace VueAppMvc.Server.Controllers
                 {
                     using (_dbContext)
                     {
+                        // Users in db
                         List<UserModel> users = new List<UserModel>();
+                        // Services in db
                         List<ServiceModel> services = new List<ServiceModel>();
 
                         if (_dbContext.users != null && _dbContext.services != null)
@@ -41,61 +43,34 @@ namespace VueAppMvc.Server.Controllers
                             services = _dbContext.services.ToList();
 
                             // Group services by date
-                            var groupedServices = services.GroupBy(s => s.Date).ToList();
-
-                            foreach (var group in groupedServices)
-                            {
-                                ResponseDataModel responseDataModel = new ResponseDataModel
+                            var groupedServicesByDate = services.GroupBy(s => s.Date)
+                                .Select(group => new ResponseDataModel
                                 {
-                                    ServiceDate = group.Key, // Use the actual service date
-                                    Services = new List<Service>() // Initialize services for this date
-                                };
-
-                                foreach (var service in group)
-                                {
-                                    // Check if this time is already added for this serviceDate in the Services list
-                                    var existingService = responseDataModel.Services
-                                        .FirstOrDefault(s => s.Time == service.Time);
-
-                                    if (existingService == null) // Avoid adding duplicates for the same time
+                                    ServiceDate = group.Key,
+                                    Services = group.Select(s =>
                                     {
-                                        // Find the user for the service (if any)
-                                        var userForService = users.FirstOrDefault(user => user.Id.Equals(service.UserId)); // Assuming `UserId` is the matching property for `service`
-
-                                        if (userForService != null)
+                                        var user = users.FirstOrDefault(u => u.Id.Equals(s.UserId));
+                                        return new Service
                                         {
-                                            // Add the service with the matched user to the Services list
-                                            responseDataModel.Services.Add(new Service
-                                            {
-                                                Time = service.Time,
-                                                Users = new List<UserModel> { userForService }
-                                            });
-                                        }
-                                    }
-                                    else
-                                    {
-                                        // If the service already exists, just add the new user to the existing service's users list
-                                        var userForService = users.FirstOrDefault(user => user.Id.Equals(service.UserId));
-                                        if (userForService != null && !existingService.Users.Any(u => u.Id == userForService.Id))
-                                        {
-                                            existingService.Users.Add(userForService);
-                                        }
-                                    }
-                                }
-
-                                // Add the responseDataModel for this particular date
-                                response.Add(responseDataModel);
-                            }
+                                            Time = s.Time,
+                                            Name = user != null ? user.Name : string.Empty,
+                                            ServiceId = s.Id,
+                                            ServiceName = s.Service,
+                                            Phone = user != null ? user.Phone : string.Empty,
+                                            Email = user != null ? user.Email : string.Empty,
+                                            Address = user != null ? user.Street + user.City + user.State + user.Zip : string.Empty,
+                                        };
+                                    }).ToList()
+                                }).ToList();
+                            response = groupedServicesByDate;
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Consider logging the exception for better diagnostics
                 throw new ApplicationException("An error occurred while fetching bookings.", ex);
             }
-
             return response;
         }
 
@@ -164,28 +139,22 @@ namespace VueAppMvc.Server.Controllers
                 return BadRequest("Something went wrong...");
             }
         }
-        
+
         [HttpPost("DeleteBooking")]
         public async Task<IActionResult> PostAsync([FromBody] DeleteModel deleteModel)
         {
-            using (var dbContext = _dbContext)
+            if (_dbContext.services != null)
             {
-                if (dbContext.services != null)
+                var serviceToBeRemoved = await _dbContext.services.FirstOrDefaultAsync(s => s.Id == deleteModel.serviceId);
+
+                if (serviceToBeRemoved != null)
                 {
-                    DbSet<ServiceModel> services = dbContext.services;
-                    foreach (ServiceModel service in services)
-                    {
-                        if (service.Id.Equals(deleteModel.serviceId))
-                        {
-                            services.Remove(service);
-                            await dbContext.SaveChangesAsync();
-                            return Ok();
-                        }
-                    }
-                    await dbContext.SaveChangesAsync();
+                    _dbContext.services.Remove(serviceToBeRemoved);
+                    await _dbContext.SaveChangesAsync();
+                    return Ok("Service deleted");
                 }
             }
-            return BadRequest(string.Format("Could not delete service with booking Id:{0}", deleteModel.serviceId));
+            return BadRequest($"Could not delete service with Id: {deleteModel.serviceId}");
         }
         /// <summary>
         /// Helper function that creates a new User and Service
