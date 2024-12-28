@@ -12,7 +12,7 @@ using VueAppMvc.Server.Data;
 namespace VueAppMvc.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241226190910_Init")]
+    [Migration("20241227192737_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -223,7 +223,7 @@ namespace VueAppMvc.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("VueAppMvc.Server.Models.ServiceAppModel", b =>
+            modelBuilder.Entity("VueAppMvc.Server.Models.ServiceModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -246,7 +246,12 @@ namespace VueAppMvc.Server.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("services");
                 });
@@ -279,9 +284,6 @@ namespace VueAppMvc.Server.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
-
                     b.Property<string>("State")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -298,8 +300,6 @@ namespace VueAppMvc.Server.Migrations
                         .HasColumnType("nvarchar(10)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ServiceId");
 
                     b.ToTable("users");
                 });
@@ -355,20 +355,20 @@ namespace VueAppMvc.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VueAppMvc.Server.Models.UserModel", b =>
+            modelBuilder.Entity("VueAppMvc.Server.Models.ServiceModel", b =>
                 {
-                    b.HasOne("VueAppMvc.Server.Models.ServiceAppModel", "Services")
-                        .WithMany("Users")
-                        .HasForeignKey("ServiceId")
+                    b.HasOne("VueAppMvc.Server.Models.UserModel", "User")
+                        .WithMany("Services")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Services");
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("VueAppMvc.Server.Models.ServiceAppModel", b =>
+            modelBuilder.Entity("VueAppMvc.Server.Models.UserModel", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("Services");
                 });
 #pragma warning restore 612, 618
         }

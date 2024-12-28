@@ -12,6 +12,6 @@ namespace VueAppMvc.Server.Data
 
         // Add your tables
         public DbSet<UserModel>? users { get; set; }
-        public DbSet<ServiceAppModel>? services { get; set; }
+        public DbSet<ServiceModel>? services { get; set; }
     }
 }

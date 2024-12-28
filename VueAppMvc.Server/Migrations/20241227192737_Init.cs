@@ -51,18 +51,22 @@ namespace VueAppMvc.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "services",
+                name: "users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Service = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Date = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Time = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    State = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Zip = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_services", x => x.Id);
+                    table.PrimaryKey("PK_users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -172,27 +176,23 @@ namespace VueAppMvc.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "users",
+                name: "services",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
-                    Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    State = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Zip = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Service = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Date = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Time = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_users", x => x.Id);
+                    table.PrimaryKey("PK_services", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_users_services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "services",
+                        name: "FK_services_users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -237,9 +237,9 @@ namespace VueAppMvc.Server.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_users_ServiceId",
-                table: "users",
-                column: "ServiceId");
+                name: "IX_services_UserId",
+                table: "services",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -261,7 +261,7 @@ namespace VueAppMvc.Server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "users");
+                name: "services");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -270,7 +270,7 @@ namespace VueAppMvc.Server.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "services");
+                name: "users");
         }
     }
 }

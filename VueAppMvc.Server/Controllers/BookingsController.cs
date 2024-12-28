@@ -23,9 +23,9 @@ namespace VueAppMvc.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetAllBookings")]
-        public BookingModel Get()
+        public List<ResponseDataModel> Get()
         {
-            BookingModel Services = new BookingModel();
+            List<ResponseDataModel> response = new List<ResponseDataModel>();
             try
             {
                 if (_dbContext != null)
@@ -33,25 +33,70 @@ namespace VueAppMvc.Server.Controllers
                     using (_dbContext)
                     {
                         List<UserModel> users = new List<UserModel>();
-                        List<ServiceAppModel> services = new List<ServiceAppModel>();
+                        List<ServiceModel> services = new List<ServiceModel>();
 
                         if (_dbContext.users != null && _dbContext.services != null)
                         {
-                            users = _dbContext.users.FromSql($"EXEC GetUsers").ToList();
-                            services = _dbContext.services.FromSql($"EXEC GetServices").ToList();
-                            Services.Services = services;
+                            users = _dbContext.users.ToList();
+                            services = _dbContext.services.ToList();
+
+                            // Group services by date
+                            var groupedServices = services.GroupBy(s => s.Date).ToList();
+
+                            foreach (var group in groupedServices)
+                            {
+                                ResponseDataModel responseDataModel = new ResponseDataModel
+                                {
+                                    ServiceDate = group.Key, // Use the actual service date
+                                    Services = new List<Service>() // Initialize services for this date
+                                };
+
+                                foreach (var service in group)
+                                {
+                                    // Check if this time is already added for this serviceDate in the Services list
+                                    var existingService = responseDataModel.Services
+                                        .FirstOrDefault(s => s.Time == service.Time);
+
+                                    if (existingService == null) // Avoid adding duplicates for the same time
+                                    {
+                                        // Find the user for the service (if any)
+                                        var userForService = users.FirstOrDefault(user => user.Id.Equals(service.UserId)); // Assuming `UserId` is the matching property for `service`
+
+                                        if (userForService != null)
+                                        {
+                                            // Add the service with the matched user to the Services list
+                                            responseDataModel.Services.Add(new Service
+                                            {
+                                                Time = service.Time,
+                                                Users = new List<UserModel> { userForService }
+                                            });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // If the service already exists, just add the new user to the existing service's users list
+                                        var userForService = users.FirstOrDefault(user => user.Id.Equals(service.UserId));
+                                        if (userForService != null && !existingService.Users.Any(u => u.Id == userForService.Id))
+                                        {
+                                            existingService.Users.Add(userForService);
+                                        }
+                                    }
+                                }
+
+                                // Add the responseDataModel for this particular date
+                                response.Add(responseDataModel);
+                            }
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-#pragma warning disable CA2200 // Rethrow to preserve stack details
-                throw ex;
-#pragma warning restore CA2200 // Rethrow to preserve stack details
+                // Consider logging the exception for better diagnostics
+                throw new ApplicationException("An error occurred while fetching bookings.", ex);
             }
 
-            return Services;
+            return response;
         }
 
         /// <summary>
@@ -72,10 +117,7 @@ namespace VueAppMvc.Server.Controllers
 
                     if (users.Any())
                     {
-                        UserModel? existingUser = users.FirstOrDefault(us =>
-                            us.Email == bookFormModel.Email ||
-                            us.Name == bookFormModel.Name ||
-                            us.Phone == bookFormModel.Phone);
+                        UserModel? existingUser = users.FirstOrDefault(us => us.Email == bookFormModel.Email || us.Phone == bookFormModel.Phone);
 
                         if (existingUser != null)
                         {
@@ -93,8 +135,9 @@ namespace VueAppMvc.Server.Controllers
 
                             await _dbContext.SaveChangesAsync();
 
-                            ServiceAppModel serviceAppModel = new ServiceAppModel
+                            ServiceModel serviceAppModel = new ServiceModel
                             {
+                                UserId = existingUser.Id,
                                 Service = bookFormModel.Service ?? "",
                                 Date = bookFormModel.Date ?? "",
                                 Time = bookFormModel.Time ?? ""
@@ -129,8 +172,8 @@ namespace VueAppMvc.Server.Controllers
             {
                 if (dbContext.services != null)
                 {
-                    DbSet<ServiceAppModel> services = dbContext.services;
-                    foreach (ServiceAppModel service in services)
+                    DbSet<ServiceModel> services = dbContext.services;
+                    foreach (ServiceModel service in services)
                     {
                         if (service.Id.Equals(deleteModel.serviceId))
                         {
@@ -145,28 +188,14 @@ namespace VueAppMvc.Server.Controllers
             return BadRequest(string.Format("Could not delete service with booking Id:{0}", deleteModel.serviceId));
         }
         /// <summary>
-        /// Helper function
+        /// Helper function that creates a new User and Service
         /// </summary>
         /// <param name="bookFormModel"></param>
         /// <returns></returns>
         private async Task<IActionResult> CreateNewUserAndService(BookFormModel bookFormModel)
         {
-            ServiceAppModel newServiceApp = new ServiceAppModel
-            {
-                Service = bookFormModel.Service ?? "",
-                Date = bookFormModel.Date ?? "",
-                Time = bookFormModel.Time ?? ""
-            };
-
-            if (_dbContext.services != null)
-            {
-                _dbContext.services.Add(newServiceApp);
-                await _dbContext.SaveChangesAsync();
-            }
-
             UserModel newUser = new UserModel
             {
-                ServiceId = newServiceApp.Id,
                 Name = bookFormModel.Name ?? "",
                 Email = bookFormModel.Email ?? "",
                 Phone = bookFormModel.Phone ?? "",
@@ -179,6 +208,20 @@ namespace VueAppMvc.Server.Controllers
             if (_dbContext.users != null)
             {
                 _dbContext.users.Add(newUser);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            ServiceModel newServiceApp = new ServiceModel
+            {
+                UserId = newUser.Id,
+                Service = bookFormModel.Service ?? "",
+                Date = bookFormModel.Date ?? "",
+                Time = bookFormModel.Time ?? ""
+            };
+
+            if (_dbContext.services != null)
+            {
+                _dbContext.services.Add(newServiceApp);
                 await _dbContext.SaveChangesAsync();
             }
 

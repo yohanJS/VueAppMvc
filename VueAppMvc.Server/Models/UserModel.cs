@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace VueAppMvc.Server.Models
@@ -7,8 +6,6 @@ namespace VueAppMvc.Server.Models
     public class UserModel
     {
         public int Id { get; set; }
-
-        public int ServiceId { get; set; }
 
         [MaxLength(100)] // Limit Name to 100 characters
         public string Name { get; set; } = string.Empty;
@@ -31,9 +28,8 @@ namespace VueAppMvc.Server.Models
         [MaxLength(10)] // Limit Zip to 10 characters
         public string Zip { get; set; } = string.Empty;
 
-        // Navigation property
-        [ForeignKey("ServiceId")]
+        // Navigation property for services (one-to-many relationship)
         [JsonIgnore]
-        public ServiceAppModel? Services { get; set; }
+        public ICollection<ServiceModel>? Services { get; set; }
     }
 }

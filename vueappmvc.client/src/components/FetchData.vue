@@ -50,51 +50,48 @@
           </div>
         </div>
 
-        <div v-for="service in services" class="row">
-          <p>{{ service.date }}</p>
-          <div class="col-3 col-md-6">
-            <p>{{ service.time }}</p>
-          </div>
-
-          <div class="col-8 col-md-6 details-card rounded-3" v-for="user in service.users">
-            <h5>{{ user.name }}</h5>
-            <p class="mb-1">{{ service.service }}</p>
-            <p>{{ user.phone }}</p>
-
-            <!--Collapse Button -->
-            <button class="btn btn-sm w-100 btn-details mb-2" type="button"
-                    :data-bs-toggle="'collapse'" :data-bs-target="'#collapse' + user.id"
-                    :aria-expanded="false" :aria-controls="'collapse' + user.id">
-              <i class="bi bi-chevron-double-down"></i> Contact Info
-            </button>
-            <!--Collapsible Section-->
-            <div :id="'collapse' + user.id" class="collapse">
-              <p class="card-text mb-1">
-                <strong>
-                  Email: 
-                </strong>
-                <a href="mailto:'user.email'" class="text-decoration-none text-white-50">
-                  {{ user.email }}
-                  <i class="bi bi-envelope-plus"></i>
-                </a>
-              </p>
-              <p class="card-text mb-1">
-                <strong>
-                  Phone:
-                </strong>
-                <a href="tel:+'user.phone'" class="text-decoration-none text-white-50">
-                  {{ user.phone }}
-                  <i class="bi bi-telephone-outbound"></i>
-                </a>
-              </p>
-              <p class="card-text">
-                <strong>Address:</strong>
-                <div v-if="!user.street">N/A</div>
-                <div v-else>{{ user.street }}, {{ user.city }}, {{ user.state }} - {{ user.zip }}</div>
-              </p>
+        <div v-for="service in services">
+          <p v-if="isDateInWeekRange(service.serviceDate)">Dec {{ service.serviceDate }}</p>
+          <div v-if="isDateInWeekRange(service.serviceDate)" v-for="records in service.services">
+            <div class="row">
+              <div class="col-12 mb-2">
+                <p class="mb-1">{{ records.time }}</p>
+              </div>
+              <div v-for="user in records.users">
+                <div class="col-12 m-0 details-card mb-5">
+                  <p class="mb-0">{{ user.name }}</p>
+                  <p class="card-text mb-1">
+                    <strong>
+                      Email:
+                    </strong>
+                    <a href="mailto:'user.email'" class="text-decoration-none text-white-50">
+                      {{ user.email }}
+                      <i class="bi bi-envelope-plus"></i>
+                    </a>
+                  </p>
+                  <p class="card-text mb-1">
+                    <strong>
+                      Phone:
+                    </strong>
+                    <a href="tel:+'user.phone'" class="text-decoration-none text-white-50">
+                      {{ user.phone }}
+                      <i class="bi bi-telephone-outbound"></i>
+                    </a>
+                  </p>
+                  <p class="card-text">
+                    <strong>Address:</strong>
+                    <div v-if="!user.street">N/A</div>
+                    <div v-else>{{ user.street }}, {{ user.city }}, {{ user.state }} - {{ user.zip }}</div>
+                  </p>
+                  <div>
+                    <i @click="deleteService(service.id)" class="bi bi-trash3 text-danger me-2">Delete</i>
+                    <i @click="test" class="bi bi-pencil text-primary">Edit</i>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <hr class="border-2 mt-5 w-75 m-4">
+          <hr v-if="isDateInWeekRange(service.serviceDate)" class="border-2 mt-5 w-75 m-4">
         </div>
       </div>
 
@@ -340,7 +337,7 @@
         this.loading = true;
         axios.get(this.GetservicesUrl)
           .then((response) => {
-            this.services = response.data.services;
+            this.services = response.data;
             console.log(response.data);
             console.log(this.services);
             this.loading = false;
