@@ -15,7 +15,7 @@
       </div>-->
       <!-- Loading State with Placeholder Cards -->
       <div v-if="loading" class="mt-4">
-        <div class="skeleton-card mb-3" v-for="n in 3" :key="n">
+        <div class="skeleton-card mb-3" v-for="n in 6" :key="n">
           <div class="skeleton-title"></div>
           <div class="skeleton-line"></div>
           <div class="skeleton-line"></div>
@@ -40,53 +40,72 @@
         <!-- Week Range Section -->
         <div class="row justify-content-between align-items-center mb-5">
           <div class="col-auto">
-            <i class="bi bi-caret-left-fill orange-bg p-1 rounded-5" @click="previousWeek"></i>
+            <i class="bi bi-caret-left-fill orange-bg p-2 rounded-5" @click="previousWeek"></i>
           </div>
           <div class="col text-center">
-            <p class="fw-bold orange-bg p-1 rounded-5 m-0">{{ weekRange }}</p>
+            <p class="fw-bold orange-bg p-2 rounded-5 m-0">{{ weekRange }}</p>
           </div>
           <div class="col-auto">
-            <i class="bi bi-caret-right-fill orange-bg p-1 rounded-5" @click="nextWeek"></i>
+            <i class="bi bi-caret-right-fill orange-bg p-2 rounded-5" @click="nextWeek"></i>
           </div>
         </div>
 
+        <!--Services Section-->
         <div v-for="record in services">
-          <p v-if="isDateInWeekRange(record.serviceDate)" class="mb-1 fs-5 orange-txt">{{ formatMonthAndDay(record.serviceDate) }}</p>
+          <p v-if="isDateInWeekRange(record.serviceDate)" :class="{
+              'mb-1': true,
+              'fs-5': true,
+              'today-class': isToday(record.serviceDate)
+            }">
+            {{ formatMonthAndDay(record.serviceDate) }}
+          </p>
           <div>
-            <div class="row" v-if="isDateInWeekRange(record.serviceDate)" v-for="service in record.services">
-              <div class="col-12 mb-2">
+            <div class="row d-flex" v-if="isDateInWeekRange(record.serviceDate)" v-for="service in record.services">
+              <div class="col-3 mb-2">
                 <p class="mb-1">{{ service.time }}</p>
               </div>
-              <div>
-                <div class="col-12 m-0 details-card mb-5 rounded-3">
+              <div class="col-8">
+                <div class="m-0 details-card mb-5 rounded-3">
                   <p class="mb-0"><span class="fw-bold">Client: </span>{{ service.name }}</p>
                   <p class="mb-0"><span class="fw-bold">Service requested: </span>{{ service.serviceName }}</p>
-                  <p class="m-0 mt-3">Contact Details</p>
-                  <p class="card-text mb-1">
-                    <strong>
-                      Email:
-                    </strong>
-                    <a href="mailto:'user.email'" class="text-decoration-none text-white-50">
-                      {{ service.email }}
-                      <i class="bi bi-envelope-plus"></i>
-                    </a>
-                  </p>
-                  <p class="card-text mb-1">
-                    <strong>
-                      Phone:
-                    </strong>
-                    <a href="tel:+'user.phone'" class="text-decoration-none text-white-50">
-                      {{ service.phone }}
-                      <i class="bi bi-telephone-outbound"></i>
-                    </a>
-                  </p>
-                  <p class="card-text">
-                    <strong>Address:</strong>
-                    <div>{{ service.address }}</div>
-                  </p>
-                  <div>
-                    <i @click="deleteService(service.serviceId)" class="bi bi-trash3 text-danger me-2">Delete</i>
-                    <i @click="test" class="bi bi-pencil text-primary">Edit</i>
+                  <!--Collapse Button-->
+                  <button class="btn btn-sm w-100 btn-details mt-2 mb-2" type="button"
+                          :data-bs-toggle="'collapse'" :data-bs-target="'#collapse' + service.serviceId"
+                          :aria-expanded="false" :aria-controls="'collapse' + service.serviceId">
+                    <i class="bi bi-chevron-double-down"></i> Contact Info
+                  </button>
+                  <!--Collapsible Section-->
+                  <div :id="'collapse' + service.serviceId" class="collapse">
+                    <p class="card-text mb-1">
+                      <strong>
+                        Email:
+                      </strong>
+                      <a :href="'mailto:' + service.email" class="text-decoration-none text-white-50">
+                        {{ service.email }}
+                        <i class="bi bi-envelope-plus"></i>
+                      </a>
+                    </p>
+                    <p class="card-text mb-1">
+                      <strong>
+                        Phone:
+                      </strong>
+                      <a :href="'tel:' + service.phone" class="text-decoration-none text-white-50">
+                        {{ service.phone }}
+                        <i class="bi bi-telephone-outbound"></i>
+                      </a>
+                    </p>
+                    <p class="card-text">
+                      <div v-if="!service.address">
+                        Online
+                      </div>
+                      <div v-else>
+                        <strong>Address: <span>{{ service.address }}</span></strong>
+                      </div>
+                    </p>
+                  </div>
+                  <div class="text-end mt-2">
+                    <i @click="deleteService(service.serviceId)" class="bi bi-trash3 me-2"> Delete</i>
+                    <i @click="test" class="bi bi-pencil"> Edit</i>
                   </div>
                 </div>
               </div>
@@ -95,119 +114,6 @@
           <hr v-if="isDateInWeekRange(record.serviceDate)" class="border-2 mt-5 w-75 m-4">
         </div>
       </div>
-
-      <!-- Display services -->
-      <!--<div v-if="services.length > 0" class="row g-3 justify-content-center">-->
-      <!-- Month and Year Section -->
-      <!--<div class="row justify-content-between align-items-center mt-4 mb-3">-->
-      <!--<div class="col-auto">
-        <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
-      </div>-->
-      <!--<div class="col text-center">
-        <h4>{{ currentMonth }}</h4>
-      </div>-->
-      <!--<div class="col-auto">
-        <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
-      </div>-->
-      <!--</div>-->
-      <!-- Week Range Section -->
-      <!--<div class="row justify-content-between align-items-center mb-3">
-        <div class="col-auto">
-          <i class="bi bi-caret-left-fill orange-bg p-1 rounded-5" @click="previousWeek"></i>
-        </div>
-        <div class="col text-center">
-          <p class="fw-bold orange-bg p-1 rounded-5 m-0">{{ weekRange }}</p>
-        </div>
-        <div class="col-auto">
-          <i class="bi bi-caret-right-fill orange-bg p-1 rounded-5" @click="nextWeek"></i>
-        </div>
-      </div>
-
-      <div class="row">
-        {{ isTodayBooking() }}
-      </div>-->
-      <!-- Services and Clients -->
-      <!--<div v-for="service in services" :key="booking.id" class="col-12 col-md-6 col-lg-4">
-      {{ service.date }}-->
-      <!--<div v-if="isbookingBookedInWeek(booking)" class="card pastel-card h-100 shadow-sm">
-      <div class="card-body d-flex flex-column rounded-2 text-dark">-->
-      <!--Collapse Button-->
-      <!--<button class="btn btn-sm btn-details mb-2" type="button"
-              :data-bs-toggle="'collapse'" :data-bs-target="'#collapse' + booking.id"
-              :aria-expanded="false" :aria-controls="'collapse' + booking.id">
-        <i class="bi bi-chevron-double-down"></i> Contact Info
-      </button>-->
-      <!--Collapsible Section-->
-      <!--<div :id="'collapse' + booking.id" class="collapse">
-        <p class="card-text mb-1">
-          <strong>
-            Email:
-          </strong>
-          <a href="mailto:'booking.email'" class="text-decoration-none text-info-emphasis">
-            {{ booking.email }}
-            <i class="bi bi-envelope-plus"></i>
-          </a>
-        </p>
-        <p class="card-text mb-1">
-          <strong>
-            Phone:
-          </strong>
-          <a href="tel:+'booking.phone'" class="text-decoration-none text-info-emphasis">
-            {{ booking.phone }}
-            <i class="bi bi-telephone-outbound"></i>
-          </a>
-        </p>
-        <p class="card-text">
-          <strong>Address:</strong>
-          <div v-if="!booking.street">N/A</div>
-          <div v-else>{{ booking.street }}, {{ booking.city }}, {{ booking.state }} - {{ booking.zip }}</div>
-        </p>
-      </div>-->
-      <!--Tabs for Services-->
-      <!--<div>
-            <ul class="nav nav-tabs mt-3" :id="'serviceTabs' + booking.id" role="tablist">
-              <li class="nav-item" v-for="(service, index) in booking.services" :key="service.id" role="presentation">
-                <div v-if="isDateInWeekRange(service.date)">
-                  <button class="nav-link p-2 border-0 text-dark-emphasis"
-                          :class="{ active: index === 0 }"
-                          :id="'tab' + booking.id + '-' + service.id"
-                          data-bs-toggle="tab"
-                          :data-bs-target="'#content' + booking.id + '-' + service.id"
-                          type="button"
-                          role="tab"
-                          :aria-controls="'content' + booking.id + '-' + service.id"
-                          :aria-selected="index === 0">
-                    {{ getDay(service.date) }}
-                    <br />
-                    <span style="font-size: 0.6rem;" class="fst-italic">{{ service.date }}</span>
-                  </button>
-                </div>
-              </li>
-            </ul>
-
-            <div class="tab-content p-3 bg-white rounded-bottom-2" :id="'serviceTabContent' + booking.id">
-              <div v-for="(service, index) in booking.services"
-                   :key="service.id"
-                   class="tab-pane fade"
-                   :class="{ 'show active': index === 0 }"
-                   :id="'content' + booking.id + '-' + service.id"
-                   role="tabpanel"
-                   :aria-labelledby="'tab' + booking.id + '-' + service.id">
-                <div v-if="isDateInWeekRange(service.date)">
-                  <p class="mb-1"><strong>Service:</strong> {{ service.service }}</p>
-                  <p class="mb-1"><strong>Date:</strong> {{ service.date }}</p>
-                  <p class="mb-1"><strong>Time:</strong> {{ service.time }}</p>
-                  <i @click="deleteService(service.id)" class="bi bi-trash3 text-danger me-2">Delete</i>
-                  <i @click="test" class="bi bi-pencil text-primary">Edit</i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>-->
-      <!--</div>
-
-      </div>-->
     </div>
   </div>
 </template>
@@ -255,11 +161,19 @@
     },
     methods: {
       formatMonthAndDay(serviceDate) {
-        const today = moment().format("YYYY/MM/DD"); // Get today's date in the same format as serviceDate
-        if (moment(serviceDate, "YYYY/MM/DD").isSame(today, 'day')) {
-          return moment(serviceDate, "YYYY/MM/DD").format("MMM D") + " Today";
+        const today = moment().startOf('day');
+        const serviceDateMoment = moment(serviceDate, "YYYY/MM/DD", true);
+
+        if (serviceDateMoment.isValid() && serviceDateMoment.isSame(today, 'day')) {
+          return serviceDateMoment.format("MMM D") + " Today";
         }
-        return moment(serviceDate, "YYYY/MM/DD").format("MMM D");
+
+        return serviceDateMoment.isValid() ? serviceDateMoment.format("MMM D") : "Invalid Date";
+      },
+      isToday(serviceDate) {
+        const today = moment().startOf('day'); // Normalize today to midnight
+        const date = moment(serviceDate, "YYYY/MM/DD", true); // Strict parsing of serviceDate
+        return date.isValid() && date.isSame(today, 'day');
       },
       isTodayBooking() {
         const today = moment(); // Get today's date
@@ -326,7 +240,6 @@
 
         this.getWeekRange(); // Update week range display
       },
-
       previousWeek() {
         const currentDate = moment(this.currentMonth, 'MMM YYYY');
         const currentStartDate = currentDate.date(this.startOfWeek);
@@ -395,7 +308,7 @@
     border-radius: 4px;
   }
 
-   .skeleton-line.short {
+    .skeleton-line.short {
       width: 70%;
     }
 
@@ -416,6 +329,10 @@
   .orange-bg {
     background-color: #F28C28;
   }
+
+  .today-class {
+    color: #F28C28;
+  }
   .orange-txt {
     color: #F28C28;
   }
@@ -430,11 +347,12 @@
     .btn-details:active {
       color: #192c39;
     }
+
   .details-card {
-      font-size: 0.8rem;
-      background-color: #003357;
-      padding: 15px;
-      box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
+    font-size: 0.8rem;
+    background-color: #003357;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
   }
   /* Modern pastel card styling */
   .pastel-card {

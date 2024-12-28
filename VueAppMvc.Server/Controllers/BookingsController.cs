@@ -58,10 +58,21 @@ namespace VueAppMvc.Server.Controllers
                                             ServiceName = s.Service,
                                             Phone = user != null ? user.Phone : string.Empty,
                                             Email = user != null ? user.Email : string.Empty,
-                                            Address = user != null ? user.Street + user.City + user.State + user.Zip : string.Empty,
+                                            Address = user != null ? string.Format("{0} {1} {2} {3}", user.Street, user.City, user.State, user.Zip) : string.Empty,
                                         };
                                     }).ToList()
                                 }).ToList();
+                            foreach (var service in groupedServicesByDate)
+                            {
+                                if (service != null && service.Services != null)
+                                {
+                                    //orders the services by date
+                                    service.Services = service.Services.OrderBy(s => DateTime.Parse(s.Time)).ToList();
+                                }
+                            }
+                            //Orders the record by date
+                            groupedServicesByDate = groupedServicesByDate.OrderBy(s => DateTime.Parse(s.ServiceDate)).ToList();
+
                             response = groupedServicesByDate;
                         }
                     }
