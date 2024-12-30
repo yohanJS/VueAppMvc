@@ -29,7 +29,7 @@
   }
 
   .btn-book-now {
-    background-color: #f8b195;
+    background-color: #F28C28;
     color: #ffffff;
     padding: 0.75rem 4.5rem;
     border-radius: 25px;
@@ -37,7 +37,7 @@
   }
 
     .btn-book-now:hover {
-      background-color: #f67280;
+      background-color: #000;
       color: white;
     }
 </style>

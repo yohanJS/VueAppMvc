@@ -9,13 +9,13 @@
       </li>
       <li class="nav-item">
         <router-link to="/UpcomingBookings" class="nav-link p-0 text-white">
-          <i class="bi bi-calendar-check m-0"></i>
+          <i class="bi bi-calendar3 m-0"></i>
           Bookings
         </router-link>
       </li>
       <li class="nav-item">
         <router-link to="/BookingForm" class="nav-link p-0 text-white">
-          <i class="bi bi-pencil-square m-0"></i>
+          <i class="bi bi-calendar-plus m-0"></i>
           Book
         </router-link>
       </li>
@@ -55,7 +55,7 @@
     },
     methods: {
       async logout() {
-        window.location.href = "http://engfuel.com";
+        window.location.href = "https://engfuel.com";
         // Set a flag in localStorage to indicate successful login
         localStorage.setItem("isLoggedIn", "false");
         this.isLoggedIn = false;

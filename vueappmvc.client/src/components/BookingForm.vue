@@ -11,59 +11,61 @@
       </div>
     </div>
 
-    <div v-if="step === 5 && formData.service !== ''" class="bg-primary-subtle p-2 mb-3 rounded-2 shadow-lg mt-2">
-      <p class="mb-2 text-center text-dark">Your appointment details:</p>
-      <ul class="list-group list-group-flush rounded-2">
-        <li class="list-group-item f-s"><span class="fw-bold">Meeting Type:</span> {{ formData.meetingType }}</li>
-        <li class="list-group-item f-s"><span class="fw-bold">Service:</span> {{ formData.service }}</li>
-        <li class="list-group-item f-s"><span class="fw-bold">Date:</span> {{ formattedDate }}</li>
-        <li class="list-group-item f-s"><span class="fw-bold">Time:</span> {{ formattedTime }}</li>
-      </ul>
-    </div>
+    <form @submit.prevent="submitForm" class="service-card min-vh-100">
+      <!--Booking Details-->
+      <!-- Booking Details -->
+      <div v-if="step === 5 && formData.service !== ''" class="text-white p-4 rounded shadow-sm" style="background-color: #001524;">
+        <p class="mb-3 text-center fs-6 fw-bold">Your Appointment Details:</p>
+        <div class="mb-2">
+          <p class="mb-1"><strong>Meeting Type:</strong> {{ formData.meetingType }}</p>
+          <p class="mb-1"><strong>Service:</strong> {{ formData.service }}</p>
+          <p class="mb-1"><strong>Date:</strong> {{ formattedDate }}</p>
+          <p class="mb-1"><strong>Time:</strong> {{ formattedTime }}</p>
+        </div>
+      </div>
 
-    <form @submit.prevent="submitForm">
       <!-- Step 1: Booking Service -->
       <div v-if="step === 1">
-        <p class="text-center mb-1 steel-blue-color">Quote service</p>
+        <p class="text-center mb-1 text-white">Select service</p>
         <div class="d-flex flex-column gap-3 mb-5">
           <div v-for="service in services"
                :key="service.id"
-               class="service-card p-2 rounded-2 shadow-lg text-start"
+               class="service-card rounded-2 text-white"
                @click="selectService(service)">
             <div class="">
               <h4 class="mb-1 card-header">{{ service.name }}</h4>
             </div>
             <p class="mb-2" style="font-size: 0.8rem;">{{ service.description }}</p>
             <div class="text-end">
-              <i class="bi bi-arrow-right-circle steel-blue-color"></i>
+              <i class="bi bi-arrow-right-circle orange-txt"></i>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Step 2 In Peson/Online/Phone-->
-      <div v-if="step === 2" class="text-center">
-        <p class="text-center mb-1 steel-blue-color">Type of meeting</p>
-        <button @click="inPersonMeeting(true)" class="btn btn-outline-primary border-0 w-50 bg-white shadow-lg mb-1 text-dark">
+      <div v-if="step === 2" class="text-center text-white">
+        <p class="text-center mb-1 text-white">Type of meeting</p>
+        <button @click="inPersonMeeting(true)" class="btn btn-outline-primary border-0 w-50 service-card mb-2 text-white">
           <span class="f-s">
             In Person
-            <i class="bi bi-arrow-right-circle steel-blue-color"></i>
+            <i class="bi bi-arrow-right-circle orange-txt"></i>
           </span>
         </button>
         <br />
-        <button @click="inPersonMeeting(false)" class="btn btn-outline-primary border-0 w-50 bg-white shadow-lg text-dark">
+        <button @click="inPersonMeeting(false)" class="btn btn-outline-primary border-0 w-50 service-card text-white">
           <span class="f-s">
             Online/Phone
-            <i class="bi bi-arrow-right-circle steel-blue-color"></i>
+            <i class="bi bi-arrow-right-circle orange-txt"></i>
           </span>
         </button>
       </div>
 
       <!-- Step 3: Date -->
       <div v-if="step === 3">
-        <p class="text-center mb-1 steel-blue-color">Select date</p>
+        <p class="text-center mb-1 text-white">Select date</p>
         <div class="datepicker-container m-2 mx-auto">
-          <div class="calendar rounded-2 shadow-sm">
+          <div class="calendar rounded-2">
             <div class="calendar-header">
               <button @click="prevMonth" class="nav-button" type="button">‹</button>
               <span>{{ monthNames[currentMonth] }} {{ currentYear }}</span>
@@ -86,23 +88,23 @@
         </div>
 
         <!--<div class="d-flex justify-content-between my-bg rounded-2 shadow-sm mx-auto" style="max-width: 300px;">
-          <button type="button"
-                  class="btn w-25"
-                  @click="goToStep(2)">
-            <i class="bi bi-arrow-left-circle text-dark"></i>
-          </button>
-          <button type="button"
-                  class="btn w-25"
-                  @click="goToStep(4)">
-            <i class="bi bi-arrow-right-circle text-dark"></i>
-          </button>
-        </div>-->
+      <button type="button"
+              class="btn w-25"
+              @click="goToStep(2)">
+        <i class="bi bi-arrow-left-circle text-dark"></i>
+      </button>
+      <button type="button"
+              class="btn w-25"
+              @click="goToStep(4)">
+        <i class="bi bi-arrow-right-circle text-dark"></i>
+      </button>
+    </div>-->
       </div>
 
       <!-- Step 4: Time Picker -->
       <div v-if="step === 4">
-        <p class="text-center mb-1 steel-blue-color">Select time</p>
-        <div class="timepicker-container m-2 mx-auto">
+        <p class="text-center mb-1 text-white">Select time</p>
+        <div class="timepicker-container m-2 mx-auto rounded-2">
           <div class="time-grid">
             <div v-for="(time, index) in timeSlots"
                  :key="index"
@@ -116,135 +118,134 @@
 
       <!-- Step 5: Personal Details -->
       <div v-if="step === 5">
-        <p class="text-center mt-4 mb-2 steel-blue-color">Enter personal details</p>
+        <p class="text-center mt-4 mb-2 text-white">Enter personal details</p>
         <!--In Person-->
-        <div v-if="isInPerson === true" class="p-2 mb-5 rounded-2 shadow-sm bg-white shadow-lg">
+        <div class="p-3 rounded-2 service-card">
+          <!--In Person-->
+          <div v-if="isInPerson">
 
-          <div class="mb-2">
-            <label for="name" class="form-label text-dark">Name</label>
-            <input type="text"
-                   id="name"
-                   class="form-control"
-                   v-model="formData.name"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="mb-2">
-            <label for="email" class="form-label text-dark">Email</label>
-            <input type="email"
-                   id="email"
-                   class="form-control"
-                   v-model="formData.email"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="mb-2">
-            <label for="phone" class="form-label text-dark">Phone Number</label>
-            <input type="tel"
-                   id="phone"
-                   class="form-control"
-                   v-model="formData.phone"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="mb-2">
-            <label for="street" class="form-label text-dark">Street Address</label>
-            <input type="text"
-                   id="street"
-                   class="form-control"
-                   v-model="formData.street"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="row mb-2">
-            <div class="col">
-              <label for="city" class="form-label text-dark">City</label>
+            <div class="mb-2">
+              <label for="name" class="form-label text-white">Name</label>
               <input type="text"
-                     id="city"
+                     id="name"
                      class="form-control"
-                     v-model="formData.city"
+                     v-model="formData.name"
                      placeholder=""
                      required />
             </div>
-            <div class="col">
-              <label for="state" class="form-label text-dark">State</label>
-              <input type="text"
-                     id="state"
+
+            <div class="mb-2">
+              <label for="email" class="form-label text-white">Email</label>
+              <input type="email"
+                     id="email"
                      class="form-control"
-                     v-model="formData.state"
+                     v-model="formData.email"
                      placeholder=""
                      required />
             </div>
-            <div class="col">
-              <label for="zip" class="form-label text-dark">ZIP Code</label>
-              <input type="text"
-                     id="zip"
+
+            <div class="mb-2">
+              <label for="phone" class="form-label text-white">Phone Number</label>
+              <input type="tel"
+                     id="phone"
                      class="form-control"
-                     v-model="formData.zip"
+                     v-model="formData.phone"
+                     placeholder=""
+                     required />
+            </div>
+
+            <div class="mb-2">
+              <label for="street" class="form-label text-white">Street Address</label>
+              <input type="text"
+                     id="street"
+                     class="form-control"
+                     v-model="formData.street"
+                     placeholder=""
+                     required />
+            </div>
+
+            <div class="row mb-2">
+              <div class="col">
+                <label for="city" class="form-label text-white">City</label>
+                <input type="text"
+                       id="city"
+                       class="form-control"
+                       v-model="formData.city"
+                       placeholder=""
+                       required />
+              </div>
+              <div class="col">
+                <label for="state" class="form-label text-white">State</label>
+                <input type="text"
+                       id="state"
+                       class="form-control"
+                       v-model="formData.state"
+                       placeholder=""
+                       required />
+              </div>
+              <div class="col">
+                <label for="zip" class="form-label text-white">ZIP Code</label>
+                <input type="text"
+                       id="zip"
+                       class="form-control"
+                       v-model="formData.zip"
+                       placeholder=""
+                       required />
+              </div>
+            </div>
+          </div>
+          <!--Online/Phone-->
+          <div v-else>
+
+            <div class="mb-2">
+              <label for="name" class="form-label text-white">Name</label>
+              <input type="text"
+                     id="name"
+                     class="form-control"
+                     v-model="formData.name"
+                     placeholder=""
+                     required />
+            </div>
+
+            <div class="mb-2">
+              <label for="email" class="form-label text-white">Email</label>
+              <input type="email"
+                     id="email"
+                     class="form-control"
+                     v-model="formData.email"
+                     placeholder=""
+                     required />
+            </div>
+
+            <div class="mb-2">
+              <label for="phone" class="form-label text-white">Phone Number</label>
+              <input type="tel"
+                     id="phone"
+                     class="form-control"
+                     v-model="formData.phone"
                      placeholder=""
                      required />
             </div>
           </div>
-
-          <div class="d-flex justify-content-between">
+          <!--Buttons Section-->
+          <div class="d-flex justify-content-between mt-4">
             <button type="button"
-                    class="btn w-25"
+                    class="btn"
                     @click="goToStep(4)">
-              <i class="bi bi-arrow-left-circle text-dark"></i>
+              <i class="bi bi-arrow-left-circle orange-txt"></i>
             </button>
-            <button type="submit" class="btn w-25">
-              <i class="bi bi-send-check-fill text-dark"></i>
-            </button>
-          </div>
-        </div>
-        <!--Online/Phone-->
-        <div v-if="isInPerson === false" class="p-2 mb-5 rounded-2 shadow-sm bg-white shadow-lg">
+            <div v-if="displaySpinnerMessage">
+              <button class="btn btn-outline-success border-0" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
 
-          <div class="mb-2">
-            <label for="name" class="form-label text-dark">Name</label>
-            <input type="text"
-                   id="name"
-                   class="form-control"
-                   v-model="formData.name"
-                   placeholder=""
-                   required />
+              </button>
+            </div>
+            <div v-else>
+              <button type="submit" class="btn w-25">
+                <i class="bi bi-send-check-fill orange-txt"></i>
+              </button>
+            </div>
           </div>
-
-          <div class="mb-2">
-            <label for="email" class="form-label text-dark">Email</label>
-            <input type="email"
-                   id="email"
-                   class="form-control"
-                   v-model="formData.email"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="mb-2">
-            <label for="phone" class="form-label text-dark">Phone Number</label>
-            <input type="tel"
-                   id="phone"
-                   class="form-control"
-                   v-model="formData.phone"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="d-flex justify-content-between">
-            <button type="button"
-                    class="btn w-25 "
-                    @click="goToStep(2)">
-              <i class="bi bi-arrow-left-circle text-dark"></i>
-            </button>
-            <button type="submit" class="btn w-25">
-              <i class="bi bi-send-check-fill steel-color"></i>
-            </button>
-          </div>
-
         </div>
       </div>
     </form>
@@ -286,8 +287,9 @@
       const today = new Date();
       const currentTime = new Date();
       return {
-        isPrd: true,
+        isPrd: false,
         GetBookingsUrl: "",
+        displaySpinnerMessage: false,
         currentYear: today.getFullYear(),
         currentMonth: today.getMonth(),
         selectedDate: today,
@@ -356,7 +358,8 @@
       }
     },
     async created() {
-      this.GetBookingsUrl = this.isPrd ? "http://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.GetBookingsUrl = this.isPrd ? "https://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
     },
     methods: {
       validateFormData(formData) {
@@ -412,6 +415,7 @@
       },
       async submitForm() {
         try {
+          this.displaySpinnerMessage = true;
           const response = await axios
             .post(
               this.GetBookingsUrl,
@@ -453,6 +457,7 @@
           date: "",
           time: "",
         };
+        this.displaySpinnerMessage = false;
         // Handle form submission (e.g., send to an API)
         //alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
       },
@@ -540,13 +545,15 @@
   .f-s {
     font-size: 0.8rem;
   }
-
+  .orange-txt {
+    color: #F28C28;
+  }
   .max-w {
     max-width: 300px;
   }
 
   .my-bg {
-    background-color: #f8b195 !important;
+    background-color: #F28C28 !important;
   }
   .small-btn {
       font-size: 0.7rem !important;
@@ -563,9 +570,11 @@
   .steel-blue-color {
     color: #4682B4;
   }
-
   .service-card {
-    background-color: #e0e0e0;
+    font-size: 0.8rem;
+    background-color: #003357;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
   }
 
   .card-header {
@@ -612,10 +621,11 @@
   }
 
   .calendar {
-    color: #000;
+    color: #ffffff;
     font-size: 0.8rem;
     padding: 10px;
-    background-color: #ffffff;
+    background-color: #003357;
+    box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
   }
 
   .calendar-header {
@@ -632,7 +642,7 @@
     cursor: pointer;
     font-size: 25px;
     padding: 5px;
-    color: #4682B4;
+    color: #F28C28;
   }
 
   .calendar-weekdays,
@@ -669,6 +679,9 @@
   }
   /*TIME PICKER CSS*/
   .timepicker-container {
+    background-color: #003357;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
     max-width: 300px;
   }
 
@@ -683,8 +696,7 @@
     text-align: center;
     border: 1px solid #ddd;
     border-radius: 4px;
-    background-color: #ffffff;
-    color: #000000;
+    color: #ffffff;
     cursor: pointer;
     transition: background-color 0.3s;
   }

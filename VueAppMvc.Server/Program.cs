@@ -46,7 +46,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.WithOrigins("https://localhost:54554", "http://engfuel.com")
+        policy.WithOrigins("https://localhost:54554", "https://engfuel.com", "http://localhost:5173", "https://luvoai.netlify.app")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });

@@ -1,7 +1,7 @@
 <template>
   <div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card p-4 shadow-sm rounded-2 border-0 col-12 col-md-6">
-      <h2 class="text-center mb-4 lead" style="font-size: 1.3rem;">Register</h2>
+    <div class="card col-12 col-md-6">
+      <h2 class="text-center text-white mb-4 lead" style="font-size: 1.3rem;">Register</h2>
       <form @submit.prevent="register">
         <div class="mb-3">
           <input type="email"
@@ -9,7 +9,7 @@
                  v-model="email"
                  required
                  placeholder="Enter your email"
-                 class="form-control rounded-pill py-2"
+                 class="form-control rounded-3 py-2"
                  style="font-size: 0.7rem;" />
         </div>
 
@@ -19,7 +19,7 @@
                  v-model="password"
                  required
                  placeholder="Enter your password"
-                 class="form-control rounded-pill py-2"
+                 class="form-control rounded-3 py-2"
                  style="font-size: 0.7rem;" />
         </div>
 
@@ -29,15 +29,15 @@
                  v-model="confirmPassword"
                  required
                  placeholder="Confirm your password"
-                 class="form-control rounded-pill py-2"
+                 class="form-control rounded-3 py-2"
                  style="font-size: 0.7rem;" />
         </div>
 
         <button type="submit"
                 :disabled="isLoading"
-                class="btn w-100 rounded-pill py-2 steel-color fw-bold"
+                class="btn w-100 rounded-pill py-2 text-white fw-bold"
                 :class="isLoading ? 'btn-secondary' : ''"
-                style="background-color: #f8b195; font-size: 0.8rem;">
+                style="background-color: #F28C28; font-size: 0.8rem;">
           {{ isLoading ? "Registering..." : "Register" }}
         </button>
 
@@ -87,13 +87,13 @@
         this.isLoading = true;
 
         try {
-          const response = await axios.post("http://engfuel.com/Account/register", payload);
+          const response = await axios.post("https://engfuel.com/Account/register", payload);
           //const response = await axios.post("https://localhost:7144/Account/register", payload);
           this.successMessage = response.data.message || "Registration successful!";
           // Set a flag in localStorage to indicate successful login
           localStorage.setItem("isLoggedIn", "true");
           // Redirect to the home page or any desired page
-          window.location.href = "http://engfuel.com";
+          window.location.href = "https://engfuel.com";
           this.email = "";
           this.password = "";
           this.confirmPassword = "";
@@ -113,7 +113,10 @@
     font-family: Arial, sans-serif;
     font-size: 0.8rem;
   }
-  .steel-color {
-    color: #3f72af;
+  .card {
+    font-size: 0.8rem;
+    background-color: #003357;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
   }
 </style>
