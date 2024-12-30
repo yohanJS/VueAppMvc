@@ -44,7 +44,7 @@
     },
     methods: {
       async created() {
-        this.LoginUrl = this.isPrd ? "http://engfuel.com/Login" : "https://localhost:7144/Login";
+        this.LoginUrl = this.isPrd ? "https://engfuel.com/Login" : "https://localhost:7144/Login";
       },
       async login() {
         try {
@@ -58,7 +58,7 @@
           localStorage.setItem("isLoggedIn", "true");
 
           // Redirect to the home page or any desired page
-          window.location.href = isDev() ? "http://engfuel.com" : "https://localhost:54554 ";
+          window.location.href = isDev() ? "https://engfuel.com" : "https://localhost:54554 ";
         } catch (error) {
           this.message = error.response.data.message;
         }

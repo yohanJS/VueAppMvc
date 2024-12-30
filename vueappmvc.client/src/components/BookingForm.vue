@@ -11,17 +11,19 @@
       </div>
     </div>
 
-    <div v-if="step === 5 && formData.service !== ''" class="bg-primary-subtle p-2 mb-3 rounded-2 shadow-lg mt-2">
-      <p class="mb-2 text-center text-dark">Your appointment details:</p>
-      <ul class="list-group list-group-flush rounded-2">
-        <li class="list-group-item f-s"><span class="fw-bold">Meeting Type:</span> {{ formData.meetingType }}</li>
-        <li class="list-group-item f-s"><span class="fw-bold">Service:</span> {{ formData.service }}</li>
-        <li class="list-group-item f-s"><span class="fw-bold">Date:</span> {{ formattedDate }}</li>
-        <li class="list-group-item f-s"><span class="fw-bold">Time:</span> {{ formattedTime }}</li>
-      </ul>
-    </div>
+    <form @submit.prevent="submitForm" class="service-card min-vh-100">
+      <!--Booking Details-->
+      <!-- Booking Details -->
+      <div v-if="step === 5 && formData.service !== ''" class="text-white p-4 rounded shadow-sm" style="background-color: #001524;">
+        <p class="mb-3 text-center fs-6 fw-bold">Your Appointment Details:</p>
+        <div class="mb-2">
+          <p class="mb-1"><strong>Meeting Type:</strong> {{ formData.meetingType }}</p>
+          <p class="mb-1"><strong>Service:</strong> {{ formData.service }}</p>
+          <p class="mb-1"><strong>Date:</strong> {{ formattedDate }}</p>
+          <p class="mb-1"><strong>Time:</strong> {{ formattedTime }}</p>
+        </div>
+      </div>
 
-    <form @submit.prevent="submitForm">
       <!-- Step 1: Booking Service -->
       <div v-if="step === 1">
         <p class="text-center mb-1 text-white">Select service</p>
@@ -86,17 +88,17 @@
         </div>
 
         <!--<div class="d-flex justify-content-between my-bg rounded-2 shadow-sm mx-auto" style="max-width: 300px;">
-          <button type="button"
-                  class="btn w-25"
-                  @click="goToStep(2)">
-            <i class="bi bi-arrow-left-circle text-dark"></i>
-          </button>
-          <button type="button"
-                  class="btn w-25"
-                  @click="goToStep(4)">
-            <i class="bi bi-arrow-right-circle text-dark"></i>
-          </button>
-        </div>-->
+      <button type="button"
+              class="btn w-25"
+              @click="goToStep(2)">
+        <i class="bi bi-arrow-left-circle text-dark"></i>
+      </button>
+      <button type="button"
+              class="btn w-25"
+              @click="goToStep(4)">
+        <i class="bi bi-arrow-right-circle text-dark"></i>
+      </button>
+    </div>-->
       </div>
 
       <!-- Step 4: Time Picker -->
@@ -118,133 +120,132 @@
       <div v-if="step === 5">
         <p class="text-center mt-4 mb-2 text-white">Enter personal details</p>
         <!--In Person-->
-        <div v-if="isInPerson === true" class="p-2 mb-5 rounded-2 service-card">
+        <div class="p-3 rounded-2 service-card">
+          <!--In Person-->
+          <div v-if="isInPerson">
 
-          <div class="mb-2">
-            <label for="name" class="form-label text-white">Name</label>
-            <input type="text"
-                   id="name"
-                   class="form-control"
-                   v-model="formData.name"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="mb-2">
-            <label for="email" class="form-label text-white">Email</label>
-            <input type="email"
-                   id="email"
-                   class="form-control"
-                   v-model="formData.email"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="mb-2">
-            <label for="phone" class="form-label text-white">Phone Number</label>
-            <input type="tel"
-                   id="phone"
-                   class="form-control"
-                   v-model="formData.phone"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="mb-2">
-            <label for="street" class="form-label text-white">Street Address</label>
-            <input type="text"
-                   id="street"
-                   class="form-control"
-                   v-model="formData.street"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="row mb-2">
-            <div class="col">
-              <label for="city" class="form-label text-white">City</label>
+            <div class="mb-2">
+              <label for="name" class="form-label text-white">Name</label>
               <input type="text"
-                     id="city"
+                     id="name"
                      class="form-control"
-                     v-model="formData.city"
+                     v-model="formData.name"
                      placeholder=""
                      required />
             </div>
-            <div class="col">
-              <label for="state" class="form-label text-white">State</label>
-              <input type="text"
-                     id="state"
+
+            <div class="mb-2">
+              <label for="email" class="form-label text-white">Email</label>
+              <input type="email"
+                     id="email"
                      class="form-control"
-                     v-model="formData.state"
+                     v-model="formData.email"
                      placeholder=""
                      required />
             </div>
-            <div class="col">
-              <label for="zip" class="form-label text-white">ZIP Code</label>
-              <input type="text"
-                     id="zip"
+
+            <div class="mb-2">
+              <label for="phone" class="form-label text-white">Phone Number</label>
+              <input type="tel"
+                     id="phone"
                      class="form-control"
-                     v-model="formData.zip"
+                     v-model="formData.phone"
+                     placeholder=""
+                     required />
+            </div>
+
+            <div class="mb-2">
+              <label for="street" class="form-label text-white">Street Address</label>
+              <input type="text"
+                     id="street"
+                     class="form-control"
+                     v-model="formData.street"
+                     placeholder=""
+                     required />
+            </div>
+
+            <div class="row mb-2">
+              <div class="col">
+                <label for="city" class="form-label text-white">City</label>
+                <input type="text"
+                       id="city"
+                       class="form-control"
+                       v-model="formData.city"
+                       placeholder=""
+                       required />
+              </div>
+              <div class="col">
+                <label for="state" class="form-label text-white">State</label>
+                <input type="text"
+                       id="state"
+                       class="form-control"
+                       v-model="formData.state"
+                       placeholder=""
+                       required />
+              </div>
+              <div class="col">
+                <label for="zip" class="form-label text-white">ZIP Code</label>
+                <input type="text"
+                       id="zip"
+                       class="form-control"
+                       v-model="formData.zip"
+                       placeholder=""
+                       required />
+              </div>
+            </div>
+          </div>
+          <!--Online/Phone-->
+          <div v-else>
+
+            <div class="mb-2">
+              <label for="name" class="form-label text-white">Name</label>
+              <input type="text"
+                     id="name"
+                     class="form-control"
+                     v-model="formData.name"
+                     placeholder=""
+                     required />
+            </div>
+
+            <div class="mb-2">
+              <label for="email" class="form-label text-white">Email</label>
+              <input type="email"
+                     id="email"
+                     class="form-control"
+                     v-model="formData.email"
+                     placeholder=""
+                     required />
+            </div>
+
+            <div class="mb-2">
+              <label for="phone" class="form-label text-white">Phone Number</label>
+              <input type="tel"
+                     id="phone"
+                     class="form-control"
+                     v-model="formData.phone"
                      placeholder=""
                      required />
             </div>
           </div>
-
-          <div class="d-flex justify-content-between">
+          <!--Buttons Section-->
+          <div class="d-flex justify-content-between mt-4">
             <button type="button"
-                    class="btn w-25"
+                    class="btn"
                     @click="goToStep(4)">
               <i class="bi bi-arrow-left-circle orange-txt"></i>
             </button>
-            <button type="submit" class="btn w-25">
-              <i class="bi bi-send-check-fill orange-txt"></i>
-            </button>
-          </div>
-        </div>
-        <!--Online/Phone-->
-        <div v-if="isInPerson === false" class="p-2 mb-5 rounded-2 service-card">
+            <div v-if="displaySpinnerMessage">
+              <button class="btn btn-outline-success border-0" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
 
-          <div class="mb-2">
-            <label for="name" class="form-label text-white">Name</label>
-            <input type="text"
-                   id="name"
-                   class="form-control"
-                   v-model="formData.name"
-                   placeholder=""
-                   required />
+              </button>
+            </div>
+            <div v-else>
+              <button type="submit" class="btn w-25">
+                <i class="bi bi-send-check-fill orange-txt"></i>
+              </button>
+            </div>
           </div>
-
-          <div class="mb-2">
-            <label for="email" class="form-label text-white">Email</label>
-            <input type="email"
-                   id="email"
-                   class="form-control"
-                   v-model="formData.email"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="mb-2">
-            <label for="phone" class="form-label text-white">Phone Number</label>
-            <input type="tel"
-                   id="phone"
-                   class="form-control"
-                   v-model="formData.phone"
-                   placeholder=""
-                   required />
-          </div>
-
-          <div class="d-flex justify-content-between">
-            <button type="button"
-                    class="btn w-25 "
-                    @click="goToStep(2)">
-              <i class="bi bi-arrow-left-circle orange-txt"></i>
-            </button>
-            <button type="submit" class="btn w-25">
-              <i class="bi bi-send-check-fill orange-txt"></i>
-            </button>
-          </div>
-
         </div>
       </div>
     </form>
@@ -286,8 +287,9 @@
       const today = new Date();
       const currentTime = new Date();
       return {
-        isPrd: true,
+        isPrd: false,
         GetBookingsUrl: "",
+        displaySpinnerMessage: false,
         currentYear: today.getFullYear(),
         currentMonth: today.getMonth(),
         selectedDate: today,
@@ -356,7 +358,8 @@
       }
     },
     async created() {
-      this.GetBookingsUrl = this.isPrd ? "http://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.GetBookingsUrl = this.isPrd ? "https://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
     },
     methods: {
       validateFormData(formData) {
@@ -412,6 +415,7 @@
       },
       async submitForm() {
         try {
+          this.displaySpinnerMessage = true;
           const response = await axios
             .post(
               this.GetBookingsUrl,
@@ -453,6 +457,7 @@
           date: "",
           time: "",
         };
+        this.displaySpinnerMessage = false;
         // Handle form submission (e.g., send to an API)
         //alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
       },

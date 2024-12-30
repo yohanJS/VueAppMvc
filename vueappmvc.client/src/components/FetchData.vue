@@ -1,6 +1,6 @@
 <template>
   <div class="container py-2 mb-5 text-white min-vh-100">
-    <!-- services Section -->
+    <!-- Services Section -->
     <div class="mt-3 mb-5">
       <!-- Button to Fetch services -->
       <!--<div class="text-end">
@@ -132,7 +132,7 @@
         loading: false,
         services: null,
         serviceId: null,
-        isPrd: true,
+        isPrd: false,
         startOfWeek: moment().startOf('week').format('DD'),
         endOfWeek: moment().endOf('week').format('DD'),
         GetservicesUrl: "",
@@ -140,9 +140,10 @@
       };
     },
     async created() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       this.getWeekRange();
-      this.GetservicesUrl = this.isPrd ? "http://engfuel.com/Bookings/GetAllBookings" : "https://localhost:7144/Bookings/GetAllBookings";
-      this.DeleteservicesUrl = this.isPrd ? "http://engfuel.com/Bookings/DeleteBooking" : "https://localhost:7144/Bookings/DeleteBooking";
+      this.GetservicesUrl = this.isPrd ? "https://engfuel.com/Bookings/GetAllBookings" : "https://localhost:7144/Bookings/GetAllBookings";
+      this.DeleteservicesUrl = this.isPrd ? "https://engfuel.com/Bookings/DeleteBooking" : "https://localhost:7144/Bookings/DeleteBooking";
       await this.fetchServices();
     },
     watch: {
