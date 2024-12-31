@@ -30,13 +30,16 @@
         <div class="d-flex flex-column gap-3 mb-5">
           <div v-for="service in services"
                :key="service.id"
-               class="service-card rounded-2 text-white"
+               class="service-card rounded-2 text-white p-3"
                @click="selectService(service)">
-            <div class="">
-              <h4 class="mb-1 card-header">{{ service.name }}</h4>
+            <div class="d-flex align-items-center gap-3">
+              <img :src="service.image" alt="service.name" class="img w-25 rounded-1" />
+              <div>
+                <h4 class="mb-1 card-header">{{ service.name }}</h4>
+                <p class="mb-2" style="font-size: 0.8rem;">{{ service.description }}</p>
+              </div>
             </div>
-            <p class="mb-2" style="font-size: 0.8rem;">{{ service.description }}</p>
-            <div class="text-end">
+            <div class="text-end mt-2">
               <i class="bi bi-arrow-right-circle orange-txt"></i>
             </div>
           </div>
@@ -318,26 +321,32 @@
           {
             name: "Modern Pergola",
             description: "A sleek, contemporary pergola to enhance your outdoor living space.",
+            image: "/src/assets/pergola.svg", // Replace with your image URL
           },
           {
             name: "Outdoor Kitchens",
             description: "Fully equipped outdoor kitchens for dining and entertaining.",
+            image: "/src/assets/outdoorKitchen.svg", // Replace with your image URL
           },
           {
             name: "Motorized Curtains",
             description: "Convenient motorized curtains for outdoor or indoor use.",
+            image: "/src/assets/curtain.svg", // Replace with your image URL
           },
           {
             name: "Fences and Gates",
             description: "Durable and stylish fences and gates for added privacy and security.",
+            image: "/src/assets/fencesGates.svg", // Replace with your image URL
           },
           {
             name: "Carports",
             description: "Protect your vehicles with a custom-designed carport.",
+            image: "/src/assets/carport.svg", // Replace with your image URL
           },
           {
             name: "Decks",
             description: "Beautiful and durable decks to elevate your outdoor experience.",
+            image: "/src/assets/deck.svg", // Replace with your image URL
           },
         ],
       };

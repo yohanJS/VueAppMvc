@@ -27,14 +27,14 @@
         <!-- Month and Year Section -->
         <div class="row justify-content-center align-items-center mt-4 mb-3">
           <!--<div class="col-auto">
-    <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
-  </div>-->
+            <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
+          </div>-->
           <div class="col text-center">
             <h4>{{ currentMonth }}</h4>
           </div>
           <!--<div class="col-auto">
-    <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
-  </div>-->
+            <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
+          </div>-->
           <!-- Week Range Section -->
           <div class="row align-items-center mb-5">
             <div class="col-auto">
@@ -44,7 +44,7 @@
               <p class="fw-bold orange-bg p-1 rounded-5 m-0">{{ weekRange }}</p>
             </div>
             <div class="col-auto">
-              <i class="bi bi-chevron-right orange-bg px-2 py-1 rounded-5" @click="nextWeek"></i>
+              <i class="bi bi-chevron-compact-right orange-bg px-2 py-1 rounded-5" @click="nextWeek"></i>
             </div>
           </div>
         </div>
@@ -59,7 +59,7 @@
             {{ formatMonthAndDay(record.serviceDate) }}
           </p>
           <div>
-            <div class="row d-flex" v-if="isDateInWeekRange(record.serviceDate)" v-for="service in record.services">
+            <div class="row d-flex justify-content-between" v-if="isDateInWeekRange(record.serviceDate)" v-for="service in record.services">
               <div class="col-3 mb-2">
                 <p class="mb-1">{{ service.time }}</p>
               </div>
