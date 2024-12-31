@@ -26,7 +26,7 @@
 
       <!-- Step 1: Booking Service -->
       <div v-if="step === 1">
-        <p class="text-center mb-1 text-white">Select service</p>
+        <p class="text-center mb-1 text-white mt-5">Select service</p>
         <div class="d-flex flex-column gap-3 mb-5">
           <div v-for="service in services"
                :key="service.id"
@@ -47,7 +47,7 @@
       </div>
 
       <!-- Step 2 In Peson/Online/Phone-->
-      <div v-if="step === 2" class="text-center text-white">
+      <div v-if="step === 2" class="text-center text-white p-2 mt-5">
         <p class="text-center mb-1 text-white">Type of meeting</p>
         <button @click="inPersonMeeting(true)" class="btn btn-outline-primary border-0 w-50 service-card mb-2 text-white">
           <span class="f-s">
@@ -66,7 +66,7 @@
 
       <!-- Step 3: Date -->
       <div v-if="step === 3">
-        <p class="text-center mb-1 text-white">Select date</p>
+        <p class="text-center mb-1 text-white mt-5">Select date</p>
         <div class="datepicker-container m-2 mx-auto">
           <div class="calendar rounded-2">
             <div class="calendar-header">
@@ -106,7 +106,7 @@
 
       <!-- Step 4: Time Picker -->
       <div v-if="step === 4">
-        <p class="text-center mb-1 text-white">Select time</p>
+        <p class="text-center mb-1 text-white mt-5">Select time</p>
         <div class="timepicker-container m-2 mx-auto rounded-2">
           <div class="time-grid">
             <div v-for="(time, index) in timeSlots"
@@ -121,7 +121,7 @@
 
       <!-- Step 5: Personal Details -->
       <div v-if="step === 5">
-        <p class="text-center mt-4 mb-2 text-white">Enter personal details</p>
+        <p class="text-center mt-4 mb-2 text-white mt-5">Enter personal details</p>
         <!--In Person-->
         <div class="p-3 rounded-2 service-card">
           <!--In Person-->
@@ -291,7 +291,7 @@
       const currentTime = new Date();
       return {
         isPrd: false,
-        GetBookingsUrl: "",
+        CreateBookingUrl: "",
         displaySpinnerMessage: false,
         currentYear: today.getFullYear(),
         currentMonth: today.getMonth(),
@@ -321,32 +321,32 @@
           {
             name: "Modern Pergola",
             description: "A sleek, contemporary pergola to enhance your outdoor living space.",
-            image: "/src/assets/pergola.svg", // Replace with your image URL
+            image: "/assets/pergola.png",
           },
           {
             name: "Outdoor Kitchens",
             description: "Fully equipped outdoor kitchens for dining and entertaining.",
-            image: "/src/assets/outdoorKitchen.svg", // Replace with your image URL
+            image: "/assets/outdoorKitchen.png",
           },
           {
             name: "Motorized Curtains",
             description: "Convenient motorized curtains for outdoor or indoor use.",
-            image: "/src/assets/curtain.svg", // Replace with your image URL
+            image: "/assets/curtain.png",
           },
           {
             name: "Fences and Gates",
             description: "Durable and stylish fences and gates for added privacy and security.",
-            image: "/src/assets/fencesGates.svg", // Replace with your image URL
+            image: "/assets/fencesAndGates.png",
           },
           {
             name: "Carports",
             description: "Protect your vehicles with a custom-designed carport.",
-            image: "/src/assets/carport.svg", // Replace with your image URL
+            image: "/assets/carport.png",
           },
           {
             name: "Decks",
             description: "Beautiful and durable decks to elevate your outdoor experience.",
-            image: "/src/assets/deck.svg", // Replace with your image URL
+            image: "/assets/deck.png",
           },
         ],
       };
@@ -364,8 +364,7 @@
       }
     },
     async created() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      this.GetBookingsUrl = this.isPrd ? "https://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
+      this.CreateBookingUrl = this.isPrd ? "https://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
     },
     methods: {
       validateFormData(formData) {
@@ -384,7 +383,7 @@
         }
       },
       selectService(service) {
-        this.formData.service = service.name; // Set the service name in formData
+        this.formData.service = service.name;
         this.goToStep(2);
       },
       inPersonMeeting(bool) {
@@ -398,15 +397,10 @@
         this.goToStep(3);
       },
       goToStep(stepNumber) {
-        // Scroll up to the top of the page
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: 'smooth' // Optional for smooth scrolling
-        });
-
         // Check if the step has changed
         if (this.step !== stepNumber) {
+          // Scroll up to the top of the page
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth'});
           // Clear previous step's styles
           var previousStep = document.getElementById("step" + this.step);
           previousStep.classList.remove('fw-bold', 'steel-blue-color');
@@ -419,12 +413,21 @@
         var step = document.getElementById("step" + stepNumber);
         step.classList.add('fw-bold', 'steel-blue-color');
       },
+      async fetchServices() {
+        this.services = null;
+        this.loading = true;
+        axios.get(this.GetservicesUrl)
+          .then((response) => {
+            this.services = response.data;
+            this.loading = false;
+          });
+      },
       async submitForm() {
         try {
           this.displaySpinnerMessage = true;
           const response = await axios
             .post(
-              this.GetBookingsUrl,
+              this.CreateBookingUrl,
               {
                 Name: this.formData.name,
                 Email: this.formData.email,
