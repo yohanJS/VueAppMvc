@@ -287,17 +287,14 @@
       const today = new Date();
       const currentTime = new Date();
       return {
-        isPrd: true,
+        isPrd: false,
         GetBookingsUrl: "",
         displaySpinnerMessage: false,
         currentYear: today.getFullYear(),
         currentMonth: today.getMonth(),
         selectedDate: today,
-        weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        monthNames: [
-          'January', 'February', 'March', 'April', 'May', 'June',
-          'July', 'August', 'September', 'October', 'November', 'December'
-        ],
+        weekdays: Array.from({ length: 7 }, (_, index) => moment().weekday(index).format('ddd')),
+        monthNames: Array.from({ length: 12 }, (_, index) => moment().month(index).format('MMMM')),
         timeSlots: this.generateTimeSlots(),
         selectedTime: null,
         takenTimes: ["9:00 AM", "9:15 AM", "12:00 PM"],
