@@ -290,7 +290,7 @@
       const today = new Date();
       const currentTime = new Date();
       return {
-        isPrd: false,
+        isPrd: true,
         CreateBookingUrl: "",
         displaySpinnerMessage: false,
         currentYear: today.getFullYear(),
@@ -300,7 +300,7 @@
         monthNames: Array.from({ length: 12 }, (_, index) => moment().month(index).format('MMMM')),
         timeSlots: this.generateTimeSlots(),
         selectedTime: null,
-        takenTimes: ["9:00 AM", "9:15 AM", "12:00 PM"],
+        takenTimes: [],
         step: 1,
         isInPerson: false,
         isSubmissionOk: false,
@@ -365,6 +365,7 @@
     },
     async created() {
       this.CreateBookingUrl = this.isPrd ? "https://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
+      this.GetTimes = this.isPrd ? "https://engfuel.com/Bookings/GetTimes" : "https://localhost:7144/Bookings/GetTimes";
     },
     methods: {
       validateFormData(formData) {
@@ -413,13 +414,85 @@
         var step = document.getElementById("step" + stepNumber);
         step.classList.add('fw-bold', 'steel-blue-color');
       },
-      async fetchServices() {
-        this.services = null;
-        this.loading = true;
-        axios.get(this.GetservicesUrl)
+      getDates() {
+        const dates = [];
+        const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
+        const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
+
+        // Add days from the previous month to fill the first week
+        const startDay = firstDayOfMonth.getDay();
+        for (let i = 0; i < startDay; i++) {
+          const prevDate = new Date(this.currentYear, this.currentMonth, -i);
+          dates.unshift(prevDate);
+        }
+
+        // Add all dates from the current month
+        for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+          dates.push(new Date(this.currentYear, this.currentMonth, i));
+        }
+
+        // Add days from the next month to complete the grid
+        while (dates.length % 7 !== 0) {
+          const nextDate = new Date(this.currentYear, this.currentMonth + 1, dates.length % 7);
+          dates.push(nextDate);
+        }
+
+        return dates;
+      },
+      prevMonth() {
+        this.currentMonth -= 1;
+        if (this.currentMonth < 0) {
+          this.currentMonth = 11;
+          this.currentYear -= 1;
+        }
+      },
+      nextMonth() {
+        this.currentMonth += 1;
+        if (this.currentMonth > 11) {
+          this.currentMonth = 0;
+          this.currentYear += 1;
+        }
+      },
+      selectDate(date) {
+        this.selectedDate = date;
+        this.formData.date = moment(date).format('YYYY/MM/DD');
+        this.fetchTimes(moment(date).format('YYYY/MM/DD'));
+        this.goToStep(4);
+      },
+      isToday(date) {
+        const today = new Date();
+        return (
+          date.getFullYear() === today.getFullYear() &&
+          date.getMonth() === today.getMonth() &&
+          date.getDate() === today.getDate()
+        );
+      },
+      isSelectedDate(date) {
+        return (
+          this.selectedDate.getFullYear() === date.getFullYear() &&
+          this.selectedDate.getMonth() === date.getMonth() &&
+          this.selectedDate.getDate() === date.getDate()
+        );
+      },
+      generateTimeSlots() {
+        const slots = [];
+        const startTime = moment().startOf('day').hour(8); // Start at 8:00 AM
+        const endTime = moment().startOf('day').hour(18); // End at 6:00 PM
+        while (startTime <= endTime) {
+          slots.push(startTime.format('h:mm A'));
+          startTime.add(15, 'minutes'); // Increment by 15 minutes
+        }
+        return slots;
+      },
+      selectTime(time) {
+        this.selectedTime = time;
+        this.formData.time = time;
+        this.goToStep(5);
+      },
+      async fetchTimes(date) {
+        await axios.get(this.GetTimes, { params: { serviceDate: date } })
           .then((response) => {
-            this.services = response.data;
-            this.loading = false;
+            this.takenTimes = response.data;
           });
       },
       async submitForm() {
@@ -469,80 +542,6 @@
         this.displaySpinnerMessage = false;
         // Handle form submission (e.g., send to an API)
         //alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
-      },
-      getDates() {
-        const dates = [];
-        const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
-        const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
-
-        // Add days from the previous month to fill the first week
-        const startDay = firstDayOfMonth.getDay();
-        for (let i = 0; i < startDay; i++) {
-          const prevDate = new Date(this.currentYear, this.currentMonth, -i);
-          dates.unshift(prevDate);
-        }
-
-        // Add all dates from the current month
-        for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
-          dates.push(new Date(this.currentYear, this.currentMonth, i));
-        }
-
-        // Add days from the next month to complete the grid
-        while (dates.length % 7 !== 0) {
-          const nextDate = new Date(this.currentYear, this.currentMonth + 1, dates.length % 7);
-          dates.push(nextDate);
-        }
-
-        return dates;
-      },
-      prevMonth() {
-        this.currentMonth -= 1;
-        if (this.currentMonth < 0) {
-          this.currentMonth = 11;
-          this.currentYear -= 1;
-        }
-      },
-      nextMonth() {
-        this.currentMonth += 1;
-        if (this.currentMonth > 11) {
-          this.currentMonth = 0;
-          this.currentYear += 1;
-        }
-      },
-      selectDate(date) {
-        this.selectedDate = date;
-        this.formData.date = moment(date).format('YYYY/MM/DD');
-        this.goToStep(4);
-      },
-      isToday(date) {
-        const today = new Date();
-        return (
-          date.getFullYear() === today.getFullYear() &&
-          date.getMonth() === today.getMonth() &&
-          date.getDate() === today.getDate()
-        );
-      },
-      isSelectedDate(date) {
-        return (
-          this.selectedDate.getFullYear() === date.getFullYear() &&
-          this.selectedDate.getMonth() === date.getMonth() &&
-          this.selectedDate.getDate() === date.getDate()
-        );
-      },
-      generateTimeSlots() {
-        const slots = [];
-        const startTime = moment().startOf('day').hour(8); // Start at 8:00 AM
-        const endTime = moment().startOf('day').hour(18); // End at 6:00 PM
-        while (startTime <= endTime) {
-          slots.push(startTime.format('h:mm A'));
-          startTime.add(15, 'minutes'); // Increment by 15 minutes
-        }
-        return slots;
-      },
-      selectTime(time) {
-        this.selectedTime = time;
-        this.formData.time = time;
-        this.goToStep(5);
       },
     },
   };
