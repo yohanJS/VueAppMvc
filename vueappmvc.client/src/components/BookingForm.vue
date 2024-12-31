@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <form @submit.prevent="submitForm" class="service-card min-vh-100">
+    <form @submit.prevent="submitForm" class="service-card rounded-1 min-vh-100">
       <!--Booking Details-->
       <!-- Booking Details -->
       <div v-if="step === 5 && formData.service !== ''" class="text-white p-4 rounded shadow-sm" style="background-color: #001524;">
@@ -287,7 +287,7 @@
       const today = new Date();
       const currentTime = new Date();
       return {
-        isPrd: false,
+        isPrd: true,
         GetBookingsUrl: "",
         displaySpinnerMessage: false,
         currentYear: today.getFullYear(),

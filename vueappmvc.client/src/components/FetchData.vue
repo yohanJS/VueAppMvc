@@ -25,28 +25,27 @@
 
       <div v-if="services !== null">
         <!-- Month and Year Section -->
-        <div class="row justify-content-between align-items-center mt-4 mb-3">
+        <div class="row justify-content-center align-items-center mt-4 mb-3">
           <!--<div class="col-auto">
-            <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
-          </div>-->
+    <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
+  </div>-->
           <div class="col text-center">
             <h4>{{ currentMonth }}</h4>
           </div>
           <!--<div class="col-auto">
-            <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
-          </div>-->
-        </div>
-
-        <!-- Week Range Section -->
-        <div class="row justify-content-between align-items-center mb-5">
-          <div class="col-auto">
-            <i class="bi bi-caret-left-fill orange-bg p-2 rounded-5" @click="previousWeek"></i>
-          </div>
-          <div class="col text-center">
-            <p class="fw-bold orange-bg p-2 rounded-5 m-0">{{ weekRange }}</p>
-          </div>
-          <div class="col-auto">
-            <i class="bi bi-caret-right-fill orange-bg p-2 rounded-5" @click="nextWeek"></i>
+    <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
+  </div>-->
+          <!-- Week Range Section -->
+          <div class="row align-items-center mb-5">
+            <div class="col-auto">
+              <i class="bi bi-chevron-left orange-bg px-2 py-1 rounded-5" @click="previousWeek"></i>
+            </div>
+            <div class="col text-center">
+              <p class="fw-bold orange-bg p-1 rounded-5 m-0">{{ weekRange }}</p>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-chevron-right orange-bg px-2 py-1 rounded-5" @click="nextWeek"></i>
+            </div>
           </div>
         </div>
 
@@ -132,7 +131,7 @@
         loading: false,
         services: null,
         serviceId: null,
-        isPrd: false,
+        isPrd: true,
         startOfWeek: moment().startOf('week').format('DD'),
         endOfWeek: moment().endOf('week').format('DD'),
         GetservicesUrl: "",

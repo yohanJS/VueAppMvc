@@ -12,7 +12,6 @@ namespace VueAppMvc.Server.Controllers
     public class BookingsController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-
         public BookingsController(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
