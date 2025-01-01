@@ -12,7 +12,6 @@ namespace VueAppMvc.Server.Controllers
     public class BookingsController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-
         public BookingsController(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -83,6 +82,37 @@ namespace VueAppMvc.Server.Controllers
                 throw new ApplicationException("An error occurred while fetching bookings.", ex);
             }
             return response;
+        }
+
+        /// <summary>
+        /// Returns all bookings
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetTimes")]
+        public List<string> GetTimes([FromQuery] string serviceDate)
+        {
+            List<string> takenTimes = new List<string>();
+            try
+            {
+                if (_dbContext != null)
+                {
+                    using (_dbContext)
+                    {
+                        List<ServiceModel> services = new List<ServiceModel>();
+
+                        if (_dbContext.services != null)
+                        {
+                            services = _dbContext.services.ToList();
+                            takenTimes = services.Where(s => s.Date.Equals(serviceDate)).Select(s => s.Time).ToList();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while fetching bookings.", ex);
+            }
+            return takenTimes;
         }
 
         /// <summary>

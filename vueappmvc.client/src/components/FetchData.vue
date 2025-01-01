@@ -25,7 +25,7 @@
 
       <div v-if="services !== null">
         <!-- Month and Year Section -->
-        <div class="row justify-content-between align-items-center mt-4 mb-3">
+        <div class="row justify-content-center align-items-center mt-4 mb-3">
           <!--<div class="col-auto">
             <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
           </div>-->
@@ -35,18 +35,17 @@
           <!--<div class="col-auto">
             <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
           </div>-->
-        </div>
-
-        <!-- Week Range Section -->
-        <div class="row justify-content-between align-items-center mb-5">
-          <div class="col-auto">
-            <i class="bi bi-caret-left-fill orange-bg p-2 rounded-5" @click="previousWeek"></i>
-          </div>
-          <div class="col text-center">
-            <p class="fw-bold orange-bg p-2 rounded-5 m-0">{{ weekRange }}</p>
-          </div>
-          <div class="col-auto">
-            <i class="bi bi-caret-right-fill orange-bg p-2 rounded-5" @click="nextWeek"></i>
+          <!-- Week Range Section -->
+          <div class="row align-items-center mb-5">
+            <div class="col-auto">
+              <i class="bi bi-chevron-left orange-bg px-2 py-1 rounded-5" @click="previousWeek"></i>
+            </div>
+            <div class="col text-center">
+              <p class="fw-bold orange-bg p-1 rounded-5 m-0">{{ weekRange }}</p>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-chevron-compact-right orange-bg px-2 py-1 rounded-5" @click="nextWeek"></i>
+            </div>
           </div>
         </div>
 
@@ -60,7 +59,7 @@
             {{ formatMonthAndDay(record.serviceDate) }}
           </p>
           <div>
-            <div class="row d-flex" v-if="isDateInWeekRange(record.serviceDate)" v-for="service in record.services">
+            <div class="row d-flex justify-content-between" v-if="isDateInWeekRange(record.serviceDate)" v-for="service in record.services">
               <div class="col-3 mb-2">
                 <p class="mb-1">{{ service.time }}</p>
               </div>
@@ -133,8 +132,8 @@
         services: null,
         serviceId: null,
         isPrd: false,
-        startOfWeek: moment().startOf('week').format('DD'),
-        endOfWeek: moment().endOf('week').format('DD'),
+        startOfWeek: moment().startOf('week').format('YYYY-MM-DD'),
+        endOfWeek: moment().endOf('week').format('YYYY-MM-DD'),
         GetservicesUrl: "",
         DeleteservicesUrl: "",
       };
@@ -209,13 +208,16 @@
         this.currentMonth = moment(this.currentMonth, 'MMM YYYY').add(1, 'months').startOf('month').format('MMM YYYY');
       },
       getWeekRange() {
-        this.weekRange = `Week ${this.startOfWeek} - ${this.endOfWeek}`;
+        const startOfWeekFormatted = moment(this.startOfWeek, 'YYYY-MM-DD').format('DD');
+        const endOfWeekFormatted = moment(this.endOfWeek, 'YYYY-MM-DD').format('DD');
+
+        this.weekRange = `Week ${startOfWeekFormatted} - ${endOfWeekFormatted}`;
       },
       isDateInWeekRange(serviceDate) {
-        const currentStartDate = moment(this.currentMonth, 'MMM YYYY').date(this.startOfWeek);
-        const currentEndDate = currentStartDate.clone().add(6, 'days');
-
+        const currentStartDate = moment(this.startOfWeek, 'YYYY-MM-DD');
+        const currentEndDate = currentStartDate.clone().endOf('week');
         const serviceMoment = moment(serviceDate, 'YYYY-MM-DD');
+
         return serviceMoment.isBetween(currentStartDate, currentEndDate, null, '[]');
       },
       isbookingBookedInWeek(booking) {
@@ -229,30 +231,26 @@
         return false;
       },
       nextWeek() {
-        const currentDate = moment(this.currentMonth, 'MMM YYYY');
-        const currentStartDate = currentDate.date(this.startOfWeek);
+        const newStartOfWeek = moment(this.startOfWeek, 'YYYY-MM-DD').add(7, 'days'); // Parse and add 7 days
 
-        const nextStartOfWeek = currentStartDate.clone().add(7, 'days');
-        this.startOfWeek = nextStartOfWeek.date();
-        this.currentMonth = nextStartOfWeek.format('MMM YYYY');
+        this.startOfWeek = moment(newStartOfWeek).startOf('week').format('YYYY-MM-DD');
+        this.currentMonth = newStartOfWeek.format('MMM YYYY');
 
-        const nextEndOfWeek = nextStartOfWeek.clone().add(6, 'days');
-        this.endOfWeek = nextEndOfWeek.date();
+        const newEndOfWeek = newStartOfWeek.clone().endOf('week');
 
-        this.getWeekRange(); // Update week range display
+        this.endOfWeek = newEndOfWeek.format('YYYY-MM-DD');
+        this.getWeekRange();
       },
       previousWeek() {
-        const currentDate = moment(this.currentMonth, 'MMM YYYY');
-        const currentStartDate = currentDate.date(this.startOfWeek);
+        const newStartOfWeek = moment(this.startOfWeek, 'YYYY-MM-DD').subtract(7, 'days'); // Parse and subtract 7 days
 
-        const prevStartOfWeek = currentStartDate.clone().subtract(7, 'days');
-        this.startOfWeek = prevStartOfWeek.date();
-        this.currentMonth = prevStartOfWeek.format('MMM YYYY');
+        this.startOfWeek = moment(newStartOfWeek).startOf('week').format('YYYY-MM-DD');
+        this.currentMonth = newStartOfWeek.format('MMM YYYY');
 
-        const prevEndOfWeek = prevStartOfWeek.clone().add(6, 'days');
-        this.endOfWeek = prevEndOfWeek.date();
+        const newEndOfWeek = newStartOfWeek.clone().endOf('week');
 
-        this.getWeekRange(); // Update week range display
+        this.endOfWeek = newEndOfWeek.format('YYYY-MM-DD');
+        this.getWeekRange();
       },
       async fetchServices() {
         this.services = null;

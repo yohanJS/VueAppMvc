@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <form @submit.prevent="submitForm" class="service-card min-vh-100">
+    <form @submit.prevent="submitForm" class="service-card rounded-1 min-vh-100">
       <!--Booking Details-->
       <!-- Booking Details -->
       <div v-if="step === 5 && formData.service !== ''" class="text-white p-4 rounded shadow-sm" style="background-color: #001524;">
@@ -26,17 +26,20 @@
 
       <!-- Step 1: Booking Service -->
       <div v-if="step === 1">
-        <p class="text-center mb-1 text-white">Select service</p>
+        <p class="text-center mb-1 text-white mt-5">Select service</p>
         <div class="d-flex flex-column gap-3 mb-5">
           <div v-for="service in services"
                :key="service.id"
-               class="service-card rounded-2 text-white"
+               class="service-card rounded-2 text-white p-3"
                @click="selectService(service)">
-            <div class="">
-              <h4 class="mb-1 card-header">{{ service.name }}</h4>
+            <div class="d-flex align-items-center gap-3">
+              <img :src="service.image" alt="service.name" class="img w-25 rounded-1" />
+              <div>
+                <h4 class="mb-1 card-header">{{ service.name }}</h4>
+                <p class="mb-2" style="font-size: 0.8rem;">{{ service.description }}</p>
+              </div>
             </div>
-            <p class="mb-2" style="font-size: 0.8rem;">{{ service.description }}</p>
-            <div class="text-end">
+            <div class="text-end mt-2">
               <i class="bi bi-arrow-right-circle orange-txt"></i>
             </div>
           </div>
@@ -44,7 +47,7 @@
       </div>
 
       <!-- Step 2 In Peson/Online/Phone-->
-      <div v-if="step === 2" class="text-center text-white">
+      <div v-if="step === 2" class="text-center text-white p-2 mt-5">
         <p class="text-center mb-1 text-white">Type of meeting</p>
         <button @click="inPersonMeeting(true)" class="btn btn-outline-primary border-0 w-50 service-card mb-2 text-white">
           <span class="f-s">
@@ -63,7 +66,7 @@
 
       <!-- Step 3: Date -->
       <div v-if="step === 3">
-        <p class="text-center mb-1 text-white">Select date</p>
+        <p class="text-center mb-1 text-white mt-5">Select date</p>
         <div class="datepicker-container m-2 mx-auto">
           <div class="calendar rounded-2">
             <div class="calendar-header">
@@ -103,7 +106,7 @@
 
       <!-- Step 4: Time Picker -->
       <div v-if="step === 4">
-        <p class="text-center mb-1 text-white">Select time</p>
+        <p class="text-center mb-1 text-white mt-5">Select time</p>
         <div class="timepicker-container m-2 mx-auto rounded-2">
           <div class="time-grid">
             <div v-for="(time, index) in timeSlots"
@@ -118,7 +121,7 @@
 
       <!-- Step 5: Personal Details -->
       <div v-if="step === 5">
-        <p class="text-center mt-4 mb-2 text-white">Enter personal details</p>
+        <p class="text-center mt-4 mb-2 text-white mt-5">Enter personal details</p>
         <!--In Person-->
         <div class="p-3 rounded-2 service-card">
           <!--In Person-->
@@ -288,19 +291,16 @@
       const currentTime = new Date();
       return {
         isPrd: false,
-        GetBookingsUrl: "",
+        CreateBookingUrl: "",
         displaySpinnerMessage: false,
         currentYear: today.getFullYear(),
         currentMonth: today.getMonth(),
         selectedDate: today,
-        weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-        monthNames: [
-          'January', 'February', 'March', 'April', 'May', 'June',
-          'July', 'August', 'September', 'October', 'November', 'December'
-        ],
+        weekdays: Array.from({ length: 7 }, (_, index) => moment().weekday(index).format('ddd')),
+        monthNames: Array.from({ length: 12 }, (_, index) => moment().month(index).format('MMMM')),
         timeSlots: this.generateTimeSlots(),
         selectedTime: null,
-        takenTimes: ["9:00 AM", "9:15 AM", "12:00 PM"],
+        takenTimes: [],
         step: 1,
         isInPerson: false,
         isSubmissionOk: false,
@@ -321,26 +321,32 @@
           {
             name: "Modern Pergola",
             description: "A sleek, contemporary pergola to enhance your outdoor living space.",
+            image: "/assets/pergola.png",
           },
           {
             name: "Outdoor Kitchens",
             description: "Fully equipped outdoor kitchens for dining and entertaining.",
+            image: "/assets/outdoorKitchen.png",
           },
           {
             name: "Motorized Curtains",
             description: "Convenient motorized curtains for outdoor or indoor use.",
+            image: "/assets/curtain.png",
           },
           {
             name: "Fences and Gates",
             description: "Durable and stylish fences and gates for added privacy and security.",
+            image: "/assets/fencesAndGates.png",
           },
           {
             name: "Carports",
             description: "Protect your vehicles with a custom-designed carport.",
+            image: "/assets/carport.png",
           },
           {
             name: "Decks",
             description: "Beautiful and durable decks to elevate your outdoor experience.",
+            image: "/assets/deck.png",
           },
         ],
       };
@@ -358,8 +364,8 @@
       }
     },
     async created() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      this.GetBookingsUrl = this.isPrd ? "https://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
+      this.CreateBookingUrl = this.isPrd ? "https://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
+      this.GetTimes = this.isPrd ? "https://engfuel.com/Bookings/GetTimes" : "https://localhost:7144/Bookings/GetTimes";
     },
     methods: {
       validateFormData(formData) {
@@ -378,7 +384,7 @@
         }
       },
       selectService(service) {
-        this.formData.service = service.name; // Set the service name in formData
+        this.formData.service = service.name;
         this.goToStep(2);
       },
       inPersonMeeting(bool) {
@@ -392,15 +398,10 @@
         this.goToStep(3);
       },
       goToStep(stepNumber) {
-        // Scroll up to the top of the page
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: 'smooth' // Optional for smooth scrolling
-        });
-
         // Check if the step has changed
         if (this.step !== stepNumber) {
+          // Scroll up to the top of the page
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth'});
           // Clear previous step's styles
           var previousStep = document.getElementById("step" + this.step);
           previousStep.classList.remove('fw-bold', 'steel-blue-color');
@@ -413,12 +414,92 @@
         var step = document.getElementById("step" + stepNumber);
         step.classList.add('fw-bold', 'steel-blue-color');
       },
+      getDates() {
+        const dates = [];
+        const startOfMonth = moment([this.currentYear, this.currentMonth]); // Start of the current month
+        const endOfMonth = moment(startOfMonth).endOf('month'); // End of the current month
+
+        // Add days from the previous month to fill the first week
+        const startDay = startOfMonth.day(); // 0 (Sunday) to 6 (Saturday)
+        for (let i = 0; i < startDay; i++) {
+          dates.push(moment(startOfMonth).subtract(startDay - i, 'days').toDate());
+        }
+
+        // Add all dates from the current month
+        for (let i = 0; i < endOfMonth.date(); i++) {
+          dates.push(moment(startOfMonth).add(i, 'days').toDate());
+        }
+
+        // Add days from the next month to complete the grid
+        const remainingDays = 7 - (dates.length % 7);
+        for (let i = 1; i <= remainingDays && remainingDays < 7; i++) {
+          dates.push(moment(endOfMonth).add(i, 'days').toDate());
+        }
+
+        return dates;
+      },
+      prevMonth() {
+        this.currentMonth -= 1;
+        if (this.currentMonth < 0) {
+          this.currentMonth = 11;
+          this.currentYear -= 1;
+        }
+      },
+      nextMonth() {
+        this.currentMonth += 1;
+        if (this.currentMonth > 11) {
+          this.currentMonth = 0;
+          this.currentYear += 1;
+        }
+      },
+      selectDate(date) {
+        this.selectedDate = date;
+        this.formData.date = moment(date).format('YYYY/MM/DD');
+        this.fetchTimes(moment(date).format('YYYY/MM/DD'));
+        this.goToStep(4);
+      },
+      isToday(date) {
+        const today = new Date();
+        return (
+          date.getFullYear() === today.getFullYear() &&
+          date.getMonth() === today.getMonth() &&
+          date.getDate() === today.getDate()
+        );
+      },
+      isSelectedDate(date) {
+        return (
+          this.selectedDate.getFullYear() === date.getFullYear() &&
+          this.selectedDate.getMonth() === date.getMonth() &&
+          this.selectedDate.getDate() === date.getDate()
+        );
+      },
+      generateTimeSlots() {
+        const slots = [];
+        const startTime = moment().startOf('day').hour(8); // Start at 8:00 AM
+        const endTime = moment().startOf('day').hour(18); // End at 6:00 PM
+        while (startTime <= endTime) {
+          slots.push(startTime.format('h:mm A'));
+          startTime.add(15, 'minutes'); // Increment by 15 minutes
+        }
+        return slots;
+      },
+      selectTime(time) {
+        this.selectedTime = time;
+        this.formData.time = time;
+        this.goToStep(5);
+      },
+      async fetchTimes(date) {
+        await axios.get(this.GetTimes, { params: { serviceDate: date } })
+          .then((response) => {
+            this.takenTimes = response.data;
+          });
+      },
       async submitForm() {
         try {
           this.displaySpinnerMessage = true;
           const response = await axios
             .post(
-              this.GetBookingsUrl,
+              this.CreateBookingUrl,
               {
                 Name: this.formData.name,
                 Email: this.formData.email,
@@ -461,84 +542,9 @@
         // Handle form submission (e.g., send to an API)
         //alert(`Booking submitted: \n${JSON.stringify(this.formData, null, 2)}`);
       },
-      getDates() {
-        const dates = [];
-        const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
-        const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
-
-        // Add days from the previous month to fill the first week
-        const startDay = firstDayOfMonth.getDay();
-        for (let i = 0; i < startDay; i++) {
-          const prevDate = new Date(this.currentYear, this.currentMonth, -i);
-          dates.unshift(prevDate);
-        }
-
-        // Add all dates from the current month
-        for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
-          dates.push(new Date(this.currentYear, this.currentMonth, i));
-        }
-
-        // Add days from the next month to complete the grid
-        while (dates.length % 7 !== 0) {
-          const nextDate = new Date(this.currentYear, this.currentMonth + 1, dates.length % 7);
-          dates.push(nextDate);
-        }
-
-        return dates;
-      },
-      prevMonth() {
-        this.currentMonth -= 1;
-        if (this.currentMonth < 0) {
-          this.currentMonth = 11;
-          this.currentYear -= 1;
-        }
-      },
-      nextMonth() {
-        this.currentMonth += 1;
-        if (this.currentMonth > 11) {
-          this.currentMonth = 0;
-          this.currentYear += 1;
-        }
-      },
-      selectDate(date) {
-        this.selectedDate = date;
-        this.formData.date = moment(date).format('YYYY/MM/DD');
-        this.goToStep(4);
-      },
-      isToday(date) {
-        const today = new Date();
-        return (
-          date.getFullYear() === today.getFullYear() &&
-          date.getMonth() === today.getMonth() &&
-          date.getDate() === today.getDate()
-        );
-      },
-      isSelectedDate(date) {
-        return (
-          this.selectedDate.getFullYear() === date.getFullYear() &&
-          this.selectedDate.getMonth() === date.getMonth() &&
-          this.selectedDate.getDate() === date.getDate()
-        );
-      },
-      generateTimeSlots() {
-        const slots = [];
-        const startTime = moment().startOf('day').hour(8); // Start at 8:00 AM
-        const endTime = moment().startOf('day').hour(18); // End at 6:00 PM
-        while (startTime <= endTime) {
-          slots.push(startTime.format('h:mm A'));
-          startTime.add(15, 'minutes'); // Increment by 15 minutes
-        }
-        return slots;
-      },
-      selectTime(time) {
-        this.selectedTime = time;
-        this.formData.time = time;
-        this.goToStep(5);
-      },
     },
   };
 </script>
-
 
 <!--CSS-->
 <style scoped>
