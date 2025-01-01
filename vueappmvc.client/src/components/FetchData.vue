@@ -131,9 +131,9 @@
         loading: false,
         services: null,
         serviceId: null,
-        isPrd: true,
-        startOfWeek: moment().startOf('week').format('DD'),
-        endOfWeek: moment().endOf('week').format('DD'),
+        isPrd: false,
+        startOfWeek: moment().startOf('week').format('YYYY-MM-DD'),
+        endOfWeek: moment().endOf('week').format('YYYY-MM-DD'),
         GetservicesUrl: "",
         DeleteservicesUrl: "",
       };
@@ -208,13 +208,16 @@
         this.currentMonth = moment(this.currentMonth, 'MMM YYYY').add(1, 'months').startOf('month').format('MMM YYYY');
       },
       getWeekRange() {
-        this.weekRange = `Week ${this.startOfWeek} - ${this.endOfWeek}`;
+        const startOfWeekFormatted = moment(this.startOfWeek, 'YYYY-MM-DD').format('DD');
+        const endOfWeekFormatted = moment(this.endOfWeek, 'YYYY-MM-DD').format('DD');
+
+        this.weekRange = `Week ${startOfWeekFormatted} - ${endOfWeekFormatted}`;
       },
       isDateInWeekRange(serviceDate) {
-        const currentStartDate = moment(this.currentMonth, 'MMM YYYY').date(this.startOfWeek);
-        const currentEndDate = currentStartDate.clone().add(6, 'days');
-
+        const currentStartDate = moment(this.startOfWeek, 'YYYY-MM-DD');
+        const currentEndDate = currentStartDate.clone().endOf('week');
         const serviceMoment = moment(serviceDate, 'YYYY-MM-DD');
+
         return serviceMoment.isBetween(currentStartDate, currentEndDate, null, '[]');
       },
       isbookingBookedInWeek(booking) {
@@ -228,30 +231,26 @@
         return false;
       },
       nextWeek() {
-        const currentDate = moment(this.currentMonth, 'MMM YYYY');
-        const currentStartDate = currentDate.date(this.startOfWeek);
+        const newStartOfWeek = moment(this.startOfWeek, 'YYYY-MM-DD').add(7, 'days'); // Parse and add 7 days
 
-        const nextStartOfWeek = currentStartDate.clone().add(7, 'days');
-        this.startOfWeek = nextStartOfWeek.date();
-        this.currentMonth = nextStartOfWeek.format('MMM YYYY');
+        this.startOfWeek = moment(newStartOfWeek).startOf('week').format('YYYY-MM-DD');
+        this.currentMonth = newStartOfWeek.format('MMM YYYY');
 
-        const nextEndOfWeek = nextStartOfWeek.clone().add(6, 'days');
-        this.endOfWeek = nextEndOfWeek.date();
+        const newEndOfWeek = newStartOfWeek.clone().endOf('week');
 
-        this.getWeekRange(); // Update week range display
+        this.endOfWeek = newEndOfWeek.format('YYYY-MM-DD');
+        this.getWeekRange();
       },
       previousWeek() {
-        const currentDate = moment(this.currentMonth, 'MMM YYYY');
-        const currentStartDate = currentDate.date(this.startOfWeek);
+        const newStartOfWeek = moment(this.startOfWeek, 'YYYY-MM-DD').subtract(7, 'days'); // Parse and subtract 7 days
 
-        const prevStartOfWeek = currentStartDate.clone().subtract(7, 'days');
-        this.startOfWeek = prevStartOfWeek.date();
-        this.currentMonth = prevStartOfWeek.format('MMM YYYY');
+        this.startOfWeek = moment(newStartOfWeek).startOf('week').format('YYYY-MM-DD');
+        this.currentMonth = newStartOfWeek.format('MMM YYYY');
 
-        const prevEndOfWeek = prevStartOfWeek.clone().add(6, 'days');
-        this.endOfWeek = prevEndOfWeek.date();
+        const newEndOfWeek = newStartOfWeek.clone().endOf('week');
 
-        this.getWeekRange(); // Update week range display
+        this.endOfWeek = newEndOfWeek.format('YYYY-MM-DD');
+        this.getWeekRange();
       },
       async fetchServices() {
         this.services = null;

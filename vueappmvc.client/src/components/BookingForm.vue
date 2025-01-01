@@ -290,7 +290,7 @@
       const today = new Date();
       const currentTime = new Date();
       return {
-        isPrd: true,
+        isPrd: false,
         CreateBookingUrl: "",
         displaySpinnerMessage: false,
         currentYear: today.getFullYear(),
@@ -416,25 +416,24 @@
       },
       getDates() {
         const dates = [];
-        const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
-        const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
+        const startOfMonth = moment([this.currentYear, this.currentMonth]); // Start of the current month
+        const endOfMonth = moment(startOfMonth).endOf('month'); // End of the current month
 
         // Add days from the previous month to fill the first week
-        const startDay = firstDayOfMonth.getDay();
+        const startDay = startOfMonth.day(); // 0 (Sunday) to 6 (Saturday)
         for (let i = 0; i < startDay; i++) {
-          const prevDate = new Date(this.currentYear, this.currentMonth, -i);
-          dates.unshift(prevDate);
+          dates.push(moment(startOfMonth).subtract(startDay - i, 'days').toDate());
         }
 
         // Add all dates from the current month
-        for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
-          dates.push(new Date(this.currentYear, this.currentMonth, i));
+        for (let i = 0; i < endOfMonth.date(); i++) {
+          dates.push(moment(startOfMonth).add(i, 'days').toDate());
         }
 
         // Add days from the next month to complete the grid
-        while (dates.length % 7 !== 0) {
-          const nextDate = new Date(this.currentYear, this.currentMonth + 1, dates.length % 7);
-          dates.push(nextDate);
+        const remainingDays = 7 - (dates.length % 7);
+        for (let i = 1; i <= remainingDays && remainingDays < 7; i++) {
+          dates.push(moment(endOfMonth).add(i, 'days').toDate());
         }
 
         return dates;
@@ -546,7 +545,6 @@
     },
   };
 </script>
-
 
 <!--CSS-->
 <style scoped>
