@@ -11,10 +11,10 @@
       </div>
     </div>
 
-    <form @submit.prevent="submitForm" class="service-card rounded-1 min-vh-100">
+    <form @submit.prevent="submitForm" class="box-shadow p-2 rounded-1 min-vh-100">
       <!--Booking Details-->
       <!-- Booking Details -->
-      <div v-if="step === 5 && formData.service !== ''" class="text-white p-4 rounded shadow-sm" style="background-color: #001524;">
+      <div v-if="step === 5 && formData.service !== ''" class="text-white p-4 m-3 rounded box-shadow">
         <p class="mb-3 text-center fs-6 fw-bold">Your Appointment Details:</p>
         <div class="mb-2">
           <p class="mb-1"><strong>Meeting Type:</strong> {{ formData.meetingType }}</p>
@@ -26,21 +26,19 @@
 
       <!-- Step 1: Booking Service -->
       <div v-if="step === 1">
-        <p class="text-center mb-1 text-white mt-5">Select service</p>
+        <p class="text-center mb-1 mt-5 pt-2 text-white">Select service</p>
         <div class="d-flex flex-column gap-3 mb-5">
           <div v-for="service in services"
                :key="service.id"
-               class="service-card rounded-2 text-white p-3"
-               @click="selectService(service)">
-            <div class="d-flex align-items-center gap-3">
-              <img :src="service.image" alt="service.name" class="img w-25 rounded-1" />
-              <div>
-                <h4 class="mb-1 card-header">{{ service.name }}</h4>
-                <p class="mb-2" style="font-size: 0.8rem;">{{ service.description }}</p>
+               class="service-card border-0 rounded-2 text-white m-3 btn"
+               @click="selectService(service)"
+               :style="{ backgroundImage: `url(${service.image})` }">
+            <div class="overlay rounded-2 d-flex flex-column">
+              <h4 class="mb-1 p-3 card-header">{{ service.name }}</h4>
+              <p class="mb-2" style="font-size: 0.8rem;">{{ service.description }}</p>
+              <div class="text-end m-3">
+                <i class="bi bi-arrow-right-circle orange-txt"></i>
               </div>
-            </div>
-            <div class="text-end mt-2">
-              <i class="bi bi-arrow-right-circle orange-txt"></i>
             </div>
           </div>
         </div>
@@ -48,15 +46,15 @@
 
       <!-- Step 2 In Peson/Online/Phone-->
       <div v-if="step === 2" class="text-center text-white p-2 mt-5">
-        <p class="text-center mb-1 text-white">Type of meeting</p>
-        <button @click="inPersonMeeting(true)" class="btn btn-outline-primary border-0 w-50 service-card mb-2 text-white">
+        <p class="text-center mb-3 mt-5 pt-2 text-white">Type of meeting</p>
+        <button @click="inPersonMeeting(true)" class="btn btn-outline-primary border-0 w-50 mb-2 text-white box-shadow">
           <span class="f-s">
             In Person
             <i class="bi bi-arrow-right-circle orange-txt"></i>
           </span>
         </button>
         <br />
-        <button @click="inPersonMeeting(false)" class="btn btn-outline-primary border-0 w-50 service-card text-white">
+        <button @click="inPersonMeeting(false)" class="btn btn-outline-primary border-0 w-50 text-white box-shadow">
           <span class="f-s">
             Online/Phone
             <i class="bi bi-arrow-right-circle orange-txt"></i>
@@ -66,7 +64,7 @@
 
       <!-- Step 3: Date -->
       <div v-if="step === 3">
-        <p class="text-center mb-1 text-white mt-5">Select date</p>
+        <p class="text-center mb-3 mt-5 pt-2 text-white">Select date</p>
         <div class="datepicker-container m-2 mx-auto">
           <div class="calendar rounded-2">
             <div class="calendar-header">
@@ -106,7 +104,7 @@
 
       <!-- Step 4: Time Picker -->
       <div v-if="step === 4">
-        <p class="text-center mb-1 text-white mt-5">Select time</p>
+        <p class="text-center mb-3 mt-5 pt-2 text-white">Select time</p>
         <div class="timepicker-container m-2 mx-auto rounded-2">
           <div class="time-grid">
             <div v-for="(time, index) in timeSlots"
@@ -121,9 +119,9 @@
 
       <!-- Step 5: Personal Details -->
       <div v-if="step === 5">
-        <p class="text-center mt-4 mb-2 text-white mt-5">Enter personal details</p>
+        <p class="text-center mb-3 mt-5 pt-2 text-white">Enter personal details</p>
         <!--In Person-->
-        <div class="p-3 rounded-2 service-card">
+        <div class="p-3 m-3 rounded-2 box-shadow">
           <!--In Person-->
           <div v-if="isInPerson">
 
@@ -412,7 +410,7 @@
 
         // Add styles to the current step
         var step = document.getElementById("step" + stepNumber);
-        step.classList.add('fw-bold', 'steel-blue-color');
+        step.classList.add('fw-bold', 'steel-blue-color', 'bg-danger');
       },
       getDates() {
         const dates = [];
@@ -576,15 +574,27 @@
   .steel-blue-color {
     color: #4682B4;
   }
-  .service-card {
-    font-size: 0.8rem;
-    background-color: #003357;
-    padding: 10px;
+  .box-shadow {
     box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
   }
-
+  .service-card {
+    font-size: 0.8rem;
+    background-size: cover; /* Ensure the background image covers the entire card */
+    background-position: center; /* Center the image */
+    position: relative; /* Required for overlay positioning */
+    min-height: 150px; /* Adjust the height as needed */
+    box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
+  }
+  .service-card .overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
   .card-header {
-      font-size: 0.8rem;
+      font-size: 1.2rem;
   }
   .form-label {
     font-size: 0.8rem !important;
@@ -630,7 +640,6 @@
     color: #ffffff;
     font-size: 0.8rem;
     padding: 10px;
-    background-color: #003357;
     box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
   }
 
@@ -670,9 +679,9 @@
     transition: background-color 0.3s ease;
   }
 
-    .date:hover {
-      background-color: #4682B4;
-    }
+  .date:hover {
+    background-color: #4682B4;
+  }
 
   .current-date {
     background-color: #ffffff;
@@ -685,7 +694,6 @@
   }
   /*TIME PICKER CSS*/
   .timepicker-container {
-    background-color: #003357;
     padding: 10px;
     box-shadow: 2px 2px 5px rgba(200, 200, 200, 0.3);
     max-width: 300px;

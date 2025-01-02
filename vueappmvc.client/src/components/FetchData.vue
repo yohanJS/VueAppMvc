@@ -282,6 +282,7 @@
 <style scoped>
   .container {
     background-color: #001524;
+
   }
   /* Loading Skeleton */
   .skeleton-card {
