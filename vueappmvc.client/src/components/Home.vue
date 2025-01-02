@@ -25,19 +25,19 @@
   }
 
     /* Add background image with opacity */
-    .home-container::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: url('/assets/bg.png'); /* Path to the background image */
-      background-size: cover; /* Cover the container */
-      background-position: center; /* Center the image */
-      opacity: 0.4; /* Adjust opacity for better contrast */
-      z-index: 1; /* Place behind other content */
-    }
+  .home-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/assets/bg.png'); /* Path to the background image */
+    background-size: cover; /* Cover the container */
+    background-position: center; /* Center the image */
+    opacity: 0.4; /* Adjust opacity for better contrast */
+    z-index: 1; /* Place behind other content */
+  }
 
   p, .btn-book-now {
     position: relative; /* Place above the pseudo-element */

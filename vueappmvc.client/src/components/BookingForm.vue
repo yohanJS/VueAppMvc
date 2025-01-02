@@ -288,7 +288,7 @@
       const today = new Date();
       const currentTime = new Date();
       return {
-        isPrd: false,
+        isPrd: true,
         CreateBookingUrl: "",
         displaySpinnerMessage: false,
         currentYear: today.getFullYear(),
