@@ -23,35 +23,35 @@
         </div>
       </div>
 
-      <div v-if="services !== null">
+      <div style="margin-top: 100px;" v-if="services !== null">
         <!-- Month and Year Section -->
-        <div class="row justify-content-center align-items-center mt-4 mb-3">
+        <div class="row justify-content-center align-items-center m-0 p-0 rounded-bottom-2 fixed-top" style="background-color: #001524;">
           <!--<div class="col-auto">
             <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
           </div>-->
-          <div class="col text-center">
+          <!--<div class="col text-center">
             <h4>{{ currentMonth }}</h4>
-          </div>
+          </div>-->
           <!--<div class="col-auto">
             <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
           </div>-->
           <!-- Week Range Section -->
-          <div class="row align-items-center mb-5">
+          <div class="row align-items-center text-center m-1">
             <div class="col-auto">
-              <i class="bi bi-chevron-left orange-bg px-2 py-1 rounded-5" @click="previousWeek"></i>
+              <i class="bi bi-chevron-left px-2 py-1 fs-6 rounded-5 orange-bg" @click="previousWeek"></i>
             </div>
             <div class="col text-center">
-              <p class="fw-bold orange-bg p-1 rounded-5 m-0">{{ weekRange }}</p>
+              <p class="p-1 rounded-5 m-0 fs-5 rounded-5 fs-6 orange-bg">{{ weekRange }}, <span class="fw-bold">{{ currentMonth }}</span></p>
             </div>
             <div class="col-auto">
-              <i class="bi bi-chevron-compact-right orange-bg px-2 py-1 rounded-5" @click="nextWeek"></i>
+              <i class="bi bi-chevron-right px-2 py-1 fs-6 rounded-5 orange-bg" @click="nextWeek"></i>
             </div>
           </div>
         </div>
 
         <!--Services Section-->
         <div v-for="record in services">
-          <p v-if="isDateInWeekRange(record.serviceDate)" :class="{
+          <p v-if="isDateInWeekRange(record.serviceDate)" :id="isToday(record.serviceDate) ? 'today' : null"  :class="{
               'mb-1': true,
               'fs-5': true,
               'today-class': isToday(record.serviceDate)
@@ -64,7 +64,7 @@
                 <p class="mb-1">{{ service.time }}</p>
               </div>
               <div class="col-8">
-                <div class="m-0 details-card mb-5 rounded-3">
+                <div class="m-0 details-card mb-3 rounded-3">
                   <p class="mb-0"><span class="fw-bold">Client: </span>{{ service.name }}</p>
                   <p class="mb-0"><span class="fw-bold">Service requested: </span>{{ service.serviceName }}</p>
                   <!--Collapse Button-->
@@ -103,14 +103,14 @@
                     </p>
                   </div>
                   <div class="text-end mt-2">
-                    <i @click="deleteService(service.serviceId)" class="bi bi-trash3 me-2"> Delete</i>
+                    <i @click="deleteService(service.serviceId)" class="bi bi-trash3 me-2"> Cancel</i>
                     <i @click="test" class="bi bi-pencil"> Edit</i>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <hr v-if="isDateInWeekRange(record.serviceDate)" class="border-2 mt-5 w-75 m-4">
+          <hr v-if="isDateInWeekRange(record.serviceDate)" class="border-2 mt-3 w-75 m-4">
         </div>
       </div>
     </div>
@@ -125,7 +125,8 @@
     data() {
       return {
         today: moment().format('MMM DD'),
-        currentMonth: moment().format('MMMM Y'),
+        todaysDate: "",
+        currentMonth: moment().format('MMM YYYY'),
         weekDays: moment.weekdays(),
         weekRange: "",
         loading: false,
@@ -139,7 +140,6 @@
       };
     },
     async created() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
       this.getWeekRange();
       this.GetservicesUrl = this.isPrd ? "https://engfuel.com/Bookings/GetAllBookings" : "https://localhost:7144/Bookings/GetAllBookings";
       this.DeleteservicesUrl = this.isPrd ? "https://engfuel.com/Bookings/DeleteBooking" : "https://localhost:7144/Bookings/DeleteBooking";
@@ -211,7 +211,7 @@
         const startOfWeekFormatted = moment(this.startOfWeek, 'YYYY-MM-DD').format('DD');
         const endOfWeekFormatted = moment(this.endOfWeek, 'YYYY-MM-DD').format('DD');
 
-        this.weekRange = `Week ${startOfWeekFormatted} - ${endOfWeekFormatted}`;
+        this.weekRange = `Week ${startOfWeekFormatted}-${endOfWeekFormatted}`;
       },
       isDateInWeekRange(serviceDate) {
         const currentStartDate = moment(this.startOfWeek, 'YYYY-MM-DD');
@@ -255,11 +255,23 @@
       async fetchServices() {
         this.services = null;
         this.loading = true;
-        axios.get(this.GetservicesUrl)
-          .then((response) => {
-            this.services = response.data;
-            this.loading = false;
-          });
+        try {
+          const response = await axios.get(this.GetservicesUrl);
+          this.services = response.data;
+
+          // Wait for DOM updates
+          //this.$nextTick() ensures that any DOM updates triggered by changes to this.services are completed before proceeding.
+          await this.$nextTick();
+          this.todaysDate = document.getElementById("today");
+
+          if (this.todaysDate) {
+            this.todaysDate.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        } catch (error) {
+          alert("Error fetching services:", error);
+        } finally {
+          this.loading = false;
+        }
       },
       async deleteService(id) {
         try {
@@ -282,6 +294,11 @@
 <style scoped>
   .container {
     background-color: #001524;
+  }
+  #today {
+    top: 10px;
+    /* Without this, the element will be aligned to the top of the page */
+    scroll-margin-top: 1000px;
   }
   /* Loading Skeleton */
   .skeleton-card {
@@ -307,9 +324,9 @@
     border-radius: 4px;
   }
 
-    .skeleton-line.short {
-      width: 70%;
-    }
+  .skeleton-line.short {
+    width: 70%;
+  }
 
   @keyframes pulse {
     0% {
@@ -343,9 +360,9 @@
     transition: background-color 0.3s ease;
   }
 
-    .btn-details:active {
-      color: #192c39;
-    }
+  .btn-details:active {
+    color: #192c39;
+  }
 
   .details-card {
     font-size: 0.8rem;
@@ -365,32 +382,32 @@
     height: 100%; /* Ensure cards take full height */
   }
 
-    .pastel-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 25px rgba(200, 200, 200, 0.3);
-    }
+  .pastel-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(200, 200, 200, 0.3);
+  }
 
-    /* Card body styling */
-    .pastel-card .card-body {
-      padding: 1rem;
-      font-size: 0.8rem;
-      background-color: #e0e0e0;
-      flex: 1; /* Make the body fill available space */
-      display: flex;
-      flex-direction: column;
-    }
+  /* Card body styling */
+  .pastel-card .card-body {
+    padding: 1rem;
+    font-size: 0.8rem;
+    background-color: #e0e0e0;
+    flex: 1; /* Make the body fill available space */
+    display: flex;
+    flex-direction: column;
+  }
 
-    /* Card title styling */
-    .pastel-card .card-title {
-      font-size: 0.9rem; /* Slightly smaller font for mobile look */
-      margin-bottom: 1rem;
-    }
+  /* Card title styling */
+  .pastel-card .card-title {
+    font-size: 0.9rem; /* Slightly smaller font for mobile look */
+    margin-bottom: 1rem;
+  }
 
-    /* Card text styling */
-    .pastel-card .card-text {
-      font-size: 0.8rem; /* Smaller font for a modern mobile look */
-      margin-bottom: 0.75rem;
-    }
+  /* Card text styling */
+  .pastel-card .card-text {
+    font-size: 0.8rem; /* Smaller font for a modern mobile look */
+    margin-bottom: 0.75rem;
+  }
 
   /* List group styling */
   .pastel-list-item {
@@ -403,9 +420,9 @@
     transition: background-color 0.3s ease;
   }
 
-    .pastel-list-item:hover {
-      background-color: #e5e7ff; /* Slightly darker pastel blue on hover */
-    }
+  .pastel-list-item:hover {
+    background-color: #e5e7ff; /* Slightly darker pastel blue on hover */
+  }
 
   /* Centered grid layout */
   .justify-content-center {
