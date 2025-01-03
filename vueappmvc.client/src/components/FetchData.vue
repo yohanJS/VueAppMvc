@@ -25,33 +25,33 @@
 
       <div style="margin-top: 100px;" v-if="services !== null">
         <!-- Month and Year Section -->
-        <div class="row justify-content-center align-items-center m-0 p-0 rounded-bottom-2 fixed-top details-card" style="background-color: #003357;">
+        <div class="row justify-content-center align-items-center m-0 p-0 rounded-bottom-2 fixed-top" style="background-color: #001524;">
           <!--<div class="col-auto">
             <i class="bi bi-caret-left-fill" @click="previousMonth"></i>
           </div>-->
-          <div class="col text-center">
+          <!--<div class="col text-center">
             <h4>{{ currentMonth }}</h4>
-          </div>
+          </div>-->
           <!--<div class="col-auto">
             <i class="bi bi-caret-right-fill" @click="nextMonth"></i>
           </div>-->
           <!-- Week Range Section -->
-          <div class="row align-items-center mb-2">
+          <div class="row align-items-center text-center m-1">
             <div class="col-auto">
-              <i class="bi bi-chevron-left orange-bg px-2 py-1 rounded-5" @click="previousWeek"></i>
+              <i class="bi bi-chevron-left px-2 py-1 fs-6 rounded-5 orange-bg" @click="previousWeek"></i>
             </div>
             <div class="col text-center">
-              <p class="fw-bold orange-bg p-1 rounded-5 m-0">{{ weekRange }}</p>
+              <p class="p-1 rounded-5 m-0 fs-5 rounded-5 fs-6 orange-bg">{{ weekRange }}, <span class="fw-bold">{{ currentMonth }}</span></p>
             </div>
             <div class="col-auto">
-              <i class="bi bi-chevron-compact-right orange-bg px-2 py-1 rounded-5" @click="nextWeek"></i>
+              <i class="bi bi-chevron-right px-2 py-1 fs-6 rounded-5 orange-bg" @click="nextWeek"></i>
             </div>
           </div>
         </div>
 
         <!--Services Section-->
         <div v-for="record in services">
-          <p v-if="isDateInWeekRange(record.serviceDate)" :class="{
+          <p v-if="isDateInWeekRange(record.serviceDate)" :id="isToday(record.serviceDate) ? 'today' : null"  :class="{
               'mb-1': true,
               'fs-5': true,
               'today-class': isToday(record.serviceDate)
@@ -143,9 +143,6 @@
       this.getWeekRange();
       this.GetservicesUrl = this.isPrd ? "https://engfuel.com/Bookings/GetAllBookings" : "https://localhost:7144/Bookings/GetAllBookings";
       this.DeleteservicesUrl = this.isPrd ? "https://engfuel.com/Bookings/DeleteBooking" : "https://localhost:7144/Bookings/DeleteBooking";
-      //For some reason the scrollingIntoView of todays date works if I call this function twice
-      //TODO research of why
-      await this.fetchServices();
       await this.fetchServices();
     },
     watch: {
@@ -214,7 +211,7 @@
         const startOfWeekFormatted = moment(this.startOfWeek, 'YYYY-MM-DD').format('DD');
         const endOfWeekFormatted = moment(this.endOfWeek, 'YYYY-MM-DD').format('DD');
 
-        this.weekRange = `Week ${startOfWeekFormatted} - ${endOfWeekFormatted}`;
+        this.weekRange = `Week ${startOfWeekFormatted}-${endOfWeekFormatted}`;
       },
       isDateInWeekRange(serviceDate) {
         const currentStartDate = moment(this.startOfWeek, 'YYYY-MM-DD');
@@ -258,15 +255,23 @@
       async fetchServices() {
         this.services = null;
         this.loading = true;
-        axios.get(this.GetservicesUrl)
-          .then((response) => {
-            this.todaysDate = document.querySelector(".today-class");
-            if (this.todaysDate) {
-              this.todaysDate.scrollIntoView({ behavior: "smooth", block: "center" });
-            };
-            this.services = response.data;
-            this.loading = false;
-          });
+        try {
+          const response = await axios.get(this.GetservicesUrl);
+          this.services = response.data;
+
+          // Wait for DOM updates
+          //this.$nextTick() ensures that any DOM updates triggered by changes to this.services are completed before proceeding.
+          await this.$nextTick();
+          this.todaysDate = document.getElementById("today");
+
+          if (this.todaysDate) {
+            this.todaysDate.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        } catch (error) {
+          alert("Error fetching services:", error);
+        } finally {
+          this.loading = false;
+        }
       },
       async deleteService(id) {
         try {
@@ -289,6 +294,11 @@
 <style scoped>
   .container {
     background-color: #001524;
+  }
+  #today {
+    top: 10px;
+    /* Without this, the element will be aligned to the top of the page */
+    scroll-margin-top: 1000px;
   }
   /* Loading Skeleton */
   .skeleton-card {

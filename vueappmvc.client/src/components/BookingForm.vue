@@ -1,6 +1,6 @@
 <!--Template-->
 <template>
-  <div class="container py-2 p-2 mb-5 text-dark min-vh-100">
+  <div id="bookingFormContainer" class="container py-2 p-2 mb-5 text-dark min-vh-100">
     <div class="text-center mb-4 mt-2">
       <div class="px-5" role="group" aria-label="First group">
         <button @click="goToStep(1)" id="step1" type="button" class="btn btn-primary m-1 rounded-5 my-bg border-0 small-btn fw-bold steel-blue-color">1</button>
@@ -60,6 +60,18 @@
             <i class="bi bi-arrow-right-circle orange-txt"></i>
           </span>
         </button>
+        <div class="d-flex justify-content-between rounded-2 shadow-sm mx-auto" style="max-width: 300px;">
+          <button type="button"
+                  class="btn w-25"
+                  @click="goToStep(1)">
+            <i class="bi bi-arrow-left-circle text-dark"></i>
+          </button>
+          <button type="button"
+                  class="btn w-25"
+                  @click="goToStep(3)">
+            <i class="bi bi-arrow-right-circle text-dark"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Step 3: Date -->
@@ -288,7 +300,7 @@
       const today = new Date();
       const currentTime = new Date();
       return {
-        isPrd: true,
+        isPrd: false,
         CreateBookingUrl: "",
         displaySpinnerMessage: false,
         currentYear: today.getFullYear(),
@@ -362,6 +374,11 @@
       }
     },
     async created() {
+      //this.$nextTick() ensures that any DOM updates triggered by changes to this.services are completed before proceeding.
+      await this.$nextTick();
+      const container = document.getElementById("bookingFormContainer");
+      container.scrollIntoView({ behavior: "smooth", block: "start" });
+
       this.CreateBookingUrl = this.isPrd ? "https://engfuel.com/Bookings/CreateBooking" : "https://localhost:7144/Bookings/CreateBooking";
       this.GetTimes = this.isPrd ? "https://engfuel.com/Bookings/GetTimes" : "https://localhost:7144/Bookings/GetTimes";
     },
