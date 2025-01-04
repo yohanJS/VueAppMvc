@@ -1,17 +1,17 @@
 <template>
   <div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card col-12 col-md-6">
+    <div class="card col-12">
       <h2 class="text-center text-white mb-4 lead" style="font-size: 1.3rem;">Login</h2>
       <form @submit.prevent="login">
         <div class="mb-3">
-          <input type="email"
+          <input required type="email"
                  v-model="email"
                  placeholder="Email"
                  class="form-control rounded-3 py-2"
                  style="font-size: 0.7rem;" />
         </div>
         <div class="mb-3">
-          <input type="password"
+          <input required type="password"
                  v-model="password"
                  placeholder="Password"
                  class="form-control rounded-3 py-2"
@@ -38,17 +38,17 @@
         email: "",
         password: "",
         message: "",
-        isPrd: true,
+        isPrd: false,
         LoginUrl: "",
       };
     },
     methods: {
       async created() {
-        this.LoginUrl = this.isPrd ? "https://engfuel.com/Login" : "https://localhost:7144/Login";
+        this.LoginUrl = this.isPrd ? "https://engfuel.com/Account/login" : "https://localhost:7144/Account/login";
       },
       async login() {
         try {
-          const response = await axios.post(this.LoginUrl, {
+          const response = await axios.post("https://localhost:7144/Account/login", {
             email: this.email,
             password: this.password,
           });
@@ -58,7 +58,7 @@
           localStorage.setItem("isLoggedIn", "true");
 
           // Redirect to the home page or any desired page
-          window.location.href = isDev() ? "https://engfuel.com" : "https://localhost:54554 ";
+          window.location.href = "https://localhost:54554";
         } catch (error) {
           this.message = error.response.data.message;
         }
