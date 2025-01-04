@@ -24,5 +24,10 @@ namespace VueAppMvc.Server.Models
         [ForeignKey("UserId")]
         [JsonIgnore]
         public UserModel? User { get; set; }
+
+        // Navigation property
+        [ForeignKey("BusinessId")]
+        [JsonIgnore]
+        public string? BusinessId { get; set; }
     }
 }

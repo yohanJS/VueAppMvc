@@ -22,7 +22,7 @@ namespace VueAppMvc.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetAllBookings")]
-        public List<ResponseDataModel> Get()
+        public List<ResponseDataModel> Get([FromQuery] string businessId)
         {
             List<ResponseDataModel> response = new List<ResponseDataModel>();
             try
@@ -39,7 +39,7 @@ namespace VueAppMvc.Server.Controllers
                         if (_dbContext.users != null && _dbContext.services != null)
                         {
                             users = _dbContext.users.ToList();
-                            services = _dbContext.services.ToList();
+                            services = _dbContext.services.Where(s => s.BusinessId.Equals(businessId)).ToList();
 
                             // Group services by date
                             var groupedServicesByDate = services.GroupBy(s => s.Date)
@@ -153,6 +153,7 @@ namespace VueAppMvc.Server.Controllers
 
                             ServiceModel serviceAppModel = new ServiceModel
                             {
+                                BusinessId = bookFormModel.BusinessId,
                                 UserId = existingUser.Id,
                                 Service = bookFormModel.Service ?? "",
                                 Date = bookFormModel.Date ?? "",
@@ -205,7 +206,7 @@ namespace VueAppMvc.Server.Controllers
         private async Task<IActionResult> CreateNewUserAndService(BookFormModel bookFormModel)
         {
             UserModel newUser = new UserModel
-            {
+            {              
                 Name = bookFormModel.Name ?? "",
                 Email = bookFormModel.Email ?? "",
                 Phone = bookFormModel.Phone ?? "",
@@ -223,6 +224,7 @@ namespace VueAppMvc.Server.Controllers
 
             ServiceModel newServiceApp = new ServiceModel
             {
+                BusinessId = bookFormModel.BusinessId ?? "",
                 UserId = newUser.Id,
                 Service = bookFormModel.Service ?? "",
                 Date = bookFormModel.Date ?? "",
