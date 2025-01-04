@@ -87,8 +87,8 @@
         this.isLoading = true;
 
         try {
-          const response = await axios.post("https://engfuel.com/Account/register", payload);
-          //const response = await axios.post("https://localhost:7144/Account/register", payload);
+          //const response = await axios.post("https://engfuel.com/Account/register", payload);
+          const response = await axios.post("https://localhost:7144/Account/register", payload);
           this.successMessage = response.data.message || "Registration successful!";
           // Set a flag in localStorage to indicate successful login
           localStorage.setItem("isLoggedIn", "true");
