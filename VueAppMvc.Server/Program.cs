@@ -46,7 +46,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.WithOrigins("https://localhost:54554", "https://engfuel.com", "http://localhost:5173", "https://luvoai.netlify.app")
+        policy.WithOrigins("https://localhost:54554", "https://engfuel.com", "http://localhost:5173", "https://luvoai.netlify.app", "https://tankac.netlify.app", "http://localhost:50405")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -64,7 +64,7 @@ using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    var roles = new[] { "Admin", "User" };
+    var roles = new[] { "Admin", "User", "YohanJS" };
 
     foreach (var role in roles)
     {
