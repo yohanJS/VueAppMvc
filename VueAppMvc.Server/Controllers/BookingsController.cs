@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SendGrid;
 using VueAppMvc.Server.Data;
 using VueAppMvc.Server.Models;
 
@@ -125,46 +126,56 @@ namespace VueAppMvc.Server.Controllers
         {
             using (_dbContext)
             {
+                SendEmail sendEmail = new SendEmail();
                 List<UserModel> users = new List<UserModel>();
 
                 if (ModelState.IsValid && _dbContext.users != null)
                 {
-                    users = _dbContext.users.ToList();
+                    Task<Response> res = sendEmail.SendEmailBookingDetails(bookFormModel);
 
-                    if (users.Any())
+                    if (res.Result.IsSuccessStatusCode)
                     {
-                        UserModel? existingUser = users.FirstOrDefault(us => us.Email == bookFormModel.Email || us.Phone == bookFormModel.Phone);
+                        users = _dbContext.users.ToList();
 
-                        if (existingUser != null)
+                        if (users.Any())
                         {
-                            if (string.IsNullOrEmpty(existingUser.Street) && !string.IsNullOrEmpty(bookFormModel.Street))
-                                existingUser.Street = bookFormModel.Street;
+                            UserModel? existingUser = users.FirstOrDefault(us => us.Email == bookFormModel.Email || us.Phone == bookFormModel.Phone);
 
-                            if (string.IsNullOrEmpty(existingUser.City) && !string.IsNullOrEmpty(bookFormModel.City))
-                                existingUser.City = bookFormModel.City;
-
-                            if (string.IsNullOrEmpty(existingUser.State) && !string.IsNullOrEmpty(bookFormModel.State))
-                                existingUser.State = bookFormModel.State;
-
-                            if (string.IsNullOrEmpty(existingUser.Zip) && !string.IsNullOrEmpty(bookFormModel.ZipCode))
-                                existingUser.Zip = bookFormModel.ZipCode;
-
-                            await _dbContext.SaveChangesAsync();
-
-                            ServiceModel serviceAppModel = new ServiceModel
+                            if (existingUser != null)
                             {
-                                BusinessId = bookFormModel.BusinessId,
-                                UserId = existingUser.Id,
-                                Service = bookFormModel.Service ?? "",
-                                Date = bookFormModel.Date ?? "",
-                                Time = bookFormModel.Time ?? ""
-                            };
+                                if (string.IsNullOrEmpty(existingUser.Street) && !string.IsNullOrEmpty(bookFormModel.Street))
+                                    existingUser.Street = bookFormModel.Street;
 
-                            if (_dbContext.services != null)
-                            {
-                                _dbContext.services.Add(serviceAppModel);
+                                if (string.IsNullOrEmpty(existingUser.City) && !string.IsNullOrEmpty(bookFormModel.City))
+                                    existingUser.City = bookFormModel.City;
+
+                                if (string.IsNullOrEmpty(existingUser.State) && !string.IsNullOrEmpty(bookFormModel.State))
+                                    existingUser.State = bookFormModel.State;
+
+                                if (string.IsNullOrEmpty(existingUser.Zip) && !string.IsNullOrEmpty(bookFormModel.ZipCode))
+                                    existingUser.Zip = bookFormModel.ZipCode;
+
                                 await _dbContext.SaveChangesAsync();
-                                return Ok(string.Format("Existing user {0}. New service added to db...", existingUser.Name));
+
+                                ServiceModel serviceAppModel = new ServiceModel
+                                {
+                                    BusinessId = bookFormModel.BusinessId,
+                                    UserId = existingUser.Id,
+                                    Service = bookFormModel.Service ?? "",
+                                    Date = bookFormModel.Date ?? "",
+                                    Time = bookFormModel.Time ?? ""
+                                };
+
+                                if (_dbContext.services != null)
+                                {
+                                    _dbContext.services.Add(serviceAppModel);
+                                    await _dbContext.SaveChangesAsync();
+                                    return Ok(string.Format("Existing user {0}. New service added to db...", existingUser.Name));
+                                }
+                            }
+                            else
+                            {
+                                return await CreateNewUserAndService(bookFormModel);
                             }
                         }
                         else
@@ -172,12 +183,7 @@ namespace VueAppMvc.Server.Controllers
                             return await CreateNewUserAndService(bookFormModel);
                         }
                     }
-                    else
-                    {
-                        return await CreateNewUserAndService(bookFormModel);
-                    }
                 }
-
                 return BadRequest("Something went wrong...");
             }
         }
@@ -206,7 +212,7 @@ namespace VueAppMvc.Server.Controllers
         private async Task<IActionResult> CreateNewUserAndService(BookFormModel bookFormModel)
         {
             UserModel newUser = new UserModel
-            {              
+            {
                 Name = bookFormModel.Name ?? "",
                 Email = bookFormModel.Email ?? "",
                 Phone = bookFormModel.Phone ?? "",
