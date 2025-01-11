@@ -17,6 +17,7 @@ namespace VueAppMvc.Server.Controllers
         public async Task<Response> SendEmailConfirmation(string recipientEmail, string subject, string confirmationLink)
         {
             if (string.IsNullOrEmpty(_apiKey))
+
                 throw new InvalidOperationException("SendGrid API key is not configured.");
 
             SendGridClient client = new SendGridClient(_apiKey);
@@ -39,58 +40,51 @@ namespace VueAppMvc.Server.Controllers
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             return await client.SendEmailAsync(msg);
         }
-        public async Task<Response> SendEmailBookingDetails(BookFormModel bookFormModel)
+        public async Task<(Response ClientResponse, Response BusinessResponse)> SendEmailBookingDetails(BookFormModel bookFormModel)
         {
+            string serviceDate = string.Empty;
+            if (!string.IsNullOrEmpty(bookFormModel.Date))
+            {
+                serviceDate = DateTime.ParseExact(bookFormModel.Date, "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture).ToString("d");
+            }
+
             string? apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
             SendGridClient client = new SendGridClient(apiKey);
-            string displayName = !string.IsNullOrEmpty(bookFormModel.BusinessId) ? bookFormModel.BusinessId.Equals("TankAC&HeatingLLC") ? "Tank AC & Heating LLC" : "YohanJS" : "BusinessId was empty";
-            EmailAddress from = new EmailAddress("engfuel@luvoai.com", displayName);
-            // Get Eastern Standard Time zone
-            TimeZoneInfo easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-            DateTime utcNow = DateTime.UtcNow;
-            DateTime easternTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, easternZone);
-            string subject = "Thank you for booking with us!";
-            EmailAddress to = new EmailAddress(bookFormModel.Email);
-            string plainTextContent = "";
 
+            string displayName = !string.IsNullOrEmpty(bookFormModel.BusinessId)
+                ? bookFormModel.BusinessId.Equals("TankAC&HeatingLLC") ? "Tank AC & Heating LLC" : "YohanJS"
+                : "BusinessId was empty";
+
+            EmailAddress from = new EmailAddress("engfuel@luvoai.com", displayName);
+
+            // Prepare email content (shared for both emails)
             var htmlContentBuilder = new StringBuilder();
             htmlContentBuilder.AppendLine("<div style='font-family: Trebuchet MS, sans-serif; line-height: 1.3; color: #333;'>");
             htmlContentBuilder.AppendLine("<h2 style='color: #2a7ae2; font-size: 24px; margin-bottom: 20px;'> Booking Details:</h2>");
-            htmlContentBuilder.AppendLine("<p style='margin: 0; padding: 1px 0;'>");
-            htmlContentBuilder.AppendLine("<strong style='color: #333;'>Service requested: </strong>");
-            htmlContentBuilder.AppendLine("<span style='color: #333 !important;'>" + bookFormModel.Service + "</span>");
-            htmlContentBuilder.AppendLine("<p style='margin: 0; padding: 1px 0;'>");
-            htmlContentBuilder.AppendLine("<strong style='color: #333;'>Phone: </strong>");
-            htmlContentBuilder.AppendLine("<span style='color: #cfdd51 !important'>" + bookFormModel.Phone + "</span>");
-            htmlContentBuilder.AppendLine("</p>");
-            htmlContentBuilder.AppendLine("<p style='margin: 0; padding: 1px 0;'>");
-            htmlContentBuilder.AppendLine("<strong style='color: #333;'>Email: </strong>");
-            htmlContentBuilder.AppendLine("<span style='color: #cfdd51 !important;'>" + bookFormModel.Email + "</span>");
-            htmlContentBuilder.AppendLine("</p>");
-            htmlContentBuilder.AppendLine("<p style='margin: 0; padding: 1px 0;'>");
-            htmlContentBuilder.AppendLine("<strong style='color: #333;'>Address: </strong>");
-            htmlContentBuilder.AppendLine("<span style='color: #333 !important;'>" + bookFormModel.Street + bookFormModel.City + bookFormModel.State + bookFormModel.State + "</span>");
-            htmlContentBuilder.AppendLine("</p>");
-            htmlContentBuilder.AppendLine("<br>");
-            htmlContentBuilder.AppendLine("<p style='margin: 0; padding: 1px 0;'>");
-            htmlContentBuilder.AppendLine("<strong style='color: #333;'>Date and time service requested for: </strong>");
-            htmlContentBuilder.AppendLine("<span style='color: #555 !important;'>" + bookFormModel.Date + "at" + bookFormModel.Time + "</span>");
-            htmlContentBuilder.AppendLine("</p>");
-            htmlContentBuilder.AppendLine("</div>");
-
-            //FOOTER SECTION
-            htmlContentBuilder.AppendLine("<div style='font-family: Trebuchet MS, sans-serif; line-height: 1.3; color: #333; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 20px;'>");
-           
-            htmlContentBuilder.AppendLine("<br>");
-            htmlContentBuilder.AppendLine("<br>");
-            htmlContentBuilder.AppendLine("<a href='https://tankac.netlify.app' style='color: #0000FF !important; text-decoration: none !important;'>www.tankack&heat.com</a>");
+            htmlContentBuilder.AppendLine($"<p><strong>Service requested:</strong> {bookFormModel.Service}</p>");
+            htmlContentBuilder.AppendLine($"<p><strong>Phone:</strong> {bookFormModel.Phone}</p>");
+            htmlContentBuilder.AppendLine($"<p><strong>Email:</strong> {bookFormModel.Email}</p>");
+            htmlContentBuilder.AppendLine($"<p><strong>Address:</strong> {bookFormModel.Street} {bookFormModel.City} {bookFormModel.State}</p>");
+            htmlContentBuilder.AppendLine($"<p><strong>Date and time:</strong> {serviceDate} at {bookFormModel.Time}</p>");
             htmlContentBuilder.AppendLine("</div>");
 
             var htmlContent = htmlContentBuilder.ToString();
 
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            // Client email
+            EmailAddress clientEmail = new EmailAddress(bookFormModel.Email);
+            var clientMessage = MailHelper.CreateSingleEmail(from, clientEmail, "Thank you for booking with us!", string.Empty, htmlContent);
 
-            return await client.SendEmailAsync(msg); ;
+            // Business email
+            EmailAddress businessEmail = new EmailAddress("yoanvaldes01@icloud.com"); // Replace with your business email
+            var businessMessage = MailHelper.CreateSingleEmail(from, businessEmail, "New Booking Received", string.Empty, htmlContent);
+
+            // Send both emails and collect responses
+            Response clientResponse = await client.SendEmailAsync(clientMessage);
+            Response businessResponse = await client.SendEmailAsync(businessMessage);
+
+            // Return both responses
+            return (clientResponse, businessResponse);
         }
+
     }
 }
