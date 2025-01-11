@@ -93,7 +93,7 @@ namespace VueAppMvc.Server.Controllers
                     try
                     {
                         SendEmail emailSender = new SendEmail();
-                        var response = await emailSender.Execute(
+                        var response = await emailSender.SendEmailConfirmation(
                             model.Email,
                             "Confirm Your Email",
                             callbackUrl);

@@ -38,7 +38,7 @@
         email: "",
         password: "",
         message: "",
-        isPrd: false,
+        isPrd: true,
         LoginUrl: "",
       };
     },
