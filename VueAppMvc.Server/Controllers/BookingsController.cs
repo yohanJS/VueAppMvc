@@ -1,3 +1,4 @@
+using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -131,9 +132,9 @@ namespace VueAppMvc.Server.Controllers
 
                 if (ModelState.IsValid && _dbContext.users != null)
                 {
-                    Task<Response> res = sendEmail.SendEmailBookingDetails(bookFormModel);
+                    var res = await sendEmail.SendEmailBookingDetails(bookFormModel);
 
-                    if (res.Result.IsSuccessStatusCode)
+                    if (res.ClientResponse.IsSuccessStatusCode && res.BusinessResponse.IsSuccessStatusCode)
                     {
                         users = _dbContext.users.ToList();
 
