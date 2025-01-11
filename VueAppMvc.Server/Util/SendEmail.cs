@@ -17,6 +17,7 @@ namespace VueAppMvc.Server.Controllers
         public async Task<Response> SendEmailConfirmation(string recipientEmail, string subject, string confirmationLink)
         {
             if (string.IsNullOrEmpty(_apiKey))
+
                 throw new InvalidOperationException("SendGrid API key is not configured.");
 
             SendGridClient client = new SendGridClient(_apiKey);
@@ -41,6 +42,11 @@ namespace VueAppMvc.Server.Controllers
         }
         public async Task<Response> SendEmailBookingDetails(BookFormModel bookFormModel)
         {
+            string serviceDate = string.Empty;
+            if (!string.IsNullOrEmpty(bookFormModel.Date))
+            {
+                serviceDate = DateTime.ParseExact(bookFormModel.Date, "yyyy/MM/dd", System.Globalization.CultureInfo.InvariantCulture).ToString("d");
+            }
             string? apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
             SendGridClient client = new SendGridClient(apiKey);
             string displayName = !string.IsNullOrEmpty(bookFormModel.BusinessId) ? bookFormModel.BusinessId.Equals("TankAC&HeatingLLC") ? "Tank AC & Heating LLC" : "YohanJS" : "BusinessId was empty";
@@ -69,18 +75,18 @@ namespace VueAppMvc.Server.Controllers
             htmlContentBuilder.AppendLine("</p>");
             htmlContentBuilder.AppendLine("<p style='margin: 0; padding: 1px 0;'>");
             htmlContentBuilder.AppendLine("<strong style='color: #333;'>Address: </strong>");
-            htmlContentBuilder.AppendLine("<span style='color: #333 !important;'>" + bookFormModel.Street + bookFormModel.City + bookFormModel.State + bookFormModel.State + "</span>");
+            htmlContentBuilder.AppendLine("<span style='color: #333 !important;'>" + bookFormModel.Street + " " + bookFormModel.City + " " + bookFormModel.State + " " + bookFormModel.State + "</span>");
             htmlContentBuilder.AppendLine("</p>");
             htmlContentBuilder.AppendLine("<br>");
             htmlContentBuilder.AppendLine("<p style='margin: 0; padding: 1px 0;'>");
             htmlContentBuilder.AppendLine("<strong style='color: #333;'>Date and time service requested for: </strong>");
-            htmlContentBuilder.AppendLine("<span style='color: #555 !important;'>" + bookFormModel.Date + "at" + bookFormModel.Time + "</span>");
+            htmlContentBuilder.AppendLine("<span style='color: #555 !important;'>" + serviceDate + " at " + bookFormModel.Time + "</span>");
             htmlContentBuilder.AppendLine("</p>");
             htmlContentBuilder.AppendLine("</div>");
 
             //FOOTER SECTION
             htmlContentBuilder.AppendLine("<div style='font-family: Trebuchet MS, sans-serif; line-height: 1.3; color: #333; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 20px;'>");
-           
+
             htmlContentBuilder.AppendLine("<br>");
             htmlContentBuilder.AppendLine("<br>");
             htmlContentBuilder.AppendLine("<a href='https://tankac.netlify.app' style='color: #0000FF !important; text-decoration: none !important;'>www.tankack&heat.com</a>");
